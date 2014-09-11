@@ -12,9 +12,11 @@
         <oxy:PlotView Model="{Binding OrigScanId}" Margin="0,0,512,384"/>
         <oxy:PlotView Model="{Binding OrigCalcMz}" Margin="512,0,0,384"/>
         <oxy:PlotView Model="{Binding FixScanId}" Margin="0,384,512,0"/>
-        <oxy:PlotView Model="{Binding FixCalcMz}" Margin="512,384,0,0"/>
-        <Image Source="{Binding AllVis}"></Image> -->
+        <oxy:PlotView Model="{Binding FixCalcMz}" Margin="512,384,0,0"/> -->
+        <!-- <Image Source="{Binding AllVis}"></Image> -->
+        <!-- 
         <oxy:PlotView Model="{Binding OrigPpmErrorHist}" Margin="0,0,512,0"/>
-        <oxy:PlotView Model="{Binding FixPpmErrorHist}" Margin="512,0,0,0"/>
+        <oxy:PlotView Model="{Binding FixPpmErrorHist}" Margin="512,0,0,0"/> -->
+        <Image Source="{Binding ErrHist}"></Image>
     </Grid>
 </Window>

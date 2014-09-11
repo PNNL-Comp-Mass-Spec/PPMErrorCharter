@@ -37,10 +37,13 @@ namespace PPMErrorCharter
 				dataFileExists = false;
 			}
 			string outFile;
+			string outFile2;
 			//outFile = Path.GetFileName(identFile);
 			//outFile = outFile.Replace('.', '_') + "_m_z_calibration.png";
 			outFile = Path.ChangeExtension(identFile, "_MZRefinery_MassErrors.png");
 			outFile = outFile.Replace("._", "_"); // The Path.ChangeExtension functions leave the '.', so change it now.
+			outFile2 = Path.ChangeExtension(identFile, "_MZRefinery_Histograms.png");
+			outFile2 = outFile2.Replace("._", "_"); // The Path.ChangeExtension functions leave the '.', so change it now.
 
 			var scanData = MzIdentMLReader.Read(identFile);
 			if (dataFileExists)
@@ -52,6 +55,7 @@ namespace PPMErrorCharter
 			//scanData.Sort(new IdentDataByCalcMz()); // sort by calc mass to charge
 
 			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFile, dataFileExists);
+			IdentDataPlotter.ErrorHistogramsToPng(scanData, outFile2, dataFileExists);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -20,62 +21,6 @@ namespace PPMErrorCharter
 			{
 				TitlePadding = 0,
 			};	
-		}
-
-		private static ScatterSeries ScatterSeriesBaseConfig()
-		{
-			return new ScatterSeries
-			{
-				MarkerType = MarkerType.Circle,
-				MarkerStrokeThickness = 0,
-				MarkerSize = 1.0,
-			};
-		}
-
-		private static Axis ScatterYAxisBase()
-		{
-			return new LinearAxis
-			{
-				Position = AxisPosition.Left,
-				Title = "Mass Error (PPM)",
-				MajorGridlineStyle = LineStyle.Solid,
-				MajorStep = 5.0,
-			};
-		}
-
-		private static Axis ScatterXAxisBase()
-		{
-			return new LinearAxis
-			{
-				Position = AxisPosition.Bottom,
-				//TitlePosition = 0.0,
-			};
-		}
-
-		private static Axis ScatterXAxisScanNum()
-		{
-			var axis = ScatterXAxisBase();
-			//axis.Title = "scan";
-			return axis;
-		}
-
-		private static Axis ScatterYAxisScanNum()
-		{
-			//var axis = ScatterYAxisBase();
-			return ScatterYAxisBase();
-		}
-
-		private static Axis ScatterXAxisCalcMz()
-		{
-			var axis = ScatterXAxisBase();
-			//axis.Title = "m/z";
-			return axis;
-		}
-
-		private static Axis ScatterYAxisCalcMz()
-		{
-			//var axis = ScatterYAxisBase();
-			return ScatterYAxisBase();
 		}
 
 		public static PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, OxyColor markerColor)
@@ -99,7 +44,13 @@ namespace PPMErrorCharter
 				Position = AxisPosition.Left,
 				Title = "Mass Error (PPM)",
 				MajorGridlineStyle = LineStyle.Solid,
-				MajorStep = 5.0,
+				MajorStep = 10.0,
+				MinorStep = 5.0,
+				Minimum = -20.0,
+				Maximum = 20.0,
+				MinimumRange = 40.0,
+				FilterMinValue = -20.0,
+				FilterMaxValue = 20.0,
 			};
 
 			var xAxis = new LinearAxis
@@ -114,92 +65,47 @@ namespace PPMErrorCharter
 			return model;
 		}
 
-		public static PlotModel ScatterOriginalByScanNum(List<IdentData> data)
+		public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
 		{
-			var model = ModelBaseConfig();
-			model.Title = "Scan Number: Original";
+			int width = 512;  // 1024 pixels final width
+			int height = 384; // 768 pixels final height
+			
+			// Draw the bitmaps onto a new canvas internally
+			// Allows us to combine them
+			DrawingVisual drawVisual = new DrawingVisual();
+			DrawingContext drawContext = drawVisual.RenderOpen();
+			var OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
+			var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", OxyColors.Green);
+			var OSI = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White);
+			var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White);
+			drawContext.DrawImage(OSI, new Rect(0, 0, width, height));
+			drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
+			
+			// Only add the fixed files if the data file exists
+			if (dataFileExists)
+			{
+				var FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorFixed", "Scan Number: Refined", OxyColors.Blue);
+				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorFixed", "M/Z: Refined", OxyColors.Green);
+				var FSI = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White);
+				var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White);
+				drawContext.DrawImage(FSI, new Rect(0, height, width, height));
+				drawContext.DrawImage(FMZ, new Rect(width, height, width, height));
+			}
 
-			var s1 = ScatterSeriesBaseConfig();
-			s1.MarkerFill = OxyColors.Blue;
-			s1.ItemsSource = data;
-			s1.DataFieldX = "ScanIdInt";
-			s1.DataFieldY = "PpmError";
+			drawContext.Close();
 
-			//foreach (var scan in data)
-			//{
-			//	s1.Points.Add(new ScatterPoint(scan.ScanId, scan.PpmError));
-			//}
+			// Turn the canvas back into an image
+			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
+			image.Render(drawVisual);
 
-			model.Series.Add(s1);
-			model.Axes.Add(ScatterYAxisScanNum());
-			model.Axes.Add(ScatterXAxisScanNum());
-			return model;
-		}
-
-		public static PlotModel ScatterOriginalByCalcMz(List<IdentData> data)
-		{
-			var model = ModelBaseConfig();
-			model.Title = "M/Z: Original";
-
-			var s1 = ScatterSeriesBaseConfig();
-			s1.MarkerFill = OxyColors.Green;
-			s1.ItemsSource = data;
-			s1.DataFieldX = "CalcMz";
-			s1.DataFieldY = "PpmError";
-
-			//foreach (var scan in data)
-			//{
-			//	s1.Points.Add(new ScatterPoint(scan.CalcMz, scan.PpmError));
-			//}
-
-			model.Series.Add(s1);
-			model.Axes.Add(ScatterYAxisCalcMz());
-			model.Axes.Add(ScatterXAxisCalcMz());
-			return model;
-		}
-
-		public static PlotModel ScatterFixedByScanNum(List<IdentData> data)
-		{
-			var model = ModelBaseConfig();
-			model.Title = "Scan Number: Refined";
-
-			var s1 = ScatterSeriesBaseConfig();
-			s1.MarkerFill = OxyColors.Blue;
-			s1.ItemsSource = data;
-			s1.DataFieldX = "ScanIdInt";
-			s1.DataFieldY = "PpmErrorFixed";
-
-			//foreach (var scan in data)
-			//{
-			//	s1.Points.Add(new ScatterPoint(scan.ScanId, scan.PpmErrorFixed));
-			//}
-
-			model.Series.Add(s1);
-			model.Axes.Add(ScatterYAxisScanNum());
-			model.Axes.Add(ScatterXAxisScanNum());
-			return model;
-		}
-
-		public static PlotModel ScatterFixedByCalcMz(List<IdentData> data)
-		{
-			var model = ModelBaseConfig();
-			model.Title = "M/Z: Refined";
-
-			var s1 = ScatterSeriesBaseConfig();
-			s1.MarkerFill = OxyColors.Green;
-			s1.ItemsSource = data;
-			s1.DataFieldX = "CalcMz";
-			s1.DataFieldY = "PpmErrorFixed";
-
-			//foreach (var scan in data)
-			//{
-			//	s1.Points.Add(new ScatterPoint(scan.CalcMz, scan.PpmErrorFixed));
-			//}
-
-			model.Series.Add(s1);
-			model.Axes.Add(ScatterYAxisCalcMz());
-			model.Axes.Add(ScatterXAxisCalcMz());
-			return model;
+			// Turn the image into a png bitmap
+			PngBitmapEncoder png = new PngBitmapEncoder();
+			png.Frames.Add(BitmapFrame.Create(image));
+			using (Stream stream = File.Create(pngFile))
+			{
+				png.Save(stream);
+			}
+			return image;
 		}
 
 		private static SortedDictionary<double, int> HistogramFrequencies(List<IdentData> data, string dataField, double binSize)
@@ -220,61 +126,72 @@ namespace PPMErrorCharter
 				}
 				counts[final]++;
 			}
-			
+
 			// Sort once?
 			return new SortedDictionary<double, int>(counts);
 		}
 
 		public static PlotModel Histogram(List<IdentData> data, string dataField, string title, OxyColor lineColor, double binSize)
 		{
+			var frequencies = HistogramFrequencies(data, dataField, binSize);
+
 			var model = ModelBaseConfig();
-			//model.Title = "Original";
 			model.Title = title;
 
+			double yStep = 50.0;
+			double xStep = 5.0;
 			var yAxis = new LinearAxis()
 			{
 				Position = AxisPosition.Left,
 				MajorGridlineStyle = LineStyle.Dash,
 				Title = "Counts",
+				Minimum = 0.0,
+				FilterMinValue = 0.0,
+				MajorStep = yStep,
+				Maximum = 0.0,
 			};
 			var xAxis = new LinearAxis()
 			{
 				Position = AxisPosition.Bottom,
-				MajorStep = 5.0,
+				MajorStep = xStep,
 				MajorGridlineStyle = LineStyle.Dash,
 				Title = "Mass error (PPM)",
-				//MinorStep = 1,//0.5,
-				//IsAxisVisible = false,
-				//LabelField = "PpmError",
-				//ItemsSource = data,
+				//MinimumRange = 60.0,
+				//Maximum = 30.0,
+				//Minimum = -30.0,
+				Maximum = 0.0,
+				Minimum = 0.0,
+				//FilterMinValue = -30.0,
+				//FilterMaxValue = 30.0,
 			};
+			foreach (var frequency in frequencies)
+			{
+				if (frequency.Value > yAxis.Maximum)
+				{
+					yAxis.Maximum = Math.Ceiling(Convert.ToDouble(frequency.Value) / yStep) * yStep;
+					//yAxis.FilterMaxValue = yAxis.Maximum + 1.0;
+				}
+				if (frequency.Key < xAxis.Minimum)
+				{
+					xAxis.Minimum = Math.Floor(Convert.ToDouble(frequency.Key) / xStep) * xStep;
+					//xAxis.FilterMinValue = xAxis.Minimum - 1.0;
+				}
+				if (frequency.Key > xAxis.Maximum)
+				{
+					xAxis.Maximum = Math.Ceiling(Convert.ToDouble(frequency.Key) / xStep) * xStep;
+					//xAxis.FilterMaxValue = xAxis.Maximum + 1.0;
+				}
+			}
 
-			//var frequencies = HistogramFrequencies(data, "PpmError");
-			var frequencies = HistogramFrequencies(data, dataField, binSize);
-
-			//for (double i = -30; i <= 30; i += xAxis.MinorStep)
-			//for (double i = -10.4; i <= 10.4; i += 0.1)
-			////for (int i = -30; i <= 30; i += 5)
-			//{
-			//	xAxis.Labels.Add(i.ToString());
-			//	xAxis.ActualLabels.Add(i.ToString());
-			//}
 			var s1 = new LineSeries()
 			{
 				MarkerFill = OxyColors.Black,
 				MarkerSize = 2.0,
 				MarkerType = MarkerType.Circle,
-				//Color = OxyColors.Blue,
 				Color = lineColor,
 				ItemsSource = frequencies,
 				DataFieldX = "Key",
 				DataFieldY = "Value",
-				//Smooth = true,
-			};
-			var s2 = new LineSeries()
-			{
-				Color = OxyColors.Green,
-				Smooth = true,
 			};
 			model.Axes.Add(yAxis);
 			model.Axes.Add(xAxis);
@@ -282,42 +199,85 @@ namespace PPMErrorCharter
 			return model;
 		}
 
-		public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
+		public static BitmapSource ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
 		{
 			int width = 512;  // 1024 pixels final width
-			int height = 384; // 768 pixels final height
-			
+			int height = 512; // 512 pixels final height
 
 			// Draw the bitmaps onto a new canvas internally
 			// Allows us to combine them
 			DrawingVisual drawVisual = new DrawingVisual();
 			DrawingContext drawContext = drawVisual.RenderOpen();
-			var OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
-			var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", OxyColors.Green);
-			var OSI = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White);
-			var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White);
-			//var OSI = PngExporter.ExportToBitmap(ScatterOriginalByScanNum(scanData), width, height, OxyColors.White);
-			//var OMZ = PngExporter.ExportToBitmap(ScatterOriginalByCalcMz(scanData), width, height, OxyColors.White);
-			drawContext.DrawImage(OSI, new Rect(0, 0, width, height));
-			drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
-			
+			// Create both histogram models to allow sychronizing the y-axis
+			var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
+			var fixError = Histogram(scanData, "PpmErrorFixed", "Refined", OxyColors.Green, 0.5);
+			var axes = new List<Axis>();
+			axes.AddRange(origError.Axes);
+			axes.AddRange(fixError.Axes);
+			var yAxes = new List<Axis>();
+			var xAxes = new List<Axis>();
+			double yMax = 0.0;
+			double xMin = 0.0;
+			double xMax = 0.0;
+			foreach (var axis in axes)
+			{
+				if (axis.Position == AxisPosition.Left)
+				{
+					yAxes.Add(axis);
+					if (axis.Maximum > yMax)
+					{
+						yMax = axis.Maximum;
+					}
+				}
+				else if (axis.Position == AxisPosition.Bottom)
+				{
+					xAxes.Add(axis);
+					if (axis.Maximum > xMax)
+					{
+						xMax = axis.Maximum;
+					}
+					if (axis.Minimum < xMin)
+					{
+						xMin = axis.Minimum;
+					}
+				}
+			}
+			foreach (var axis in yAxes)
+			{
+				axis.Maximum = yMax;
+				//axis.FilterMaxValue = yMax + 1.0;
+			}
+			// Make sure the axis is centered...
+			if (xMax > Math.Abs(xMin))
+			{
+				xMin = -xMax;
+			}
+			else
+			{
+				xMax = -xMin;
+			}
+			foreach (var axis in xAxes)
+			{
+				axis.Maximum = xMax;
+				axis.Minimum = xMin;
+				//axis.FilterMaxValue = xMax + 1.0;
+				//axis.FilterMinValue = xMin - 1.0;
+			}
+
+			var oe = PngExporter.ExportToBitmap(origError, width, height, OxyColors.White);
+			drawContext.DrawImage(oe, new Rect(0, 0, width, height));
+
 			// Only add the fixed files if the data file exists
 			if (dataFileExists)
 			{
-				var FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorFixed", "Scan Number: Refined", OxyColors.Blue);
-				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorFixed", "M/Z: Refined", OxyColors.Green);
-				var FSI = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White);
-				var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White);
-				//var FSI = PngExporter.ExportToBitmap(ScatterFixedByScanNum(scanData), width, height, OxyColors.White);
-				//var FMZ = PngExporter.ExportToBitmap(ScatterFixedByCalcMz(scanData), width, height, OxyColors.White);
-				drawContext.DrawImage(FSI, new Rect(0, height, width, height));
-				drawContext.DrawImage(FMZ, new Rect(width, height, width, height));
+				var fe = PngExporter.ExportToBitmap(fixError, width, height, OxyColors.White);
+				drawContext.DrawImage(fe, new Rect(width, 0, width, height));
 			}
 
 			drawContext.Close();
 
 			// Turn the canvas back into an image
-			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
+			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, 96, 96, PixelFormats.Pbgra32);
 			image.Render(drawVisual);
 
 			// Turn the image into a png bitmap
