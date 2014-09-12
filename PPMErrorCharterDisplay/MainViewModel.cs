@@ -15,7 +15,7 @@ namespace PPMErrorCharterDisplay
 	{
 		public MainViewModel()
 		{
-			var datasetPathName = "E:\\Test4\\Cyano_GC_08_17_15Jun09_Draco_09-05-01";
+			var datasetPathName = "E:\\Test4\\Cyano_GC_07_13_25Aug09_Draco_09-05-03";
 			var identFile = datasetPathName + ".mzid";
 			var dataFileFixed = datasetPathName + "_FIXED.mzML";
 			var scanData = MzIdentMLReader.Read(identFile);

@@ -108,6 +108,13 @@ namespace PPMErrorCharter
 			return image;
 		}
 
+		/// <summary>
+		/// Create the histogram binned data
+		/// </summary>
+		/// <param name="data"></param>
+		/// <param name="dataField"></param>
+		/// <param name="binSize"></param>
+		/// <returns></returns>
 		private static SortedDictionary<double, int> HistogramFrequencies(List<IdentData> data, string dataField, double binSize)
 		{
 			Dictionary<double, int> counts = new Dictionary<double, int>();
@@ -131,6 +138,15 @@ namespace PPMErrorCharter
 			return new SortedDictionary<double, int>(counts);
 		}
 
+		/// <summary>
+		/// Generate a frequency histogram using the specified data field
+		/// </summary>
+		/// <param name="data"></param>
+		/// <param name="dataField"></param>
+		/// <param name="title"></param>
+		/// <param name="lineColor"></param>
+		/// <param name="binSize"></param>
+		/// <returns></returns>
 		public static PlotModel Histogram(List<IdentData> data, string dataField, string title, OxyColor lineColor, double binSize)
 		{
 			var frequencies = HistogramFrequencies(data, dataField, binSize);
@@ -156,30 +172,22 @@ namespace PPMErrorCharter
 				MajorStep = xStep,
 				MajorGridlineStyle = LineStyle.Dash,
 				Title = "Mass error (PPM)",
-				//MinimumRange = 60.0,
-				//Maximum = 30.0,
-				//Minimum = -30.0,
 				Maximum = 0.0,
 				Minimum = 0.0,
-				//FilterMinValue = -30.0,
-				//FilterMaxValue = 30.0,
 			};
 			foreach (var frequency in frequencies)
 			{
 				if (frequency.Value > yAxis.Maximum)
 				{
 					yAxis.Maximum = Math.Ceiling(Convert.ToDouble(frequency.Value) / yStep) * yStep;
-					//yAxis.FilterMaxValue = yAxis.Maximum + 1.0;
 				}
 				if (frequency.Key < xAxis.Minimum)
 				{
 					xAxis.Minimum = Math.Floor(Convert.ToDouble(frequency.Key) / xStep) * xStep;
-					//xAxis.FilterMinValue = xAxis.Minimum - 1.0;
 				}
 				if (frequency.Key > xAxis.Maximum)
 				{
 					xAxis.Maximum = Math.Ceiling(Convert.ToDouble(frequency.Key) / xStep) * xStep;
-					//xAxis.FilterMaxValue = xAxis.Maximum + 1.0;
 				}
 			}
 
@@ -199,6 +207,13 @@ namespace PPMErrorCharter
 			return model;
 		}
 
+		/// <summary>
+		/// Output the original and refined ppm error histograms to a single file
+		/// </summary>
+		/// <param name="scanData"></param>
+		/// <param name="pngFile"></param>
+		/// <param name="dataFileExists"></param>
+		/// <returns></returns>
 		public static BitmapSource ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
 		{
 			int width = 512;  // 1024 pixels final width
@@ -211,6 +226,8 @@ namespace PPMErrorCharter
 			// Create both histogram models to allow sychronizing the y-axis
 			var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
 			var fixError = Histogram(scanData, "PpmErrorFixed", "Refined", OxyColors.Green, 0.5);
+
+			// Synchronize the histogram plot areas - x and y axis ranges
 			var axes = new List<Axis>();
 			axes.AddRange(origError.Axes);
 			axes.AddRange(fixError.Axes);
@@ -245,7 +262,6 @@ namespace PPMErrorCharter
 			foreach (var axis in yAxes)
 			{
 				axis.Maximum = yMax;
-				//axis.FilterMaxValue = yMax + 1.0;
 			}
 			// Make sure the axis is centered...
 			if (xMax > Math.Abs(xMin))
@@ -260,10 +276,9 @@ namespace PPMErrorCharter
 			{
 				axis.Maximum = xMax;
 				axis.Minimum = xMin;
-				//axis.FilterMaxValue = xMax + 1.0;
-				//axis.FilterMinValue = xMin - 1.0;
 			}
 
+			// Output the graph models to a context
 			var oe = PngExporter.ExportToBitmap(origError, width, height, OxyColors.White);
 			drawContext.DrawImage(oe, new Rect(0, 0, width, height));
 

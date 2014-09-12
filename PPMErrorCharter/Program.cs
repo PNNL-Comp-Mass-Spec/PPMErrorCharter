@@ -51,8 +51,6 @@ namespace PPMErrorCharter
 				MzMLReader.ReadMzMl(fixedDataFile, scanData);
 			}
 
-			//scanData.Sort(); // Sort by scan id
-			//scanData.Sort(new IdentDataByCalcMz()); // sort by calc mass to charge
 
 			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFile, dataFileExists);
 			IdentDataPlotter.ErrorHistogramsToPng(scanData, outFile2, dataFileExists);
