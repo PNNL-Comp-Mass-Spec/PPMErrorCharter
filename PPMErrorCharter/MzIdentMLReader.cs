@@ -43,6 +43,7 @@ namespace PPMErrorCharter
 		/// Files are commonly larger than 30 MB, so use a streaming reader instead of a DOM reader
 		/// </summary>
 		/// <param name="reader">XmlReader object for the file to be read</param>
+		/// <param name="scanData"></param>
 		private static void ReadMzIdentMl(XmlReader reader, List<IdentData> scanData)
 		{
 			// Handle disposal of allocated object correctly
@@ -290,7 +291,19 @@ namespace PPMErrorCharter
 			data.NativeId = nativeId;
 			if (!string.IsNullOrWhiteSpace(nativeId))
 			{
-				data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scan=") + 5));
+				if (data.NativeId.LastIndexOf("scan=") != -1)
+				{
+					data.IdField = "id";
+					data.IdValue = data.NativeId;
+					data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scan=") + 5));
+				}
+				else if (data.NativeId.LastIndexOf("index=") != -1)
+				{
+					data.IdField = "index";
+					data.IdValue = data.NativeId.Substring(data.NativeId.LastIndexOf("index=") + 6);
+					data.ScanId = Convert.ToUInt64(data.IdValue);
+					//data.IdValue = (data.ScanId + 1).ToString();
+				}
 			}
 			data.CalcMz = Convert.ToDouble(reader.GetAttribute("calculatedMassToCharge"));
 			data.ExperMz = Convert.ToDouble(reader.GetAttribute("experimentalMassToCharge"));

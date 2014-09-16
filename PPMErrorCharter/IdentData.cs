@@ -7,6 +7,8 @@ namespace PPMErrorCharter
 	{
 		public string NativeId;
 		public ulong ScanId;
+		public string IdField;
+		public string IdValue;
 		public int Charge;
 		public double SpecEValue;
 		public double QValue;

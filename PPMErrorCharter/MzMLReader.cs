@@ -192,7 +192,10 @@ namespace PPMErrorCharter
 					case "spectrumList":
 						// Schema requirements: zero to one instances of this element
 						// Use reader.ReadSubtree() to provide an XmlReader that is only valid for the element and child nodes
-						ReadSpectrumList(reader.ReadSubtree(), data, ref dataIndex);
+						if (dataIndex < data.Count)
+						{
+							ReadSpectrumList(reader.ReadSubtree(), data, ref dataIndex);
+						}
 						// "spectrumList" might not have any child nodes
 						// We will either consume the EndElement, or the same element that was passed to ReadSpectrumList (in case of no child nodes)
 						reader.Read();
@@ -230,9 +233,9 @@ namespace PPMErrorCharter
 				}
 				if (reader.Name == "spectrum")
 				{
-					var nativeId = reader.GetAttribute("id");
-					
-					if (data[dataIndex].NativeId == nativeId)
+					var idValue = reader.GetAttribute(data[dataIndex].IdField);
+
+					if (data[dataIndex].IdValue == idValue)
 					{
 						// Schema requirements: zero to many instances of this element
 						// Use reader.ReadSubtree() to provide an XmlReader that is only valid for the element and child nodes
@@ -240,7 +243,7 @@ namespace PPMErrorCharter
 						// "spectrum" might not have any child nodes
 						// We will either consume the EndElement, or the same element that was passed to ReadSpectrum (in case of no child nodes)
 						reader.Read();
-						while (data[dataIndex].NativeId == nativeId)
+						while (data[dataIndex].IdValue == idValue)
 						{
 							data[dataIndex].ExperMzFixed = fixedValue;
 							dataIndex++;
@@ -407,7 +410,10 @@ namespace PPMErrorCharter
 			double precursorMass = scans[0].MonoisotopicMz;
 			if (precursorMass == 0.0)
 			{
-				precursorMass = precursors[0].Ions[0].SelectedIonMz;
+				if (precursors.Count > 0 && precursors[0].Ions.Count > 0)
+				{
+					precursorMass = precursors[0].Ions[0].SelectedIonMz;
+				}
 			}
 			return precursorMass;
 		}
