@@ -46,7 +46,7 @@ namespace PPMErrorCharter
 
 		public double ExperMz
 		{
-			get { return _experMzFixed; }
+			get { return _experMz; }
 			set
 			{
 				_experMz = value;
