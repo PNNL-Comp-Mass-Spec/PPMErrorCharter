@@ -216,9 +216,9 @@ namespace PPMErrorCharter
 
 			var s1 = new LineSeries()
 			{
-				MarkerFill = OxyColors.Black,
-				MarkerSize = 2.0,
-				MarkerType = MarkerType.Circle,
+				//MarkerFill = OxyColors.Undefined, //OxyColors.Black,
+				//MarkerSize = 2.0,
+				//MarkerType = MarkerType.None, //MarkerType.Circle,
 				Color = lineColor,
 				ItemsSource = frequencies,
 				DataFieldX = "Key",
