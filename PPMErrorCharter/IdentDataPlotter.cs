@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using OxyPlot;
@@ -59,8 +59,19 @@ namespace PPMErrorCharter
 				//TitlePosition = 0.0,
 			};
 
+			var xAxisCenter = new LinearAxis
+			{
+				Position = AxisPosition.Top, // To let the other axis be locked to the bottom, and force this one to be horizontal
+				PositionAtZeroCrossing = true,
+				TickStyle = TickStyle.None, // To change to show a value, need to do axis synchronization
+				AxislineStyle = LineStyle.Solid,
+				AxislineThickness = 1.0,
+				TextColor = OxyColors.Undefined, // Force invisible labels
+			};
+
 			model.Axes.Add(yAxis);
 			model.Axes.Add(xAxis);
+			model.Axes.Add(xAxisCenter);
 			model.Series.Add(s1);
 			return model;
 		}
@@ -84,8 +95,8 @@ namespace PPMErrorCharter
 			// Only add the fixed files if the data file exists
 			if (dataFileExists)
 			{
-				var FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorFixed", "Scan Number: Refined", OxyColors.Blue);
-				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorFixed", "M/Z: Refined", OxyColors.Green);
+				var FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
+				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorRefined", "M/Z: Refined", OxyColors.Green);
 				var FSI = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White);
 				var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White);
 				drawContext.DrawImage(FSI, new Rect(0, height, width, height));
@@ -166,6 +177,18 @@ namespace PPMErrorCharter
 				MajorStep = yStep,
 				Maximum = 0.0,
 			};
+			var yAxisCenter = new LinearAxis()
+			{
+				Position = AxisPosition.Right,
+				PositionAtZeroCrossing = true,
+				TickStyle = TickStyle.Crossing, //TickStyle.None,
+				Minimum = 0.0,
+				FilterMinValue = 0.0,
+				AxislineStyle = LineStyle.Solid,
+				AxislineThickness = 1.0,
+				MajorStep = yStep,
+				TextColor = OxyColors.Undefined, // Force invisible labels
+			};
 			var xAxis = new LinearAxis()
 			{
 				Position = AxisPosition.Bottom,
@@ -203,6 +226,7 @@ namespace PPMErrorCharter
 			};
 			model.Axes.Add(yAxis);
 			model.Axes.Add(xAxis);
+			model.Axes.Add(yAxisCenter);
 			model.Series.Add(s1);
 			return model;
 		}
@@ -216,16 +240,9 @@ namespace PPMErrorCharter
 		/// <returns></returns>
 		public static BitmapSource ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
 		{
-			int width = 512;  // 1024 pixels final width
-			int height = 512; // 512 pixels final height
-
-			// Draw the bitmaps onto a new canvas internally
-			// Allows us to combine them
-			DrawingVisual drawVisual = new DrawingVisual();
-			DrawingContext drawContext = drawVisual.RenderOpen();
 			// Create both histogram models to allow sychronizing the y-axis
 			var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
-			var fixError = Histogram(scanData, "PpmErrorFixed", "Refined", OxyColors.Green, 0.5);
+			var fixError = Histogram(scanData, "PpmErrorRefined", "Refined", OxyColors.Green, 0.5);
 
 			// Synchronize the histogram plot areas - x and y axis ranges
 			var axes = new List<Axis>();
@@ -238,7 +255,7 @@ namespace PPMErrorCharter
 			double xMax = 0.0;
 			foreach (var axis in axes)
 			{
-				if (axis.Position == AxisPosition.Left)
+				if (axis.IsVertical())
 				{
 					yAxes.Add(axis);
 					if (axis.Maximum > yMax)
@@ -246,7 +263,7 @@ namespace PPMErrorCharter
 						yMax = axis.Maximum;
 					}
 				}
-				else if (axis.Position == AxisPosition.Bottom)
+				else if (axis.IsHorizontal())
 				{
 					xAxes.Add(axis);
 					if (axis.Maximum > xMax)
@@ -262,6 +279,7 @@ namespace PPMErrorCharter
 			foreach (var axis in yAxes)
 			{
 				axis.Maximum = yMax;
+				//axis.MinimumRange = yMax;
 			}
 			// Make sure the axis is centered...
 			if (xMax > Math.Abs(xMin))
@@ -278,6 +296,79 @@ namespace PPMErrorCharter
 				axis.Minimum = xMin;
 			}
 
+			int resolution = 96;
+			int width = 512;  // 1024 pixels final width
+			int height = 512; // 512 pixels final height
+
+			// Draw the bitmaps onto a new canvas internally
+			// Allows us to combine them
+			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
+			/*/
+			//RenderTargetBitmap image = new RenderTargetBitmap(4096, 4096, 256, 256, PixelFormats.Pbgra32);
+			IPlotModel origModel = origError;
+			IPlotModel fixModel = fixError;
+			var fullCanvas = new Canvas
+			{
+				Width = width * 2,
+				Height = height,
+				Background = OxyColors.White.ToBrush(),
+			};
+			var origCanvas = new Canvas
+			{
+				Width = width,
+				Height = height,
+				Background = OxyColors.White.ToBrush(),
+			};
+			var fixCanvas = new Canvas
+			{
+				Width = width,
+				Height = height,
+				Background = OxyColors.White.ToBrush(),
+			};
+			fullCanvas.Measure(new Size(fullCanvas.Width, fullCanvas.Height));
+			origCanvas.Measure(new Size(origCanvas.Width, origCanvas.Height));
+			fixCanvas.Measure(new Size(fixCanvas.Width, fixCanvas.Height));
+			fullCanvas.Arrange(new Rect(0, 0, fullCanvas.Width, fullCanvas.Height));
+			origCanvas.Arrange(new Rect(0, 0, origCanvas.Width, origCanvas.Height));
+			fixCanvas.Arrange(new Rect(0, 0, fixCanvas.Width, fixCanvas.Height));
+
+			var rcOrig = new ShapesRenderContext(origCanvas)
+			{
+				RendersToScreen = false,
+				TextFormattingMode = TextFormattingMode.Ideal,
+			};
+			var rcFix = new ShapesRenderContext(fixCanvas)
+			{
+				RendersToScreen = false,
+				TextFormattingMode = TextFormattingMode.Ideal,
+			};
+			//((IPlotModel)origError).Update(true);
+			//((IPlotModel)fixError).Update(true);
+			//((IPlotModel)origError).Render(rcOrig, origCanvas.Width, origCanvas.Height);
+			//((IPlotModel)fixError).Render(rcOrig, fixCanvas.Width, fixCanvas.Height);
+			origModel.Update(true);
+			fixModel.Update(true);
+			origModel.Render(rcOrig, origCanvas.Width, origCanvas.Height);
+			fixModel.Render(rcFix, fixCanvas.Width, fixCanvas.Height);
+
+			origCanvas.UpdateLayout();
+			fixCanvas.UpdateLayout();
+
+			Canvas.SetTop(origCanvas, 0);
+			Canvas.SetLeft(origCanvas, 0);
+			fullCanvas.Children.Add(origCanvas);
+
+			Canvas.SetTop(fixCanvas, 0);
+			Canvas.SetLeft(fixCanvas, width);
+			fullCanvas.Children.Add(fixCanvas);
+
+			fullCanvas.UpdateLayout();
+
+			image.Render(fullCanvas);
+			/*/
+			DrawingVisual drawVisual = new DrawingVisual();
+			DrawingContext drawContext = drawVisual.RenderOpen();
+
 			// Output the graph models to a context
 			var oe = PngExporter.ExportToBitmap(origError, width, height, OxyColors.White);
 			drawContext.DrawImage(oe, new Rect(0, 0, width, height));
@@ -290,10 +381,14 @@ namespace PPMErrorCharter
 			}
 
 			drawContext.Close();
+			image.Render(drawVisual);
+			
+			/**/
 
 			// Turn the canvas back into an image
-			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, 96, 96, PixelFormats.Pbgra32);
-			image.Render(drawVisual);
+			//RenderTargetBitmap image = new RenderTargetBitmap(width * 2 * (resolution / 96), height * (resolution / 96), resolution, resolution, PixelFormats.Pbgra32);
+			//RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
+			//image.Render(drawVisual);
 
 			// Turn the image into a png bitmap
 			PngBitmapEncoder png = new PngBitmapEncoder();

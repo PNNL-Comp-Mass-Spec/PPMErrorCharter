@@ -14,10 +14,10 @@ namespace PPMErrorCharter
 		public double QValue;
 		private double _calcMz;
 		private double _experMz;
-		private double _experMzFixed;
+		private double _experMzRefined;
 		private bool _isSetCalcMz;
 		private bool _isSetExperMz;
-		private bool _isSetExperMzFixed;
+		private bool _isSetExperMzRefined;
 
 		public int ScanIdInt
 		{
@@ -35,10 +35,10 @@ namespace PPMErrorCharter
 					MassError = _experMz - _calcMz;
 					PpmError = (MassError / _calcMz) * 1.0e6;
 				}
-				if (_isSetCalcMz && _isSetExperMzFixed && _calcMz != 0.0)
+				if (_isSetCalcMz && _isSetExperMzRefined && _calcMz != 0.0)
 				{
-					MassErrorFixed = _experMzFixed - _calcMz;
-					PpmErrorFixed = (MassErrorFixed / _calcMz) * 1.0e6;
+					MassErrorRefined = _experMzRefined - _calcMz;
+					PpmErrorRefined = (MassErrorRefined / _calcMz) * 1.0e6;
 				}
 				_isSetCalcMz = true;
 			}
@@ -59,25 +59,25 @@ namespace PPMErrorCharter
 			}
 		}
 
-		public double ExperMzFixed
+		public double ExperMzRefined
 		{
-			get { return _experMzFixed; }
+			get { return _experMzRefined; }
 			set
 			{
-				_experMzFixed = value;
+				_experMzRefined = value;
 				if (_isSetCalcMz && _calcMz != 0.0)
 				{
-					MassErrorFixed = _experMzFixed - _calcMz;
-					PpmErrorFixed = (MassErrorFixed / _calcMz) * 1.0e6;
+					MassErrorRefined = _experMzRefined - _calcMz;
+					PpmErrorRefined = (MassErrorRefined / _calcMz) * 1.0e6;
 				}
-				_isSetExperMzFixed = true;
+				_isSetExperMzRefined = true;
 			}
 		}
 
 		public double MassError { get; private set; }
 		public double PpmError { get; private set; }
-		public double MassErrorFixed { get; private set; }
-		public double PpmErrorFixed { get; private set; }
+		public double MassErrorRefined { get; private set; }
+		public double PpmErrorRefined { get; private set; }
 
 		public IdentData()
 		{
@@ -90,10 +90,10 @@ namespace PPMErrorCharter
 			QValue = 0.0;
 			_calcMz = 0.0;
 			_experMz = 0.0;
-			_experMzFixed = 0.0;
+			_experMzRefined = 0.0;
 			_isSetCalcMz = false;
 			_isSetExperMz = false;
-			_isSetExperMzFixed = false;
+			_isSetExperMzRefined = false;
 		}
 
 		public int CompareToByCalcMz(IdentData compareData)
@@ -128,6 +128,36 @@ namespace PPMErrorCharter
 			else
 			{
 				return right == null ? 1 : left.CalcMz.CompareTo(right.CalcMz);
+			}
+		}
+	}
+
+	public class IdentDataByPpmError : IComparer<IdentData>
+	{
+		public int Compare(IdentData left, IdentData right)
+		{
+			if (left == null)
+			{
+				return right == null ? 0 : -1;
+			}
+			else
+			{
+				return right == null ? 1 : left.PpmError.CompareTo(right.PpmError);
+			}
+		}
+	}
+
+	public class IdentDataByPpmErrorRefined : IComparer<IdentData>
+	{
+		public int Compare(IdentData left, IdentData right)
+		{
+			if (left == null)
+			{
+				return right == null ? 0 : -1;
+			}
+			else
+			{
+				return right == null ? 1 : left.PpmErrorRefined.CompareTo(right.PpmErrorRefined);
 			}
 		}
 	}

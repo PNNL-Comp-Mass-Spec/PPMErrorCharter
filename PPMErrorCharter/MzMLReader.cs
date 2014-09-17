@@ -245,7 +245,7 @@ namespace PPMErrorCharter
 						reader.Read();
 						while (data[dataIndex].IdValue == idValue)
 						{
-							data[dataIndex].ExperMzFixed = fixedValue;
+							data[dataIndex].ExperMzRefined = fixedValue;
 							dataIndex++;
 							if (dataIndex >= data.Count)
 							{

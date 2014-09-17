@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace PPMErrorCharter
 {
@@ -51,6 +52,11 @@ namespace PPMErrorCharter
 			{
 				MzMLReader.ReadMzMl(fixedDataFile, scanData);
 			}
+
+			scanData.Sort(new IdentDataByPpmError()); // Sort by the PpmError
+			Console.WriteLine("\tMedianMassErrorPPM: " + Math.Round(scanData[scanData.Count / 2].PpmError, 3));
+			scanData.Sort(new IdentDataByPpmErrorRefined()); // Sort by the fixed PpmError
+			Console.WriteLine("\tMedianMassErrorPPM_Refined: " + Math.Round(scanData[scanData.Count / 2].PpmErrorRefined, 3));
 
 			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists);
 			IdentDataPlotter.ErrorHistogramsToPng(scanData, outFileStub + "_MZRefinery_Histograms.png", dataFileExists);
