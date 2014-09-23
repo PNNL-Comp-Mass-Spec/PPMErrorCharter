@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.Remoting;
 using System.Xml;
 
 namespace PPMErrorCharter
@@ -348,9 +349,9 @@ namespace PPMErrorCharter
 				}
 				reader.Read();
 			}
-			if (data.SpecEValue < 1.0e-10 
-				&& (-0.2 < data.MassError && data.MassError < 0.2) 
-				&& (-50.0 < data.PpmError && data.PpmError < 50.0))
+			if (data.SpecEValue < 1.0e-10 && 
+				(-IdentData.IsotopeErrorFilterWindow < data.MassError && data.MassError < IdentData.IsotopeErrorFilterWindow) 
+				&& (-IdentData.PpmErrorFilterWindow < data.PpmError && data.PpmError < IdentData.PpmErrorFilterWindow))
 			{
 				scanData.Add(data);
 			}

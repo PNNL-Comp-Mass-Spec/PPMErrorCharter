@@ -1,27 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace PPMErrorCharter
 {
 	public class IdentData : IEquatable<IdentData>, IComparable<IdentData>
 	{
+		public static double IsotopeErrorFilterWindow = 0.2;
+		public static double PpmErrorFilterWindow = 50.0;
+
+		private const double IsotopeErrorTestWindow = 0.05;
+		private const double IsotopeErrorFixWindow = 0.15;
+
 		public string NativeId;
 		public ulong ScanId;
 		public string IdField;
 		public string IdValue;
-		public int Charge;
 		public double SpecEValue;
 		public double QValue;
+		public int _charge;
 		private double _calcMz;
 		private double _experMz;
 		private double _experMzRefined;
+		private double _experMzIsotoped;
+		private double _experMzRefinedIsotoped;
 		private bool _isSetCalcMz;
 		private bool _isSetExperMz;
+		private bool _isStoredExperMz;
 		private bool _isSetExperMzRefined;
+		private bool _isStoredExperMzRefined;
+		private bool _fixIsoLocked;
+		private bool _internalOp;
+
+		private enum CheckedIsotopeError : byte
+		{
+			Yes,
+			No,
+			Unknown,
+		}
+		private CheckedIsotopeError _hasIsotopeError;
+		private int _isotopeErrorCount;
+		private double _isotopeErrorAdjustment;
 
 		public int ScanIdInt
 		{
 			get { return Convert.ToInt32(ScanId); }
+		}
+
+		public int Charge
+		{
+			get { return _charge; }
+			set
+			{
+				_charge = value;
+				_hasIsotopeError = CheckedIsotopeError.Unknown;
+				if (!_fixIsoLocked)
+				{
+					_fixIsoLocked = true;
+					FindIsotopeError();
+					FixIsotopeError();
+					_fixIsoLocked = false;
+				}
+			}
 		}
 
 		public double CalcMz
@@ -30,17 +70,28 @@ namespace PPMErrorCharter
 			set
 			{
 				_calcMz = value;
-				if (_isSetCalcMz && _isSetExperMz && _calcMz != 0.0)
+				_isSetCalcMz = true;
+				bool runIsotopeCheck = false;
+				bool locked = _fixIsoLocked;
+				_fixIsoLocked = true; // Value only changed if was false
+				if (_isSetExperMz && _calcMz != 0.0)
 				{
+					runIsotopeCheck = true;
 					MassError = _experMz - _calcMz;
 					PpmError = (MassError / _calcMz) * 1.0e6;
 				}
-				if (_isSetCalcMz && _isSetExperMzRefined && _calcMz != 0.0)
+				if (_isSetExperMzRefined && _calcMz != 0.0)
 				{
+					runIsotopeCheck = true;
 					MassErrorRefined = _experMzRefined - _calcMz;
 					PpmErrorRefined = (MassErrorRefined / _calcMz) * 1.0e6;
 				}
-				_isSetCalcMz = true;
+				if (runIsotopeCheck && !locked) // Will only run if was not locked
+				{
+					FindIsotopeError();
+					FixIsotopeError();
+				}
+				_fixIsoLocked = locked; // value restored to previous state
 			}
 		}
 
@@ -50,12 +101,39 @@ namespace PPMErrorCharter
 			set
 			{
 				_experMz = value;
+				_isSetExperMz = true;
+				if (!_internalOp)
+				{
+					_isStoredExperMz = false;
+				}
 				if (_isSetCalcMz && _calcMz != 0.0)
 				{
 					MassError = _experMz - _calcMz;
 					PpmError = (MassError / _calcMz) * 1.0e6;
+					bool locked = _fixIsoLocked;
+					_fixIsoLocked = true; // Value only changed if was false
+					if (!locked) // Will only run if was not locked
+					{
+						FindIsotopeError();
+						FixIsotopeError();
+					}
+					_fixIsoLocked = locked; // value restored to previous state
 				}
-				_isSetExperMz = true;
+			}
+		}
+
+		public double ExperMzIsotoped
+		{
+			get { return _experMzIsotoped; }
+			private set
+			{
+				_experMzIsotoped = value;
+				_isStoredExperMz = true;
+				if (_isSetCalcMz && _calcMz != 0.0)
+				{
+					MassErrorIsotoped = _experMzIsotoped - _calcMz;
+					PpmErrorIsotoped = (MassErrorIsotoped / _calcMz) * 1.0e6;
+				}
 			}
 		}
 
@@ -65,12 +143,40 @@ namespace PPMErrorCharter
 			set
 			{
 				_experMzRefined = value;
+				_isSetExperMzRefined = true;
+				if (!_internalOp)
+				{
+					_isStoredExperMzRefined = false;
+				}
 				if (_isSetCalcMz && _calcMz != 0.0)
 				{
+					bool locked = _fixIsoLocked;
+					_fixIsoLocked = true; // Value only changed if was false
+
 					MassErrorRefined = _experMzRefined - _calcMz;
 					PpmErrorRefined = (MassErrorRefined / _calcMz) * 1.0e6;
+
+					if (!locked) // Will only run if was not locked
+					{
+						FindIsotopeError();
+						FixIsotopeError();
+					}
+					_fixIsoLocked = locked; // value restored to previous state
 				}
-				_isSetExperMzRefined = true;
+			}
+		}
+
+		public double ExperMzRefinedIsotoped
+		{
+			get { return _experMzRefinedIsotoped; }
+			private set
+			{
+				_experMzRefinedIsotoped = value;
+				if (_isSetCalcMz && _calcMz != 0.0)
+				{
+					MassErrorRefinedIsotoped = _experMzRefinedIsotoped - _calcMz;
+					PpmErrorRefinedIsotoped = (MassErrorRefinedIsotoped / _calcMz) * 1.0e6;
+				}
 			}
 		}
 
@@ -78,6 +184,10 @@ namespace PPMErrorCharter
 		public double PpmError { get; private set; }
 		public double MassErrorRefined { get; private set; }
 		public double PpmErrorRefined { get; private set; }
+		public double MassErrorIsotoped { get; private set; }
+		public double PpmErrorIsotoped { get; private set; }
+		public double MassErrorRefinedIsotoped { get; private set; }
+		public double PpmErrorRefinedIsotoped { get; private set; }
 
 		public IdentData()
 		{
@@ -94,6 +204,82 @@ namespace PPMErrorCharter
 			_isSetCalcMz = false;
 			_isSetExperMz = false;
 			_isSetExperMzRefined = false;
+			_hasIsotopeError = CheckedIsotopeError.Unknown;
+			_isotopeErrorCount = 0;
+			_experMzIsotoped = 0.0;
+			_experMzRefinedIsotoped = 0.0;
+			_isotopeErrorAdjustment = 0.0;
+			MassError = 0.0;
+			PpmError = 0.0;
+			MassErrorRefined = 0.0;
+			PpmErrorRefined = 0.0;
+			MassErrorIsotoped = 0.0;
+			PpmErrorIsotoped = 0.0;
+			MassErrorRefinedIsotoped = 0.0;
+			PpmErrorRefinedIsotoped = 0.0;
+			_fixIsoLocked = false;
+			_internalOp = false;
+			_isStoredExperMz = false;
+			_isStoredExperMzRefined = false;
+		}
+
+		private void FindIsotopeError()
+		{
+			if (_hasIsotopeError != CheckedIsotopeError.Unknown)
+			{
+				return;
+			}
+			if (!(_isSetCalcMz && _isSetExperMz) || _charge == 0)
+			{
+				return;
+			}
+			// Assume that it doesn't, and only change it if it does.
+			_hasIsotopeError = CheckedIsotopeError.No;
+			if (_charge == 0 || (-IsotopeErrorFixWindow < MassError && MassError < IsotopeErrorFixWindow))
+			{
+				return;
+			}
+			double chargeWithSign = _charge;
+			if (MassError < 0)
+			{
+				chargeWithSign = -chargeWithSign;
+			}
+			for (int i = 1; i <= 5; ++i)
+			{
+				double adjustment = (double)i / chargeWithSign;
+				if ((adjustment - IsotopeErrorTestWindow) <= MassError && MassError <= (adjustment + IsotopeErrorTestWindow))
+				{
+					_hasIsotopeError = CheckedIsotopeError.Yes;
+					_isotopeErrorCount = MassError < 0 ? -i : i;
+					_isotopeErrorAdjustment = adjustment;
+					break;
+				}
+			}
+		}
+
+		private void FixIsotopeError()
+		{
+			_internalOp = true;
+			if (_hasIsotopeError != CheckedIsotopeError.Unknown)
+			{
+				if (!_isStoredExperMz)
+				{
+					ExperMzIsotoped = ExperMz;
+				}
+				if (_isSetExperMzRefined && !_isStoredExperMzRefined)
+				{
+					ExperMzRefinedIsotoped = ExperMzRefined;
+				}
+			}
+			if (_hasIsotopeError == CheckedIsotopeError.Yes)
+			{
+				ExperMz = ExperMzIsotoped - _isotopeErrorAdjustment;
+				if (_isSetExperMzRefined)
+				{
+					ExperMzRefined = ExperMzRefinedIsotoped - _isotopeErrorAdjustment;
+				}
+			}
+			_internalOp = false;
 		}
 
 		public int CompareToByCalcMz(IdentData compareData)
