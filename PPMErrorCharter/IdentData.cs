@@ -41,6 +41,9 @@ namespace PPMErrorCharter
 		private CheckedIsotopeError _hasIsotopeError;
 		private int _isotopeErrorCount;
 		private double _isotopeErrorAdjustment;
+		private CheckedIsotopeError _hasRefinedIsotopeError;
+		private int _refinedIsotopeErrorCount;
+		private double _refinedIsotopeErrorAdjustment;
 
 		public int ScanIdInt
 		{
@@ -206,9 +209,12 @@ namespace PPMErrorCharter
 			_isSetExperMzRefined = false;
 			_hasIsotopeError = CheckedIsotopeError.Unknown;
 			_isotopeErrorCount = 0;
+			_isotopeErrorAdjustment = 0.0;
+			_hasRefinedIsotopeError = CheckedIsotopeError.Unknown;
+			_refinedIsotopeErrorCount = 0;
+			_refinedIsotopeErrorAdjustment = 0.0;
 			_experMzIsotoped = 0.0;
 			_experMzRefinedIsotoped = 0.0;
-			_isotopeErrorAdjustment = 0.0;
 			MassError = 0.0;
 			PpmError = 0.0;
 			MassErrorRefined = 0.0;
@@ -257,6 +263,40 @@ namespace PPMErrorCharter
 			}
 		}
 
+		private void FindIsotopeErrorRefined()
+		{
+			if (_hasRefinedIsotopeError != CheckedIsotopeError.Unknown)
+			{
+				return;
+			}
+			if (!(_isSetCalcMz && _isSetExperMzRefined) || _charge == 0)
+			{
+				return;
+			}
+			// Assume that it doesn't, and only change it if it does.
+			_hasRefinedIsotopeError = CheckedIsotopeError.No;
+			if (_charge == 0 || (-IsotopeErrorFixWindow < MassErrorRefined && MassErrorRefined < IsotopeErrorFixWindow))
+			{
+				return;
+			}
+			double chargeWithSign = _charge;
+			if (MassErrorRefined < 0)
+			{
+				chargeWithSign = -chargeWithSign;
+			}
+			for (int i = 1; i <= 5; ++i)
+			{
+				double adjustment = (double)i / chargeWithSign;
+				if ((adjustment - IsotopeErrorTestWindow) <= MassErrorRefined && MassErrorRefined <= (adjustment + IsotopeErrorTestWindow))
+				{
+					_hasRefinedIsotopeError = CheckedIsotopeError.Yes;
+					_refinedIsotopeErrorCount = MassError < 0 ? -i : i;
+					_refinedIsotopeErrorAdjustment = adjustment;
+					break;
+				}
+			}
+		}
+
 		private void FixIsotopeError()
 		{
 			_internalOp = true;
@@ -274,9 +314,10 @@ namespace PPMErrorCharter
 			if (_hasIsotopeError == CheckedIsotopeError.Yes)
 			{
 				ExperMz = ExperMzIsotoped - _isotopeErrorAdjustment;
-				if (_isSetExperMzRefined)
+				if (_isSetExperMzRefined && (PpmErrorRefinedIsotoped < -50 || 50 < PpmErrorRefinedIsotoped))
 				{
-					ExperMzRefined = ExperMzRefinedIsotoped - _isotopeErrorAdjustment;
+					FindIsotopeErrorRefined();
+					ExperMzRefined = ExperMzRefinedIsotoped - _refinedIsotopeErrorAdjustment;
 				}
 			}
 			_internalOp = false;
@@ -300,6 +341,22 @@ namespace PPMErrorCharter
 		public bool Equals(IdentData other)
 		{
 			return other != null && this.ScanId.Equals(other.ScanId);
+		}
+
+		public string ToDebugString()
+		{
+			return NativeId + "\t" + CalcMz + "\t" + ExperMzIsotoped + "\t" + ExperMzRefinedIsotoped + 
+				"\t" + MassErrorIsotoped + "\t" + PpmErrorIsotoped + "\t" + MassErrorRefinedIsotoped + 
+				"\t" + PpmErrorRefinedIsotoped + "\t" + Charge;
+		}
+
+		public bool OutOfRange()
+		{
+			bool orig = (MassError < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassError) ||
+						(PpmError < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmError);
+			bool refined = (MassErrorRefined < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassErrorRefined) ||
+						(PpmErrorRefined < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmErrorRefined);
+			return orig || refined;
 		}
 	}
 

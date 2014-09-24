@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace PPMErrorCharter
 {
@@ -58,8 +59,34 @@ namespace PPMErrorCharter
 			scanData.Sort(new IdentDataByPpmErrorRefined()); // Sort by the fixed PpmError
 			Console.WriteLine("\tMedianMassErrorPPM_Refined: " + Math.Round(scanData[scanData.Count / 2].PpmErrorRefined, 3));
 
+			int origSize = scanData.Count;
+			int itemsRemoved = 0;
+			for (int i = 0; i < scanData.Count; i++)
+			{
+				if (scanData[i].OutOfRange())
+				{
+					scanData.RemoveAt(i);
+					i--;
+					itemsRemoved++;
+				}
+			}
+			Console.WriteLine("Removed " + itemsRemoved + " items from data set of " + origSize + " items to keep results nice.");
+
 			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists);
 			IdentDataPlotter.ErrorHistogramsToPng(scanData, outFileStub + "_MZRefinery_Histograms.png", dataFileExists);
+
+			/*using (var file = new StreamWriter(new FileStream(outFileStub + "_debug.tsv", FileMode.Create, FileAccess.Write, FileShare.None)))
+			{
+				file.WriteLine("NativeID\tCalcMZ\tExperMZ\tRefineMZ\tMassError\tPpmError\tRMassError\tRPpmError\tCharge");
+				foreach (var data in scanData)
+				{
+					double error = data.MassErrorIsotoped - data.MassErrorRefinedIsotoped;
+					if (error < -0.2 || 0.2 < error)
+					{
+						file.WriteLine(data.ToDebugString());
+					}
+				}
+			}*/
 		}
 	}
 }
