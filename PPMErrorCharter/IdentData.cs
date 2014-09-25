@@ -1,13 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Runtime.InteropServices;
 
 namespace PPMErrorCharter
 {
 	public class IdentData : IEquatable<IdentData>, IComparable<IdentData>
 	{
-		public static double IsotopeErrorFilterWindow = 0.2;
-		public static double PpmErrorFilterWindow = 50.0;
+		private static double _specEValueThreshold = 1e-10;
+		private static readonly double _specEValueThresholdStep = 10;
+		private static readonly int _maxSteps = 3;
+		private static int _currentSteps = 0;
+
+		public static double SpecEValueThreshold
+		{
+			get { return _specEValueThreshold; }
+		}
+
+		public static readonly double IsotopeErrorFilterWindow = 0.2;
+		public static readonly double PpmErrorFilterWindow = 50.0;
+
+		public static bool AdjustThreshold()
+		{
+			if (_currentSteps < _maxSteps)
+			{
+				_currentSteps++;
+				_specEValueThreshold *= _specEValueThresholdStep;
+			}
+			return false;
+		}
 
 		private const double IsotopeErrorTestWindow = 0.05;
 		private const double IsotopeErrorFixWindow = 0.15;

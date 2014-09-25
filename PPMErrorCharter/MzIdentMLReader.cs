@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Remoting;
 using System.Xml;
 
 namespace PPMErrorCharter
@@ -22,19 +21,24 @@ namespace PPMErrorCharter
 		public static List<IdentData> Read(string path)
 		{
 			var scanData = new List<IdentData>();
-			// Set a large buffer size. Doesn't affect gzip reading speed, but speeds up non-gzipped
-			Stream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
 
-			if (path.EndsWith(".mzid.gz"))
+			do
 			{
-				file = new GZipStream(file, CompressionMode.Decompress);
-			}
+				scanData.Clear();
+				// Set a large buffer size. Doesn't affect gzip reading speed, but speeds up non-gzipped
+				Stream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
 
-			var xSettings = new XmlReaderSettings { IgnoreWhitespace = true };
-			var reader = XmlReader.Create(new StreamReader(file, System.Text.Encoding.UTF8, true, 65536), xSettings);
+				if (path.EndsWith(".mzid.gz"))
+				{
+					file = new GZipStream(file, CompressionMode.Decompress);
+				}
 
-			// Read in the file
-			ReadMzIdentMl(reader, scanData);
+				var xSettings = new XmlReaderSettings {IgnoreWhitespace = true};
+				var reader = XmlReader.Create(new StreamReader(file, System.Text.Encoding.UTF8, true, 65536), xSettings);
+
+				// Read in the file
+				ReadMzIdentMl(reader, scanData);
+			} while (scanData.Count < 500 && IdentData.AdjustThreshold());
 
 			return scanData;
 		}
