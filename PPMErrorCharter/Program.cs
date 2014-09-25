@@ -66,7 +66,7 @@ namespace PPMErrorCharter
 				if (scanData[i].OutOfRange())
 				{
 					scanData.RemoveAt(i);
-					i--;
+					i--; // Step back one value, to hit this same index again
 					itemsRemoved++;
 				}
 			}

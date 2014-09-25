@@ -197,6 +197,8 @@ namespace PPMErrorCharter
 				Title = "Mass error (PPM)",
 				Maximum = 0.0,
 				Minimum = 0.0,
+				FilterMinValue = -51.0, // Prevent huge, hard to read plots
+				FilterMaxValue = 51.0, // Prevent huge, hard to read plots
 			};
 			foreach (var frequency in frequencies)
 			{
@@ -212,6 +214,11 @@ namespace PPMErrorCharter
 				{
 					xAxis.Maximum = Math.Ceiling(Convert.ToDouble(frequency.Key) / xStep) * xStep;
 				}
+			}
+			if (yAxis.Maximum > 500)
+			{
+				yAxis.MajorStep = Math.Floor((yAxis.Maximum + 499) / 1000) * 100;
+				yAxis.Maximum = Math.Ceiling(yAxis.Maximum / yAxis.MajorStep) * yAxis.MajorStep;
 			}
 
 			var s1 = new LineSeries()
@@ -251,6 +258,7 @@ namespace PPMErrorCharter
 			var yAxes = new List<Axis>();
 			var xAxes = new List<Axis>();
 			double yMax = 0.0;
+			double yStep = 0.0;
 			double xMin = 0.0;
 			double xMax = 0.0;
 			foreach (var axis in axes)
@@ -261,6 +269,7 @@ namespace PPMErrorCharter
 					if (axis.Maximum > yMax)
 					{
 						yMax = axis.Maximum;
+						yStep = axis.MajorStep;
 					}
 				}
 				else if (axis.IsHorizontal())
@@ -276,9 +285,16 @@ namespace PPMErrorCharter
 					}
 				}
 			}
+			if (yMax > 500)
+			{
+				yStep = Math.Floor((yMax + 499) / 1000) * 100;
+				yMax = Math.Ceiling(yMax / yStep) * yStep;
+			}
+
 			foreach (var axis in yAxes)
 			{
 				axis.Maximum = yMax;
+				axis.MajorStep = yStep;
 				//axis.MinimumRange = yMax;
 			}
 			// Make sure the axis is centered...
