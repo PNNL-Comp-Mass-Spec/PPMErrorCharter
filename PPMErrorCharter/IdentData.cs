@@ -26,6 +26,7 @@ namespace PPMErrorCharter
 			{
 				_currentSteps++;
 				_specEValueThreshold *= _specEValueThresholdStep;
+				return true;
 			}
 			return false;
 		}
