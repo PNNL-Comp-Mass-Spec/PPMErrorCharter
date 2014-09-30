@@ -54,10 +54,12 @@ namespace PPMErrorCharter
 				MzMLReader.ReadMzMl(fixedDataFile, scanData);
 			}
 
-			scanData.Sort(new IdentDataByPpmError()); // Sort by the PpmError
-			Console.WriteLine("\tMedianMassErrorPPM: " + Math.Round(scanData[scanData.Count / 2].PpmError, 3));
-			scanData.Sort(new IdentDataByPpmErrorRefined()); // Sort by the fixed PpmError
-			Console.WriteLine("\tMedianMassErrorPPM_Refined: " + Math.Round(scanData[scanData.Count / 2].PpmErrorRefined, 3));
+			var stats = new IdentDataStats(scanData);
+
+			stats.PrintStatsTable();
+
+			Console.WriteLine("\tMedianMassErrorPPM: " + Math.Round(stats.Median, 3));
+			Console.WriteLine("\tMedianMassErrorPPM_Refined: " + Math.Round(stats.RefinedMedian, 3));
 
 			int origSize = scanData.Count;
 			int itemsRemoved = 0;

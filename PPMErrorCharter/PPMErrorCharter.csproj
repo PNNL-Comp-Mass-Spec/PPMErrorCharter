@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdentDataPlotter.cs" />
+    <Compile Include="IdentDataStats.cs" />
     <Compile Include="MzMLReader.cs" />
     <Compile Include="MzIdentMLReader.cs" />
     <Compile Include="Program.cs" />
