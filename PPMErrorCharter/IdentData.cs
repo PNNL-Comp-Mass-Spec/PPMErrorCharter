@@ -13,6 +13,11 @@ namespace PPMErrorCharter
 		public static double SpecEValueThreshold
 		{
 			get { return _specEValueThreshold; }
+			set
+			{
+				_specEValueThreshold = value;
+				_currentSteps = 10; // Disable threshold adjustment
+			}
 		}
 
 		public static readonly double IsotopeErrorFilterWindow = 0.2;

@@ -12,9 +12,19 @@ namespace PPMErrorCharter
 		{
 			if (args.Length < 1)
 			{
-				Console.WriteLine("Usage: " + System.AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz]");
+				Console.WriteLine("Usage: " + System.AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz] [specEValueThreshold]");
 				return;
 			}
+			// Set a solid, unchanging threshold of the user specifies one.
+			if (args.Length > 1)
+			{
+				double possibleThreshold;
+				if (Double.TryParse(args[1], out possibleThreshold))
+				{
+					IdentData.SpecEValueThreshold = possibleThreshold;
+				}
+			}
+			// Get the file name
 			string identFile = args[0];
 			if (!(identFile.EndsWith(".mzid") || identFile.EndsWith(".mzid.gz")))
 			{
@@ -58,9 +68,6 @@ namespace PPMErrorCharter
 
 			stats.PrintStatsTable();
 
-			Console.WriteLine("\tMedianMassErrorPPM: " + Math.Round(stats.Median, 3));
-			Console.WriteLine("\tMedianMassErrorPPM_Refined: " + Math.Round(stats.RefinedMedian, 3));
-
 			int origSize = scanData.Count;
 			int itemsRemoved = 0;
 			for (int i = 0; i < scanData.Count; i++)
@@ -72,7 +79,7 @@ namespace PPMErrorCharter
 					itemsRemoved++;
 				}
 			}
-			Console.WriteLine("Removed " + itemsRemoved + " items from data set of " + origSize + " items to keep results nice.");
+			Console.WriteLine("Removed " + itemsRemoved + " out-of-range items from the original " + origSize + " items.");
 
 			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists);
 			IdentDataPlotter.ErrorHistogramsToPng(scanData, outFileStub + "_MZRefinery_Histograms.png", dataFileExists);

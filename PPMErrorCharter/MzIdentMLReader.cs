@@ -353,7 +353,7 @@ namespace PPMErrorCharter
 				}
 				reader.Read();
 			}
-			if (data.SpecEValue < 1.0e-10 && 
+			if (data.SpecEValue <= IdentData.SpecEValueThreshold && 
 				(-IdentData.IsotopeErrorFilterWindow < data.MassError && data.MassError < IdentData.IsotopeErrorFilterWindow) 
 				&& (-IdentData.PpmErrorFilterWindow < data.PpmError && data.PpmError < IdentData.PpmErrorFilterWindow))
 			{
