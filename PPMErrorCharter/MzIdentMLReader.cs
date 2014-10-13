@@ -10,15 +10,108 @@ namespace PPMErrorCharter
 	/// Read and perform some processing on a MZIdentML file
 	/// Processes the data into an LCMS DataSet
 	/// </summary>
-	public static class MzIdentMLReader
+	public class MzIdentMLReader
 	{
+		public readonly double IsotopeErrorFilterWindow = 0.2;
+		public readonly double PpmErrorFilterWindow = 50.0;
+
+		private readonly int _maxSteps = 3;
+		private int _currentSteps = 0;
+
+		// MSGF+ Filtering
+		private double _specEValueThreshold = 1e-10; // Less than
+		private readonly double _specEValueThresholdStep = 10; // Multiply by
+
+		public double SpecEValueThreshold
+		{
+			get { return _specEValueThreshold; }
+			private set
+			{
+				_specEValueThreshold = value;
+				_currentSteps = 10; // Disable threshold adjustment
+			}
+		}
+
+		// MyriMatch Filtering
+		private double _mvhThreshold = 35; // Greater than
+		private double _xCorrThreshold = 3; // Greater than
+		private string _myrim_Field = "MyriMatch:MVH"; // "xcorr", "MyriMatch:MVH"
+		//private string _myrim_Field = "xcorr"; // "xcorr", "MyriMatch:MVH"
+		private readonly double _mvhThresholdStep = 3; // Subtract
+		private readonly double _xCorrThresholdStep = 1; // Subtract
+
+		public bool AdjustThreshold()
+		{
+			if (IdentProg == IdentProgramType.MyriMatch)
+			{
+				return false;
+			}
+			if (_currentSteps < _maxSteps)
+			{
+				_currentSteps++;
+				_specEValueThreshold *= _specEValueThresholdStep;
+				return true;
+			}
+			return false;
+		}
+
+		public enum IdentProgramType : byte
+		{
+			MSGFPlus,
+			MyriMatch,
+			Unset,
+		}
+
+		public IdentProgramType IdentProg { get; private set; }
+
+		private bool PassesThreshold(IdentData data)
+		{
+			if (IdentProg == IdentProgramType.MSGFPlus)
+			{
+				return data.ThresholdValue <= SpecEValueThreshold;
+			}
+			if (IdentProg == IdentProgramType.MyriMatch)
+			{
+				if (_myrim_Field == "MyriMatch:MVH")
+				{
+					return data.ThresholdValue >= _mvhThreshold;
+				}
+				else
+				{
+					return data.ThresholdValue >= _xCorrThreshold;
+				}
+			}
+			// If neither, return everything
+			return true;
+		}
+
+		private bool PassesWindows(IdentData data)
+		{
+			return (-IsotopeErrorFilterWindow < data.MassError && data.MassError < IsotopeErrorFilterWindow)
+			       && (-PpmErrorFilterWindow < data.PpmError && data.PpmError < PpmErrorFilterWindow);
+		}
+
+		public MzIdentMLReader(double setThreshold)
+		{
+			IdentProg = IdentProgramType.Unset;
+			_currentSteps = 10; // Disable threshold stepping
+			_specEValueThreshold = setThreshold;
+			_mvhThreshold = setThreshold;
+			_xCorrThreshold = setThreshold;
+		}
+
+		public MzIdentMLReader()
+		{
+			IdentProg = IdentProgramType.Unset;
+		}
+
 		/// <summary>
 		/// Entry point for MZIdentMLReader, overriden from PHRPReaderBase
 		/// Read the MZIdentML file, map the data to MSGF+ data, compute the NETs, and return the LCMS DataSet
 		/// </summary>
 		/// <param name="path">Path to *.mzid/mzIdentML file</param>
 		/// <returns>List<ScanData></returns>
-		public static List<IdentData> Read(string path)
+		public List<IdentData> Read(string path)
 		{
 			var scanData = new List<IdentData>();
 
@@ -38,7 +131,7 @@ namespace PPMErrorCharter
 
 				// Read in the file
 				ReadMzIdentMl(reader, scanData);
-			} while (scanData.Count < 500 && IdentData.AdjustThreshold());
+			} while (scanData.Count < 500 && AdjustThreshold());
 
 			return scanData;
 		}
@@ -49,7 +142,7 @@ namespace PPMErrorCharter
 		/// </summary>
 		/// <param name="reader">XmlReader object for the file to be read</param>
 		/// <param name="scanData"></param>
-		private static void ReadMzIdentMl(XmlReader reader, List<IdentData> scanData)
+		private void ReadMzIdentMl(XmlReader reader, List<IdentData> scanData)
 		{
 			// Handle disposal of allocated object correctly
 			using (reader)
@@ -78,7 +171,8 @@ namespace PPMErrorCharter
 							break;
 						case "AnalysisSoftwareList":
 							// Schema requirements: zero to one instances of this element
-							reader.Skip();
+							ReadAnalysisSoftwareList(reader.ReadSubtree());
+							reader.ReadEndElement();
 							break;
 						case "Provider":
 							// Schema requirements: zero to one instances of this element
@@ -124,13 +218,67 @@ namespace PPMErrorCharter
 		}
 
 		/// <summary>
+		/// Handle the child nodes of a AnalysisSoftwareList element
+		/// Called by ReadMzIdentMl (xml hierarchy)
+		/// </summary>
+		/// <param name="reader">XmlReader that is only valid for the scope of the single AnalysisSoftwareList element</param>
+		/// <returns></returns>
+		private void ReadAnalysisSoftwareList(XmlReader reader)
+		{
+			string identProgName = "";
+			reader.MoveToContent();
+			reader.ReadStartElement("AnalysisSoftwareList"); // Throws exception if we are not at the "AnalysisSoftwareList" tag.
+			while (reader.ReadState == ReadState.Interactive)
+			{
+				// Handle exiting out properly at EndElement tags
+				if (reader.NodeType != XmlNodeType.Element)
+				{
+					reader.Read();
+					continue;
+				}
+				if (reader.Name == "AnalysisSoftware")
+				{
+					// Schema requirements: one to many instances of this element
+					// Use reader.ReadSubtree() to provide an XmlReader that is only valid for the element and child nodes
+					reader.ReadStartElement("AnalysisSoftware");
+					var innerReader = reader.ReadSubtree();
+					innerReader.MoveToContent();
+					innerReader.ReadStartElement("SoftwareName");
+					if (innerReader.Name == "cvParam" || innerReader.Name == "userParam")
+					{
+						identProgName = innerReader.GetAttribute("name");
+					}
+					innerReader.Skip();
+					innerReader.ReadEndElement(); // "SoftwareName" must have child nodes
+					innerReader.Close();
+					reader.ReadEndElement(); // "SoftwareName" must have child nodes - finish clearing it out.
+					reader.ReadEndElement(); // "AnalysisSoftware" must have child nodes
+				}
+				else
+				{
+					reader.Skip();
+				}
+			}
+			reader.Close();
+			switch (identProgName)
+			{
+				case "MyriMatch":
+					IdentProg = IdentProgramType.MyriMatch;
+					break;
+				case "MS-GF+":
+					IdentProg = IdentProgramType.MSGFPlus;
+					break;
+			}
+		}
+
+		/// <summary>
 		/// Handle the child nodes of the DataCollection element
 		/// Called by ReadMzIdentML (xml hierarchy)
 		/// Currently we are only working with the AnalysisData child element
 		/// </summary>
 		/// <param name="reader">XmlReader that is only valid for the scope of the single DataCollection element</param>
 		/// <param name="scanData"></param>
-		private static void ReadDataCollection(XmlReader reader, List<IdentData> scanData)
+		private void ReadDataCollection(XmlReader reader, List<IdentData> scanData)
 		{
 			reader.MoveToContent();
 			reader.ReadStartElement("DataCollection"); // Throws exception if we are not at the "DataCollection" tag.
@@ -164,7 +312,7 @@ namespace PPMErrorCharter
 		/// </summary>
 		/// <param name="reader">XmlReader that is only valid for the scope of the single AnalysisData element</param>
 		/// <param name="scanData"></param>
-		private static void ReadAnalysisData(XmlReader reader, List<IdentData> scanData)
+		private void ReadAnalysisData(XmlReader reader, List<IdentData> scanData)
 		{
 			reader.MoveToContent();
 			reader.ReadStartElement("AnalysisData"); // Throws exception if we are not at the "AnalysisData" tag.
@@ -197,7 +345,7 @@ namespace PPMErrorCharter
 		/// </summary>
 		/// <param name="reader">XmlReader that is only valid for the scope of the single SpectrumIdentificationList element</param>
 		/// <param name="scanData"></param>
-		private static void ReadSpectrumIdentificationList(XmlReader reader, List<IdentData> scanData)
+		private void ReadSpectrumIdentificationList(XmlReader reader, List<IdentData> scanData)
 		{
 			reader.MoveToContent();
 			reader.ReadStartElement("SpectrumIdentificationList"); // Throws exception if we are not at the "SpectrumIdentificationList" tag.
@@ -230,7 +378,7 @@ namespace PPMErrorCharter
 		/// </summary>
 		/// <param name="reader">XmlReader that is only valid for the scope of the single SpectrumIdentificationResult element</param>
 		/// <param name="scanData"></param>
-		private static void ReadSpectrumIdentificationResult(XmlReader reader, List<IdentData> scanData)
+		private void ReadSpectrumIdentificationResult(XmlReader reader, List<IdentData> scanData)
 		{
 			reader.MoveToContent();
 			var nativeId = reader.GetAttribute("spectrumID");
@@ -277,7 +425,11 @@ namespace PPMErrorCharter
 						break;
 				}
 			}
-			scanData.AddRange(newSpectra);
+			//scanData.AddRange(newSpectra);
+			if (newSpectra.Count > 0)
+			{
+				scanData.Add(newSpectra[0]);
+			}
 			reader.Close();
 		}
 
@@ -287,7 +439,7 @@ namespace PPMErrorCharter
 		/// </summary>
 		/// <param name="reader">XmlReader that is only valid for the scope of the single SpectrumIdentificationItem element</param>
 		/// <param name="scanData"></param>
-		private static void ReadSpectrumIdentificationItem(XmlReader reader, List<IdentData> scanData, string nativeId)
+		private void ReadSpectrumIdentificationItem(XmlReader reader, List<IdentData> scanData, string nativeId)
 		{
 			var data = new IdentData();
 
@@ -332,13 +484,14 @@ namespace PPMErrorCharter
 						//specItem.DeNovoScore = Convert.ToInt32(reader.GetAttribute("value"));
 						break;
 					case "MS-GF:SpecEValue":
-						data.SpecEValue = Convert.ToDouble(reader.GetAttribute("value"));
+						//data.SpecEValue = Convert.ToDouble(reader.GetAttribute("value"));
+						data.ThresholdValue = Convert.ToDouble(reader.GetAttribute("value"));
 						break;
 					case "MS-GF:EValue":
 						//specItem.EValue = Convert.ToDouble(reader.GetAttribute("value"));
 						break;
 					case "MS-GF:QValue":
-						data.QValue = Convert.ToDouble(reader.GetAttribute("value"));
+						//data.QValue = Convert.ToDouble(reader.GetAttribute("value"));
 						break;
 					case "MS-GF:PepQValue":
 						//specItem.PepQValue = Convert.ToDouble(reader.GetAttribute("value"));
@@ -350,12 +503,23 @@ namespace PPMErrorCharter
 					case "AssumedDissociationMethod":
 						// userParam field
 						break;
+					case "MyriMatch:MVH":
+						if (_myrim_Field == "MyriMatch:MVH")
+						{
+							data.ThresholdValue = Convert.ToDouble(reader.GetAttribute("value"));
+						}
+						break;
+					case "xcorr":
+						// userParam field
+						if (_myrim_Field == "xcorr")
+						{
+							data.ThresholdValue = Convert.ToDouble(reader.GetAttribute("value"));
+						}
+						break;
 				}
 				reader.Read();
 			}
-			if (data.SpecEValue <= IdentData.SpecEValueThreshold && 
-				(-IdentData.IsotopeErrorFilterWindow < data.MassError && data.MassError < IdentData.IsotopeErrorFilterWindow) 
-				&& (-IdentData.PpmErrorFilterWindow < data.PpmError && data.PpmError < IdentData.PpmErrorFilterWindow))
+			if (PassesThreshold(data) && PassesWindows(data))
 			{
 				scanData.Add(data);
 			}

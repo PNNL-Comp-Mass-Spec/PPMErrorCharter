@@ -15,13 +15,16 @@ namespace PPMErrorCharter
 				Console.WriteLine("Usage: " + System.AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz] [specEValueThreshold]");
 				return;
 			}
-			// Set a solid, unchanging threshold of the user specifies one.
+			// Set a solid, unchanging threshold if the user specifies one.
+			bool useSetThreshold = false;
+			double setThreshold = 0;
 			if (args.Length > 1)
 			{
 				double possibleThreshold;
 				if (Double.TryParse(args[1], out possibleThreshold))
 				{
-					IdentData.SpecEValueThreshold = possibleThreshold;
+					setThreshold = possibleThreshold;
+					useSetThreshold = true;
 				}
 			}
 			// Get the file name
@@ -58,7 +61,16 @@ namespace PPMErrorCharter
 				Console.WriteLine("\tOuput will not include fixed data graphs.");
 			}
 
-			var scanData = MzIdentMLReader.Read(identFile);
+			MzIdentMLReader reader;
+			if (useSetThreshold)
+			{
+				reader = new MzIdentMLReader(setThreshold);
+			}
+			else
+			{
+				reader = new MzIdentMLReader();
+			}
+			var scanData = reader.Read(identFile);
 			if (dataFileExists)
 			{
 				MzMLReader.ReadMzMl(fixedDataFile, scanData);

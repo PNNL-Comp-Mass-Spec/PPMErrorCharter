@@ -254,7 +254,12 @@ namespace PPMErrorCharter
 			// Synchronize the histogram plot areas - x and y axis ranges
 			var axes = new List<Axis>();
 			axes.AddRange(origError.Axes);
-			axes.AddRange(fixError.Axes);
+
+			// Don't include fixed axes if no fixed file was found
+			if (dataFileExists)
+			{
+				axes.AddRange(fixError.Axes);
+			}
 			var yAxes = new List<Axis>();
 			var xAxes = new List<Axis>();
 			double yMax = 0.0;

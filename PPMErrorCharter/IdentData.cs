@@ -5,35 +5,8 @@ namespace PPMErrorCharter
 {
 	public class IdentData : IEquatable<IdentData>, IComparable<IdentData>
 	{
-		private static double _specEValueThreshold = 1e-10;
-		private static readonly double _specEValueThresholdStep = 10;
-		private static readonly int _maxSteps = 3;
-		private static int _currentSteps = 0;
-
-		public static double SpecEValueThreshold
-		{
-			get { return _specEValueThreshold; }
-			set
-			{
-				_specEValueThreshold = value;
-				_currentSteps = 10; // Disable threshold adjustment
-			}
-		}
-
-		public static readonly double IsotopeErrorFilterWindow = 0.2;
-		public static readonly double PpmErrorFilterWindow = 50.0;
-
-		public static bool AdjustThreshold()
-		{
-			if (_currentSteps < _maxSteps)
-			{
-				_currentSteps++;
-				_specEValueThreshold *= _specEValueThresholdStep;
-				return true;
-			}
-			return false;
-		}
-
+		public readonly double IsotopeErrorFilterWindow = 0.2;
+		public readonly double PpmErrorFilterWindow = 50.0;
 		private const double IsotopeErrorTestWindow = 0.05;
 		private const double IsotopeErrorFixWindow = 0.15;
 
@@ -41,8 +14,7 @@ namespace PPMErrorCharter
 		public ulong ScanId;
 		public string IdField;
 		public string IdValue;
-		public double SpecEValue;
-		public double QValue;
+		public double ThresholdValue;
 		public int _charge;
 		private double _calcMz;
 		private double _experMz;
@@ -224,8 +196,7 @@ namespace PPMErrorCharter
 			MassError = 0.0;
 			PpmError = 0.0;
 			Charge = 0;
-			SpecEValue = 0.0;
-			QValue = 0.0;
+			ThresholdValue = 0.0;
 			_calcMz = 0.0;
 			_experMz = 0.0;
 			_experMzRefined = 0.0;
