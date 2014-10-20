@@ -454,6 +454,12 @@ namespace PPMErrorCharter
 					data.IdValue = data.NativeId;
 					data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scan=") + 5));
 				}
+				else if (data.NativeId.LastIndexOf("scanId=") != -1)
+				{
+					data.IdField = "id";
+					data.IdValue = data.NativeId;
+					data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scanId=") + 7));
+				}
 				else if (data.NativeId.LastIndexOf("index=") != -1)
 				{
 					data.IdField = "index";
