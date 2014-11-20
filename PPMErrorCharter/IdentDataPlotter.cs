@@ -76,7 +76,7 @@ namespace PPMErrorCharter
 			return model;
 		}
 
-		public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
+		public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists, bool haveScanTimes)
 		{
 			int width = 512;  // 1024 pixels final width
 			int height = 384; // 768 pixels final height
@@ -85,7 +85,15 @@ namespace PPMErrorCharter
 			// Allows us to combine them
 			DrawingVisual drawVisual = new DrawingVisual();
 			DrawingContext drawContext = drawVisual.RenderOpen();
-			var OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
+			PlotModel OrigScan;
+			if (haveScanTimes)
+			{
+				OrigScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmError", "Scan Time: Original", OxyColors.Blue);
+			}
+			else
+			{
+				OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
+			}
 			var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", OxyColors.Green);
 			var OSI = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White);
 			var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White);
@@ -95,7 +103,15 @@ namespace PPMErrorCharter
 			// Only add the fixed files if the data file exists
 			if (dataFileExists)
 			{
-				var FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
+				PlotModel FixScan;
+				if (haveScanTimes)
+				{
+					FixScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmErrorRefined", "Scan Time: Refined", OxyColors.Blue);
+				}
+				else
+				{
+					FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
+				}
 				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorRefined", "M/Z: Refined", OxyColors.Green);
 				var FSI = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White);
 				var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White);

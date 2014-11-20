@@ -12,6 +12,7 @@ namespace PPMErrorCharter
 
 		public string NativeId;
 		public ulong ScanId;
+		public double ScanTimeSeconds { get; set; } // Property for reflection by OxyPlot
 		public string IdField;
 		public string IdValue;
 		public double ThresholdValue;
@@ -193,6 +194,7 @@ namespace PPMErrorCharter
 		{
 			NativeId = "";
 			ScanId = 0;
+			ScanTimeSeconds = -1;
 			MassError = 0.0;
 			PpmError = 0.0;
 			Charge = 0;
@@ -367,6 +369,21 @@ namespace PPMErrorCharter
 			else
 			{
 				return right == null ? 1 : left.CalcMz.CompareTo(right.CalcMz);
+			}
+		}
+	}
+
+	public class IdentDataByScanTime : IComparer<IdentData>
+	{
+		public int Compare(IdentData left, IdentData right)
+		{
+			if (left == null)
+			{
+				return right == null ? 0 : -1;
+			}
+			else
+			{
+				return right == null ? 1 : left.ScanTimeSeconds.CompareTo(right.ScanTimeSeconds);
 			}
 		}
 	}

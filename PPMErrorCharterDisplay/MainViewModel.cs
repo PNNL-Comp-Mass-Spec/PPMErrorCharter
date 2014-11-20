@@ -68,11 +68,13 @@ namespace PPMErrorCharterDisplay
 			var dataFileFixed = datasetPathName + "_FIXED.mzML";
 			var reader = new MzIdentMLReader();
 			var scanData = reader.Read(identFile);
+			bool haveScanTimes = reader.HaveScanTimes;
 			bool dataFileExists = false;
 			if (File.Exists(dataFileFixed))
 			{
 				MzMLReader.ReadMzMl(dataFileFixed, scanData);
 				dataFileExists = true;
+				haveScanTimes = true;
 			}
 
 			//this.OrigScanId = IdentDataPlotter.ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
@@ -82,7 +84,7 @@ namespace PPMErrorCharterDisplay
 			//this.OrigPpmErrorHist = IdentDataPlotter.Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
 			//this.FixPpmErrorHist = IdentDataPlotter.Histogram(scanData, "PpmErrorFixed", "Refined", OxyColors.Green, 0.5);
 
-			this.AllVis = IdentDataPlotter.ErrorScatterPlotsToPng(scanData, datasetPathName + "_MZRefinery_MassErrors.png", dataFileExists);
+			this.AllVis = IdentDataPlotter.ErrorScatterPlotsToPng(scanData, datasetPathName + "_MZRefinery_MassErrors.png", dataFileExists, haveScanTimes);
 			this.ErrHist = IdentDataPlotter.ErrorHistogramsToPng(scanData, datasetPathName + "_MZRefinery_Histograms.png", dataFileExists);
 			/**/
 		}

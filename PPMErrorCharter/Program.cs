@@ -71,9 +71,11 @@ namespace PPMErrorCharter
 				reader = new MzIdentMLReader();
 			}
 			var scanData = reader.Read(identFile);
+			bool haveScanTimes = reader.HaveScanTimes;
 			if (dataFileExists)
 			{
 				MzMLReader.ReadMzMl(fixedDataFile, scanData);
+				haveScanTimes = true;
 			}
 
 			var stats = new IdentDataStats(scanData);
@@ -93,7 +95,7 @@ namespace PPMErrorCharter
 			}
 			Console.WriteLine("Removed " + itemsRemoved + " out-of-range items from the original " + origSize + " items.");
 
-			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists);
+			IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists, haveScanTimes);
 			IdentDataPlotter.ErrorHistogramsToPng(scanData, outFileStub + "_MZRefinery_Histograms.png", dataFileExists);
 
 			/*using (var file = new StreamWriter(new FileStream(outFileStub + "_debug.tsv", FileMode.Create, FileAccess.Write, FileShare.None)))

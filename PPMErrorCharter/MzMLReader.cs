@@ -12,11 +12,15 @@ namespace PPMErrorCharter
 		{
 			public double MonoisotopicMz;
 			public double StartTime;
+			public string TimeUnitAccession; // UO:0000031 for minute, UO:0000010 for second
+			public string TimeUnitName;
 
 			public ScanData()
 			{
 				MonoisotopicMz = 0.0;
-				StartTime = 0.0;
+				StartTime = -1;
+				TimeUnitAccession = "UO:0000010";
+				TimeUnitName = "second";
 			}
 		}
 
@@ -46,6 +50,12 @@ namespace PPMErrorCharter
 				IsolationWindowLowerOffset = 0.0;
 				IsolationWindowUpperOffset = 0.0;
 			}
+		}
+
+		private class SpectrumData
+		{
+			public readonly List<ScanData> Scans = new List<ScanData>();
+			public readonly List<Precursor> Precursors = new List<Precursor>();
 		}
 
 		/// <summary>
@@ -239,13 +249,38 @@ namespace PPMErrorCharter
 					{
 						// Schema requirements: zero to many instances of this element
 						// Use reader.ReadSubtree() to provide an XmlReader that is only valid for the element and child nodes
-						var fixedValue = ReadSpectrum(reader.ReadSubtree());
+						var spectrumData = ReadSpectrum(reader.ReadSubtree());
 						// "spectrum" might not have any child nodes
 						// We will either consume the EndElement, or the same element that was passed to ReadSpectrum (in case of no child nodes)
 						reader.Read();
+
+						// Assume the lists contain only a single element
+						double precursorMass = spectrumData.Scans[0].MonoisotopicMz;
+						if (precursorMass == 0.0)
+						{
+							if (spectrumData.Precursors.Count > 0 && spectrumData.Precursors[0].Ions.Count > 0)
+							{
+								precursorMass = spectrumData.Precursors[0].Ions[0].SelectedIonMz;
+							}
+						}
+						double time = spectrumData.Scans[0].StartTime; // Assume seconds, but if minutes or seconds, assume all start times are the same unit
+						if (spectrumData.Scans[0].TimeUnitAccession == "UO:0000031") // UO:0000031 for minute, UO:0000010 for second
+						{
+							time = spectrumData.Scans[0].StartTime * 60;
+						}
+						else if (spectrumData.Scans[0].TimeUnitAccession == "UO:0000010")
+						{
+							time = spectrumData.Scans[0].StartTime;
+						}
+
+						var fixedValue = precursorMass;
 						while (data[dataIndex].IdValue == idValue)
 						{
 							data[dataIndex].ExperMzRefined = fixedValue;
+							if (data[dataIndex].ScanTimeSeconds < 0 && time >= 0)
+							{
+								data[dataIndex].ScanTimeSeconds = time;
+							}
 							dataIndex++;
 							if (dataIndex >= data.Count)
 							{
@@ -275,7 +310,7 @@ namespace PPMErrorCharter
 		/// Called by ReadSpectrumList (xml hierarchy)
 		/// </summary>
 		/// <param name="reader">XmlReader that is only valid for the scope of the single spectrum element</param>
-		private static double ReadSpectrum(XmlReader reader)
+		private static SpectrumData ReadSpectrum(XmlReader reader)
 		{
 			reader.MoveToContent();
 			//string index = reader.GetAttribute("index");
@@ -290,8 +325,7 @@ namespace PPMErrorCharter
 			//bool is_ms_ms = false;
 			//int msLevel = 0;
 			//bool centroided = false;
-			List<Precursor> precursors = new List<Precursor>();
-			List<ScanData> scans = new List<ScanData>();
+			SpectrumData data = new SpectrumData();
 			//List<BinaryDataArray> bdas = new List<BinaryDataArray>();
 			while (reader.ReadState == ReadState.Interactive)
 			{
@@ -382,12 +416,12 @@ namespace PPMErrorCharter
 						break;
 					case "scanList":
 						// Schema requirements: zero to one instances of this element
-						scans.AddRange(ReadScanList(reader.ReadSubtree()));
+						data.Scans.AddRange(ReadScanList(reader.ReadSubtree()));
 						reader.ReadEndElement(); // "scanList" must have child nodes
 						break;
 					case "precursorList":
 						// Schema requirements: zero to one instances of this element
-						precursors.AddRange(ReadPrecursorList(reader.ReadSubtree()));
+						data.Precursors.AddRange(ReadPrecursorList(reader.ReadSubtree()));
 						reader.ReadEndElement(); // "precursorList" must have child nodes
 						break;
 					case "productList":
@@ -406,16 +440,7 @@ namespace PPMErrorCharter
 				}
 			}
 			reader.Close();
-			// Assume the lists contain only a single element
-			double precursorMass = scans[0].MonoisotopicMz;
-			if (precursorMass == 0.0)
-			{
-				if (precursors.Count > 0 && precursors[0].Ions.Count > 0)
-				{
-					precursorMass = precursors[0].Ions[0].SelectedIonMz;
-				}
-			}
-			return precursorMass;
+			return data;
 		}
 
 		/// <summary>
@@ -540,6 +565,8 @@ namespace PPMErrorCharter
 							case "MS:1000016":
 								// name="scan start time"
 								scan.StartTime = Convert.ToDouble(reader.GetAttribute("value"));
+								scan.TimeUnitAccession = reader.GetAttribute("unitAccession");
+								scan.TimeUnitName = reader.GetAttribute("unitName");
 								break;
 							case "MS:1000512":
 								// name="filter string"

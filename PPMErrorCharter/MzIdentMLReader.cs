@@ -55,6 +55,8 @@ namespace PPMErrorCharter
 			return false;
 		}
 
+		public bool HaveScanTimes { get; private set; }
+
 		public enum IdentProgramType : byte
 		{
 			MSGFPlus,
@@ -98,6 +100,7 @@ namespace PPMErrorCharter
 			_specEValueThreshold = setThreshold;
 			_mvhThreshold = setThreshold;
 			_xCorrThreshold = setThreshold;
+			HaveScanTimes = true;
 		}
 
 		public MzIdentMLReader()
@@ -117,6 +120,7 @@ namespace PPMErrorCharter
 
 			do
 			{
+				HaveScanTimes = true;
 				scanData.Clear();
 				// Set a large buffer size. Doesn't affect gzip reading speed, but speeds up non-gzipped
 				Stream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
@@ -404,14 +408,35 @@ namespace PPMErrorCharter
 						// Schema requirements: zero to many instances of this element
 						if (reader.GetAttribute("accession") == "MS:1001115")
 						{
-								ulong value = Convert.ToUInt64(reader.GetAttribute("value"));
-								foreach (var item in newSpectra)
+							ulong value = Convert.ToUInt64(reader.GetAttribute("value"));
+							foreach (var item in newSpectra)
+							{
+								if (item.ScanId == 0)
 								{
-									if (item.ScanId == 0)
-									{
-										item.ScanId = value;
-									}
+									item.ScanId = value;
 								}
+							}
+						}
+						else if (reader.GetAttribute("accession") == "MS:1000016")
+						{
+							// Read and store the scan start time.
+							double time = Convert.ToDouble(reader.GetAttribute("value"));
+							string unitAccession = reader.GetAttribute("unitAccession"); // UO:0000031 for minute, UO:0000010 for second
+							double value = time; // Assume seconds, but if minutes or seconds, assume all start times are the same unit
+							if (unitAccession == "UO:0000031")
+							{
+								// Minutes
+								value = time * 60;
+							}
+							else if (unitAccession == "UO:0000010")
+							{
+								// Seconds
+								value = time;
+							}
+							foreach (var item in newSpectra)
+							{
+								item.ScanTimeSeconds = value;
+							}
 						}
 						//reader.Read(); // Consume the cvParam element (no child nodes)
 						reader.Skip();
@@ -429,6 +454,10 @@ namespace PPMErrorCharter
 			if (newSpectra.Count > 0)
 			{
 				scanData.Add(newSpectra[0]);
+				if (newSpectra[0].ScanTimeSeconds < 0)
+				{
+					HaveScanTimes = false;
+				}
 			}
 			reader.Close();
 		}
