@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using OxyPlot;
@@ -35,8 +34,62 @@ namespace PPMErrorCharter
 				MarkerSize = 1.0,
 				MarkerFill = markerColor,
 				ItemsSource = data,
-				DataFieldX = xDataField,
-				DataFieldY = yDataField,
+				//DataFieldX = xDataField,
+				//DataFieldY = yDataField,
+				Mapping = item => new ScatterPoint(Convert.ToDouble(typeof(IdentData).GetProperty(xDataField).GetValue(item)), Convert.ToDouble(typeof(IdentData).GetProperty(yDataField).GetValue(item))),
+			};
+
+			var yAxis = new LinearAxis
+			{
+				Position = AxisPosition.Left,
+				Title = "Mass Error (PPM)",
+				MajorGridlineStyle = LineStyle.Solid,
+				MajorStep = 10.0,
+				MinorStep = 5.0,
+				Minimum = -20.0,
+				Maximum = 20.0,
+				MinimumRange = 40.0,
+				FilterMinValue = -20.0,
+				FilterMaxValue = 20.0,
+			};
+
+			var xAxis = new LinearAxis
+			{
+				Position = AxisPosition.Bottom,
+				//TitlePosition = 0.0,
+			};
+
+			var xAxisCenter = new LinearAxis
+			{
+				Position = AxisPosition.Top, // To let the other axis be locked to the bottom, and force this one to be horizontal
+				PositionAtZeroCrossing = true,
+				TickStyle = TickStyle.None, // To change to show a value, need to do axis synchronization
+				AxislineStyle = LineStyle.Solid,
+				AxislineThickness = 1.0,
+				TextColor = OxyColors.Undefined, // Force invisible labels
+			};
+
+			model.Axes.Add(yAxis);
+			model.Axes.Add(xAxis);
+			model.Axes.Add(xAxisCenter);
+			model.Series.Add(s1);
+			return model;
+		}
+
+		public static PlotModel ScatterPlot(List<IdentData> data, Func<object, ScatterPoint> mapping, string title, OxyColor markerColor)
+		{
+			//series1.Mapping = item => new DataPoint(((MyType)item).Time,((MyType)item).Value)
+			var model = ModelBaseConfig();
+			model.Title = title;
+
+			var s1 = new ScatterSeries
+			{
+				MarkerType = MarkerType.Circle,
+				MarkerStrokeThickness = 0,
+				MarkerSize = 1.0,
+				MarkerFill = markerColor,
+				ItemsSource = data,
+				Mapping = mapping,
 			};
 
 			var yAxis = new LinearAxis
@@ -88,17 +141,27 @@ namespace PPMErrorCharter
 			PlotModel OrigScan;
 			if (haveScanTimes)
 			{
-				OrigScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmError", "Scan Time: Original", OxyColors.Blue);
+				//OrigScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmError", "Scan Time: Original", OxyColors.Blue);
+				OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError), "Scan Time: Original", OxyColors.Blue);
 			}
 			else
 			{
-				OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
+				//OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
+				OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError), "Scan Time: Original", OxyColors.Blue);
 			}
 			var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", OxyColors.Green);
 			var OSI = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White);
 			var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White);
 			drawContext.DrawImage(OSI, new Rect(0, 0, width, height));
 			drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
+
+
+			var fileName = pngFile.Substring(0, pngFile.IndexOf(".png"));
+
+			//using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
+			//{
+			//	OxyPlot.Wpf.SvgExporter.Export(OrigScan, file, width, height, true);
+			//}
 			
 			// Only add the fixed files if the data file exists
 			if (dataFileExists)
@@ -106,11 +169,13 @@ namespace PPMErrorCharter
 				PlotModel FixScan;
 				if (haveScanTimes)
 				{
-					FixScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmErrorRefined", "Scan Time: Refined", OxyColors.Blue);
+					//FixScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmErrorRefined", "Scan Time: Refined", OxyColors.Blue);
+					FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined), "Scan Time: Refined", OxyColors.Blue);
 				}
 				else
 				{
-					FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
+					//FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
+					FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined), "Scan Time: Refined", OxyColors.Blue);
 				}
 				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorRefined", "M/Z: Refined", OxyColors.Green);
 				var FSI = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White);
@@ -147,9 +212,12 @@ namespace PPMErrorCharter
 			Dictionary<double, int> counts = new Dictionary<double, int>();
 			int roundingDigits = Convert.ToInt32(Math.Ceiling((1.0 / binSize) / 2));
 
+			var reflectItem = typeof(IdentData).GetProperty(dataField);
+
 			foreach (var item in data)
 			{
-				var value = item.GetType().GetProperty(dataField).GetValue(item);
+				//var value = item.GetType().GetProperty(dataField).GetValue(item);
+				var value = reflectItem.GetValue(item);
 				var valueExpanded = Convert.ToDouble(value) * (1 / binSize);
 				var roundedExpanded = Math.Round(valueExpanded);
 				var roundedSmall = roundedExpanded / (1 / binSize);
