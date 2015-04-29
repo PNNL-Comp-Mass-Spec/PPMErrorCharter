@@ -22,7 +22,7 @@ namespace PPMErrorCharter
 			};	
 		}
 
-		public static PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, OxyColor markerColor)
+		public static PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, string xTitle, OxyColor markerColor)
 		{
 			var model = ModelBaseConfig();
 			model.Title = title;
@@ -56,7 +56,7 @@ namespace PPMErrorCharter
 			var xAxis = new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				//TitlePosition = 0.0,
+				Title = xTitle,
 			};
 
 			var xAxisCenter = new LinearAxis
@@ -76,7 +76,7 @@ namespace PPMErrorCharter
 			return model;
 		}
 
-		public static PlotModel ScatterPlot(List<IdentData> data, Func<object, ScatterPoint> mapping, string title, OxyColor markerColor)
+		public static PlotModel ScatterPlot(List<IdentData> data, Func<object, ScatterPoint> mapping, string title, string xTitle, OxyColor markerColor)
 		{
 			//series1.Mapping = item => new DataPoint(((MyType)item).Time,((MyType)item).Value)
 			var model = ModelBaseConfig();
@@ -109,7 +109,9 @@ namespace PPMErrorCharter
 			var xAxis = new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				//TitlePosition = 0.0,
+				Title = xTitle,
+				//Minimum = 1000,
+				//Maximum = 4600,
 			};
 
 			var xAxisCenter = new LinearAxis
@@ -131,8 +133,9 @@ namespace PPMErrorCharter
 
 		public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists, bool haveScanTimes)
 		{
-			int width = 512;  // 1024 pixels final width
-			int height = 384; // 768 pixels final height
+			int width = 1600; //512;  // 1024 pixels final width
+			int height = 1200; //384; // 768 pixels final height
+			int resolution = 300; //96
 			
 			// Draw the bitmaps onto a new canvas internally
 			// Allows us to combine them
@@ -142,17 +145,17 @@ namespace PPMErrorCharter
 			if (haveScanTimes)
 			{
 				//OrigScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmError", "Scan Time: Original", OxyColors.Blue);
-				OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError), "Scan Time: Original", OxyColors.Blue);
+				OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError), "Scan Time: Original", "Scan Time (s)", OxyColors.Blue);
 			}
 			else
 			{
 				//OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
-				OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError), "Scan Time: Original", OxyColors.Blue);
+				OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError), "Scan Number: Original", "Scan Number", OxyColors.Blue);
 			}
-			var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", OxyColors.Green);
-			var OSI = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White);
-			var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White);
-			drawContext.DrawImage(OSI, new Rect(0, 0, width, height));
+			var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", "Mass Error (PPM)", OxyColors.Green);
+			var OSN = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White, resolution);
+			var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White, resolution);
+			drawContext.DrawImage(OSN, new Rect(0, 0, width, height));
 			drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
 
 
@@ -170,24 +173,27 @@ namespace PPMErrorCharter
 				if (haveScanTimes)
 				{
 					//FixScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmErrorRefined", "Scan Time: Refined", OxyColors.Blue);
-					FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined), "Scan Time: Refined", OxyColors.Blue);
+					FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined), "Scan Time: Refined", "Scan Time (s)", OxyColors.Blue);
 				}
 				else
 				{
 					//FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
-					FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined), "Scan Time: Refined", OxyColors.Blue);
+					FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined), "Scan Number: Refined", "Scan Number", OxyColors.Blue);
 				}
-				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorRefined", "M/Z: Refined", OxyColors.Green);
-				var FSI = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White);
-				var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White);
-				drawContext.DrawImage(FSI, new Rect(0, height, width, height));
+				var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorRefined", "M/Z: Refined", "Mass Error (PPM)", OxyColors.Green);
+				var FSN = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White, resolution);
+				var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White, resolution);
+				drawContext.DrawImage(FSN, new Rect(0, height, width, height));
 				drawContext.DrawImage(FMZ, new Rect(width, height, width, height));
+				//drawContext.DrawImage(FSN, new Rect(width, 0, width, height));
 			}
-
+			
 			drawContext.Close();
 
 			// Turn the canvas back into an image
+			//RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, resolution, resolution, PixelFormats.Pbgra32);
 			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
+			//RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
 			image.Render(drawVisual);
 
 			// Turn the image into a png bitmap
