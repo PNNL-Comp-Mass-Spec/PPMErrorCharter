@@ -63,7 +63,7 @@ namespace PPMErrorCharterDisplay
 			mainWindow.Content = myParentCanvas;
 			mainWindow.Show();
 			/*/
-			var datasetPathName = "E:\\Test4\\Cyano_GC_07_13_25Aug09_Draco_09-05-03";
+            var datasetPathName = "E:\\iPRG_2015\\pub_images\\sample4-B_BB5_01_924";
 			var identFile = datasetPathName + ".mzid";
 			var dataFileFixed = datasetPathName + "_FIXED.mzML";
 			var reader = new MzIdentMLReader();
@@ -72,7 +72,8 @@ namespace PPMErrorCharterDisplay
 			bool dataFileExists = false;
 			if (File.Exists(dataFileFixed))
 			{
-				MzMLReader.ReadMzMl(dataFileFixed, scanData);
+                var mzML = new MzMLReader(dataFileFixed);
+				mzML.ReadSpectraData(scanData);
 				dataFileExists = true;
 				haveScanTimes = true;
 			}

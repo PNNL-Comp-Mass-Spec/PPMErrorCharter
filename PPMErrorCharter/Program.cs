@@ -72,7 +72,8 @@ namespace PPMErrorCharter
 			bool haveScanTimes = reader.HaveScanTimes;
 			if (dataFileExists)
 			{
-				MzMLReader.ReadMzMl(fixedDataFile, scanData);
+                var mzML = new MzMLReader(fixedDataFile);
+				mzML.ReadSpectraData(scanData);
 				haveScanTimes = true;
 			}
 
