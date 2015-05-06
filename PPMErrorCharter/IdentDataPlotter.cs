@@ -133,9 +133,9 @@ namespace PPMErrorCharter
 
 		public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists, bool haveScanTimes)
 		{
-			int width = 1600; //512;  // 1024 pixels final width
-			int height = 1200; //384; // 768 pixels final height
-			int resolution = 300; //96
+			int width = 512;  // 1024 pixels final width
+			int height = 384; // 768 pixels final height
+			int resolution = 96; //96
 			
 			// Draw the bitmaps onto a new canvas internally
 			// Allows us to combine them
@@ -159,8 +159,7 @@ namespace PPMErrorCharter
 			drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
 
 
-			var fileName = pngFile.Substring(0, pngFile.IndexOf(".png"));
-
+			//var fileName = pngFile.Substring(0, pngFile.IndexOf(".png"));
 			//using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
 			//{
 			//	OxyPlot.Wpf.SvgExporter.Export(OrigScan, file, width, height, true);
@@ -192,6 +191,8 @@ namespace PPMErrorCharter
 
 			// Turn the canvas back into an image
 			//RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, resolution, resolution, PixelFormats.Pbgra32);
+            // Setting the DPI of the PngExporter to a higher-than-normal resolution, with a larger image size, 
+            //   then leaving this at standard 96 DPI will give a blown-up image; setting this to the same high DPI results in an odd image, without improving it.
 			RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
 			//RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
 			image.Render(drawVisual);
@@ -337,7 +338,7 @@ namespace PPMErrorCharter
 		/// <returns></returns>
 		public static BitmapSource ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
 		{
-			// Create both histogram models to allow sychronizing the y-axis
+			// Create both histogram models to allow synchronizing the y-axis
 			var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
 			var fixError = Histogram(scanData, "PpmErrorRefined", "Refined", OxyColors.Green, 0.5);
 
