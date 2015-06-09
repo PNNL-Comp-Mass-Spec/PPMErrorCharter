@@ -158,7 +158,6 @@ namespace PPMErrorCharter
             drawContext.DrawImage(OSN, new Rect(0, 0, width, height));
             drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
 
-
             //var fileName = pngFile.Substring(0, pngFile.IndexOf(".png"));
             //using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
             //{
@@ -285,6 +284,8 @@ namespace PPMErrorCharter
                 Position = AxisPosition.Bottom,
                 MajorStep = xStep,
                 MajorGridlineStyle = LineStyle.Dash,
+                MinorStep = 1,
+                MinorGridlineStyle = LineStyle.None,
                 Title = "Mass error (PPM)",
                 Maximum = 0.0,
                 Minimum = 0.0,
