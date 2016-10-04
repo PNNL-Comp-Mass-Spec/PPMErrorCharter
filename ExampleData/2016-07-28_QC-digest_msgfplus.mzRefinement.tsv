@@ -1,0 +1,2 @@
+ThresholdScore	ThresholdValue	Excluded (score)	Excluded (mass error)	MS1 Included	MS1 Shift method	MS1 Final stDev	MS1 Tolerance for 99%	MS1 Final MAD	MS1 MAD Tolerance for 99%	MS2 Included	MS2 Shift method	MS2 Final stDev	MS2 Tolerance for 99%	MS2 Final MAD	MS2 MAD Tolerance for 99%
+MS-GF:SpecEValue	-1.7976931348623157e+308 <= MME <= 1e-010	36944	3	5514	global	7.2029	21.6087	2.18949	9.73839	64287	global	6.33536	19.0061	2.23216	9.92822

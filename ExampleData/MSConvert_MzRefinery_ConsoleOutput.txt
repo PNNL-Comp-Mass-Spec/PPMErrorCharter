@@ -1,0 +1,19 @@
+format: mzML 
+    m/z: Compression-None, 32-bit
+    intensity: Compression-None, 32-bit
+    rt: Compression-None, 32-bit
+ByteOrder_LittleEndian
+ indexed="true"
+outputPath: .
+extension: .mzML
+contactFilename: 
+
+filters:
+  mzRefiner E:\DMS_WorkDir3\2016-07-28_QC-digest_msgfplus.mzid thresholdValue=-1e-10 thresholdStep=10 maxSteps=2
+  
+filenames:
+  E:\DMS_WorkDir3\2016-07-28_QC-digest.mzML
+  
+processing file: E:\DMS_WorkDir3\2016-07-28_QC-digest.mzML
+writing output file: .\2016-07-28_QC-digest_FIXED.mzML
+

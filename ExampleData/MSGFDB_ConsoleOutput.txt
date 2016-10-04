@@ -1,0 +1,757 @@
+MS-GF+ Release (v2016.07.26) (7/26/2016)
+Loading database files...
+Warning: Sequence database contains 2 counts of letter 'U', which does not correspond to an amino acid.
+Warning: Sequence database contains 144 counts of letter 'X', which does not correspond to an amino acid.
+Loading database finished (elapsed time: 0.65 sec)
+Reading spectra...
+Ignoring 0 profile spectra.
+Ignoring 7 spectra having less than 5 peaks.
+Reading spectra finished (elapsed time: 94.21 sec)
+Using 7 threads.
+Search Parameters:
+	PrecursorMassTolerance: 50.0ppm
+	IsotopeError: -1,2
+	TargetDecoyAnalysis: true
+	FragmentationMethod: As written in the spectrum or CID if no info
+	Instrument: QExactive
+	Enzyme: Tryp
+	Protocol: Standard
+	NumTolerableTermini: 2
+	MinPeptideLength: 6
+	MaxPeptideLength: 50
+	NumMatchesPerSpec: 1
+Spectrum 0-39283 (total: 39284)
+Splitting work into 64 tasks.
+Search progress: 0 / 64 tasks, 0.00%
+pool-1-thread-2: Starting task 2
+pool-1-thread-4: Starting task 4
+pool-1-thread-5: Starting task 5
+pool-1-thread-1: Starting task 1
+pool-1-thread-6: Starting task 6
+pool-1-thread-7: Starting task 7
+pool-1-thread-3: Starting task 3
+pool-1-thread-4: Preprocessing spectra...
+Loading built-in param file: HCD_QExactive_Tryp.param
+pool-1-thread-1: Preprocessing spectra...
+Loading built-in param file: HCD_QExactive_Tryp.param
+pool-1-thread-2: Preprocessing spectra...
+Loading built-in param file: HCD_QExactive_Tryp.param
+pool-1-thread-3: Preprocessing spectra...
+Loading built-in param file: HCD_QExactive_Tryp.param
+pool-1-thread-5: Preprocessing spectra...
+Loading built-in param file: HCD_QExactive_Tryp.param
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-7: Preprocessing spectra...
+Loading built-in param file: HCD_QExactive_Tryp.param
+Loading built-in param file: HCD_QExactive_Tryp.param
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 5.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 5.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 5.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 6.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 6.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 6.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 6.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-2: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-5: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-4: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-1: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-6: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-3: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-7: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+Search progress: 0 / 64 tasks, 10.16%
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 44.00 sec)
+pool-1-thread-4: Task 4 completed.
+Search progress: 0 / 64 tasks, 10.35%
+pool-1-thread-4: Starting task 8
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 45.00 sec)
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-2: Task 2 completed.
+Search progress: 1 / 64 tasks, 10.46%
+pool-1-thread-2: Starting task 9
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 46.00 sec)
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 46.00 sec)
+pool-1-thread-1: Task 1 completed.
+Search progress: 2 / 64 tasks, 10.63%
+pool-1-thread-1: Starting task 10
+pool-1-thread-3: Task 3 completed.
+Search progress: 3 / 64 tasks, 10.71%
+pool-1-thread-3: Starting task 11
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 49.00 sec)
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 49.00 sec)
+pool-1-thread-6: Task 6 completed.
+Search progress: 4 / 64 tasks, 11.85%
+pool-1-thread-6: Starting task 12
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 49.00 sec)
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-5: Task 5 completed.
+Search progress: 5 / 64 tasks, 11.96%
+pool-1-thread-5: Starting task 13
+pool-1-thread-7: Task 7 completed.
+Search progress: 6 / 64 tasks, 12.03%
+pool-1-thread-7: Starting task 14
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-4: Database search finished (elapsed time: 5.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-2: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-6: Database search finished (elapsed time: 5.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-1: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-7: Database search finished (elapsed time: 5.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+pool-1-thread-5: Database search finished (elapsed time: 6.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 44.00 sec)
+pool-1-thread-4: Task 8 completed.
+Search progress: 7 / 64 tasks, 20.95%
+pool-1-thread-4: Starting task 15
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 1.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+Search progress: 8 / 64 tasks, 22.04%
+pool-1-thread-4: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 53.00 sec)
+pool-1-thread-2: Task 9 completed.
+Search progress: 8 / 64 tasks, 22.66%
+pool-1-thread-2: Starting task 16
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 54.00 sec)
+pool-1-thread-1: Task 10 completed.
+Search progress: 9 / 64 tasks, 22.84%
+pool-1-thread-1: Starting task 17
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 1.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 56.00 sec)
+pool-1-thread-6: Task 12 completed.
+Search progress: 10 / 64 tasks, 23.52%
+pool-1-thread-6: Starting task 18
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 57.00 sec)
+pool-1-thread-3: Task 11 completed.
+Search progress: 11 / 64 tasks, 24.20%
+pool-1-thread-3: Starting task 19
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 57.00 sec)
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-5: Task 13 completed.
+Search progress: 12 / 64 tasks, 24.35%
+pool-1-thread-5: Starting task 20
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 59.00 sec)
+pool-1-thread-7: Task 14 completed.
+Search progress: 13 / 64 tasks, 25.46%
+pool-1-thread-7: Starting task 21
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-2: Database search finished (elapsed time: 5.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-1: Database search finished (elapsed time: 5.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-6: Database search finished (elapsed time: 6.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-3: Database search finished (elapsed time: 6.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-5: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 55.00 sec)
+pool-1-thread-4: Task 15 completed.
+Search progress: 14 / 64 tasks, 31.76%
+pool-1-thread-4: Starting task 22
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 1.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+Search progress: 15 / 64 tasks, 31.88%
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 61.00 sec)
+pool-1-thread-2: Task 16 completed.
+Search progress: 15 / 64 tasks, 33.56%
+pool-1-thread-2: Starting task 23
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 1.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 63.00 sec)
+pool-1-thread-1: Task 17 completed.
+Search progress: 16 / 64 tasks, 34.27%
+pool-1-thread-1: Starting task 24
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 1.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 62.00 sec)
+pool-1-thread-3: Task 19 completed.
+Search progress: 17 / 64 tasks, 35.00%
+pool-1-thread-3: Starting task 25
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 64.00 sec)
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-6: Task 18 completed.
+Search progress: 18 / 64 tasks, 35.43%
+pool-1-thread-6: Starting task 26
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-2: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 66.00 sec)
+pool-1-thread-5: Task 20 completed.
+Search progress: 19 / 64 tasks, 37.50%
+pool-1-thread-5: Starting task 27
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-1: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 66.00 sec)
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-7: Task 21 completed.
+Search progress: 20 / 64 tasks, 38.63%
+pool-1-thread-7: Starting task 28
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-3: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-6: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-5: Database search finished (elapsed time: 7.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+Search progress: 21 / 64 tasks, 42.32%
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 61.00 sec)
+pool-1-thread-4: Task 22 completed.
+Search progress: 21 / 64 tasks, 42.59%
+pool-1-thread-4: Starting task 29
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 1.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 66.00 sec)
+pool-1-thread-2: Task 23 completed.
+Search progress: 22 / 64 tasks, 44.44%
+pool-1-thread-2: Starting task 30
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 69.00 sec)
+pool-1-thread-1: Task 24 completed.
+Search progress: 23 / 64 tasks, 45.24%
+pool-1-thread-1: Starting task 31
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 68.00 sec)
+pool-1-thread-3: Task 25 completed.
+Search progress: 24 / 64 tasks, 45.74%
+pool-1-thread-3: Starting task 32
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-2: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 71.00 sec)
+pool-1-thread-6: Task 26 completed.
+Search progress: 25 / 64 tasks, 47.29%
+pool-1-thread-6: Starting task 33
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 71.00 sec)
+pool-1-thread-1: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-5: Task 27 completed.
+Search progress: 26 / 64 tasks, 49.10%
+pool-1-thread-5: Starting task 34
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-3: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-6: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 75.00 sec)
+pool-1-thread-7: Task 28 completed.
+Search progress: 27 / 64 tasks, 50.83%
+pool-1-thread-7: Starting task 35
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+Search progress: 28 / 64 tasks, 51.82%
+pool-1-thread-5: Database search finished (elapsed time: 9.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-7: Database search finished (elapsed time: 9.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 75.00 sec)
+pool-1-thread-4: Task 29 completed.
+Search progress: 28 / 64 tasks, 53.49%
+pool-1-thread-4: Starting task 36
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 9.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+Search progress: 29 / 64 tasks, 55.19%
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 80.00 sec)
+pool-1-thread-2: Task 30 completed.
+Search progress: 29 / 64 tasks, 55.33%
+pool-1-thread-2: Starting task 37
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 82.00 sec)
+pool-1-thread-1: Task 31 completed.
+Search progress: 30 / 64 tasks, 56.47%
+pool-1-thread-1: Starting task 38
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 82.00 sec)
+pool-1-thread-3: Task 32 completed.
+Search progress: 31 / 64 tasks, 56.64%
+pool-1-thread-3: Starting task 39
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-2: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 84.00 sec)
+pool-1-thread-6: Task 33 completed.
+Search progress: 32 / 64 tasks, 58.46%
+pool-1-thread-6: Starting task 40
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-1: Database search finished (elapsed time: 9.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Database search finished (elapsed time: 8.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 84.00 sec)
+pool-1-thread-5: Task 34 completed.
+Search progress: 33 / 64 tasks, 60.33%
+pool-1-thread-5: Starting task 41
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-6: Database search finished (elapsed time: 9.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 88.00 sec)
+pool-1-thread-7: Task 35 completed.
+Search progress: 34 / 64 tasks, 62.21%
+pool-1-thread-7: Starting task 42
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-5: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-7: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+Search progress: 35 / 64 tasks, 64.13%
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 83.00 sec)
+pool-1-thread-4: Task 36 completed.
+Search progress: 35 / 64 tasks, 64.34%
+pool-1-thread-4: Starting task 43
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 87.00 sec)
+pool-1-thread-2: Task 37 completed.
+Search progress: 36 / 64 tasks, 66.19%
+pool-1-thread-2: Starting task 44
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 92.00 sec)
+pool-1-thread-2: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-1: Task 38 completed.
+Search progress: 37 / 64 tasks, 67.71%
+pool-1-thread-1: Starting task 45
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 92.00 sec)
+pool-1-thread-3: Task 39 completed.
+Search progress: 38 / 64 tasks, 67.83%
+pool-1-thread-3: Starting task 46
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+Search progress: 39 / 64 tasks, 69.05%
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-1: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 99.00 sec)
+pool-1-thread-6: Task 40 completed.
+Search progress: 39 / 64 tasks, 70.56%
+pool-1-thread-6: Starting task 47
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 98.00 sec)
+pool-1-thread-5: Task 41 completed.
+Search progress: 40 / 64 tasks, 71.32%
+pool-1-thread-5: Starting task 48
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-6: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-5: Database search finished (elapsed time: 11.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 103.00 sec)
+pool-1-thread-7: Task 42 completed.
+Search progress: 41 / 64 tasks, 73.52%
+pool-1-thread-7: Starting task 49
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-7: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 96.00 sec)
+pool-1-thread-4: Task 43 completed.
+Search progress: 42 / 64 tasks, 75.20%
+pool-1-thread-4: Starting task 50
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+Search progress: 43 / 64 tasks, 75.83%
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 10.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 103.00 sec)
+pool-1-thread-2: Task 44 completed.
+Search progress: 43 / 64 tasks, 77.08%
+pool-1-thread-2: Starting task 51
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-2: Database search progress... 70.7% complete
+pool-1-thread-2: Database search finished (elapsed time: 11.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 106.00 sec)
+pool-1-thread-1: Task 45 completed.
+Search progress: 44 / 64 tasks, 78.61%
+pool-1-thread-1: Starting task 52
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 112.00 sec)
+pool-1-thread-3: Task 46 completed.
+Search progress: 45 / 64 tasks, 79.41%
+pool-1-thread-3: Starting task 53
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-1: Database search progress... 70.7% complete
+Search progress: 46 / 64 tasks, 79.78%
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-1: Database search finished (elapsed time: 11.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-3: Database search finished (elapsed time: 11.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 113.00 sec)
+pool-1-thread-6: Task 47 completed.
+Search progress: 46 / 64 tasks, 81.55%
+pool-1-thread-6: Starting task 54
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 119.00 sec)
+pool-1-thread-5: Task 48 completed.
+Search progress: 47 / 64 tasks, 82.73%
+pool-1-thread-5: Starting task 55
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-6: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 109.00 sec)
+pool-1-thread-7: Task 49 completed.
+Search progress: 48 / 64 tasks, 83.76%
+pool-1-thread-7: Starting task 56
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-5: Database search progress... 70.7% complete
+pool-1-thread-5: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-7: Database search finished (elapsed time: 11.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 112.00 sec)
+pool-1-thread-4: Task 50 completed.
+Search progress: 49 / 64 tasks, 86.09%
+pool-1-thread-4: Starting task 57
+pool-1-thread-4: Preprocessing spectra...
+Search progress: 50 / 64 tasks, 86.11%
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 117.00 sec)
+pool-1-thread-2: Task 51 completed.
+Search progress: 50 / 64 tasks, 88.00%
+pool-1-thread-2: Starting task 58
+pool-1-thread-2: Preprocessing spectra...
+pool-1-thread-2: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-2: Database search...
+pool-1-thread-2: Database search progress... 0.0% complete
+pool-1-thread-2: Database search progress... 70.7% complete
+Search progress: 51 / 64 tasks, 89.14%
+pool-1-thread-2: Database search finished (elapsed time: 13.00 sec)
+pool-1-thread-2: Computing spectral E-values...
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 121.00 sec)
+pool-1-thread-1: Task 52 completed.
+Search progress: 51 / 64 tasks, 89.55%
+pool-1-thread-1: Starting task 59
+pool-1-thread-1: Preprocessing spectra...
+pool-1-thread-1: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-1: Database search...
+pool-1-thread-1: Database search progress... 0.0% complete
+pool-1-thread-1: Database search progress... 70.7% complete
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 123.00 sec)
+pool-1-thread-3: Task 53 completed.
+Search progress: 52 / 64 tasks, 90.70%
+pool-1-thread-3: Starting task 60
+pool-1-thread-3: Preprocessing spectra...
+pool-1-thread-1: Database search finished (elapsed time: 11.00 sec)
+pool-1-thread-1: Computing spectral E-values...
+pool-1-thread-3: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-3: Database search...
+pool-1-thread-3: Database search progress... 0.0% complete
+pool-1-thread-3: Database search progress... 70.7% complete
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 121.00 sec)
+pool-1-thread-6: Task 54 completed.
+Search progress: 53 / 64 tasks, 92.19%
+pool-1-thread-6: Starting task 61
+pool-1-thread-6: Preprocessing spectra...
+pool-1-thread-3: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-3: Computing spectral E-values...
+pool-1-thread-6: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-6: Database search...
+pool-1-thread-6: Database search progress... 0.0% complete
+pool-1-thread-6: Database search progress... 70.7% complete
+pool-1-thread-6: Database search finished (elapsed time: 13.00 sec)
+pool-1-thread-6: Computing spectral E-values...
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 129.00 sec)
+pool-1-thread-5: Task 55 completed.
+Search progress: 54 / 64 tasks, 94.03%
+pool-1-thread-5: Starting task 62
+pool-1-thread-5: Preprocessing spectra...
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 126.00 sec)
+pool-1-thread-7: Task 56 completed.
+Search progress: 55 / 64 tasks, 94.21%
+pool-1-thread-7: Starting task 63
+pool-1-thread-5: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-5: Database search...
+pool-1-thread-5: Database search progress... 0.0% complete
+pool-1-thread-7: Preprocessing spectra...
+pool-1-thread-7: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-7: Database search...
+pool-1-thread-7: Database search progress... 0.0% complete
+pool-1-thread-5: Database search progress... 70.7% complete
+Search progress: 56 / 64 tasks, 95.79%
+pool-1-thread-7: Database search progress... 70.7% complete
+pool-1-thread-5: Database search finished (elapsed time: 12.00 sec)
+pool-1-thread-5: Computing spectral E-values...
+pool-1-thread-7: Database search finished (elapsed time: 13.00 sec)
+pool-1-thread-7: Computing spectral E-values...
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 127.00 sec)
+pool-1-thread-4: Task 57 completed.
+Search progress: 56 / 64 tasks, 97.03%
+pool-1-thread-4: Starting task 64
+pool-1-thread-4: Preprocessing spectra...
+pool-1-thread-4: Preprocessing spectra finished (elapsed time: 2.00 sec)
+pool-1-thread-4: Database search...
+pool-1-thread-4: Database search progress... 0.0% complete
+pool-1-thread-4: Database search progress... 70.7% complete
+pool-1-thread-4: Database search finished (elapsed time: 13.00 sec)
+pool-1-thread-4: Computing spectral E-values...
+Search progress: 57 / 64 tasks, 98.74%
+pool-1-thread-2: Computing spectral E-values finished (elapsed time: 135.00 sec)
+pool-1-thread-2: Task 58 completed.
+Search progress: 57 / 64 tasks, 98.99%
+pool-1-thread-1: Computing spectral E-values finished (elapsed time: 123.00 sec)
+pool-1-thread-1: Task 59 completed.
+Search progress: 58 / 64 tasks, 99.14%
+pool-1-thread-3: Computing spectral E-values finished (elapsed time: 126.00 sec)
+pool-1-thread-3: Task 60 completed.
+Search progress: 59 / 64 tasks, 99.42%
+pool-1-thread-6: Computing spectral E-values finished (elapsed time: 119.00 sec)
+pool-1-thread-6: Task 61 completed.
+Search progress: 60 / 64 tasks, 99.59%
+pool-1-thread-5: Computing spectral E-values finished (elapsed time: 106.00 sec)
+pool-1-thread-5: Task 62 completed.
+Search progress: 61 / 64 tasks, 99.74%
+pool-1-thread-7: Computing spectral E-values finished (elapsed time: 107.00 sec)
+pool-1-thread-7: Task 63 completed.
+Search progress: 62 / 64 tasks, 99.86%
+Search progress: 63 / 64 tasks, 99.91%
+pool-1-thread-4: Computing spectral E-values finished (elapsed time: 86.00 sec)
+pool-1-thread-4: Task 64 completed.
+Search progress: 63 / 64 tasks, 100.00%
+Search progress: 64 / 64 tasks, 100.00%
+Computing q-values...
+Computing q-values finished (elapsed time: 0.22 sec)
+Writing results...
+Writing results finished (elapsed time: 28.99 sec)
+MS-GF+ complete (total elapsed time: 1038.87 sec)
