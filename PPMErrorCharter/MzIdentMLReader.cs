@@ -24,7 +24,7 @@ namespace PPMErrorCharter
 
         public double SpecEValueThreshold
         {
-            get { return _specEValueThreshold; }
+            get => _specEValueThreshold;
             private set
             {
                 _specEValueThreshold = value;

@@ -43,14 +43,11 @@ namespace PPMErrorCharter
         private int _refinedIsotopeErrorCount;
         private double _refinedIsotopeErrorAdjustment;
 
-        public int ScanIdInt
-        {
-            get { return Convert.ToInt32(ScanId); }
-        }
+        public int ScanIdInt => Convert.ToInt32(ScanId);
 
         public int Charge
         {
-            get { return _charge; }
+            get => _charge;
             set
             {
                 _charge = value;
@@ -67,7 +64,7 @@ namespace PPMErrorCharter
 
         public double CalcMz
         {
-            get { return _calcMz; }
+            get => _calcMz;
             set
             {
                 _calcMz = value;
@@ -98,7 +95,7 @@ namespace PPMErrorCharter
 
         public double ExperMz
         {
-            get { return _experMz; }
+            get => _experMz;
             set
             {
                 _experMz = value;
@@ -125,7 +122,7 @@ namespace PPMErrorCharter
 
         public double ExperMzIsotoped
         {
-            get { return _experMzIsotoped; }
+            get => _experMzIsotoped;
             private set
             {
                 _experMzIsotoped = value;
@@ -140,7 +137,7 @@ namespace PPMErrorCharter
 
         public double ExperMzRefined
         {
-            get { return _experMzRefined; }
+            get => _experMzRefined;
             set
             {
                 _experMzRefined = value;
@@ -169,7 +166,7 @@ namespace PPMErrorCharter
 
         public double ExperMzRefinedIsotoped
         {
-            get { return _experMzRefinedIsotoped; }
+            get => _experMzRefinedIsotoped;
             private set
             {
                 _experMzRefinedIsotoped = value;

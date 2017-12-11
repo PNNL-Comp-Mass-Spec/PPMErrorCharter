@@ -86,20 +86,20 @@ namespace PPMErrorCharter
 
             public virtual string CVRef
             {
-                get { return string.Empty; }
-                set { _cvRef = string.Empty; }
+                get => string.Empty;
+                set => _cvRef = string.Empty;
             }
 
             public virtual string Accession
             {
-                get { return string.Empty; }
-                set { _accession = string.Empty; }
+                get => string.Empty;
+                set => _accession = string.Empty;
             }
 
             public virtual string Type
             {
-                get { return string.Empty; }
-                set { _type = string.Empty; }
+                get => string.Empty;
+                set => _type = string.Empty;
             }
 
             protected Param()
@@ -119,14 +119,14 @@ namespace PPMErrorCharter
         {
             public override string CVRef      // Required
             {
-                get { return _cvRef; }
-                set { _cvRef = value; }
+                get => _cvRef;
+                set => _cvRef = value;
             }
 
             public override string Accession  // Required
             {
-                get { return _accession; }
-                set { _accession = value; }
+                get => _accession;
+                set => _accession = value;
             }
 
             public CVParam()
@@ -139,8 +139,8 @@ namespace PPMErrorCharter
         {
             public override string Type       // Optional
             {
-                get { return _type; }
-                set { _type = value; }
+                get => _type;
+                set => _type = value;
             }
 
             public UserParam()
@@ -184,7 +184,7 @@ namespace PPMErrorCharter
                 Unknown,
             }
             private readonly List<IndexItem> _offsets = new List<IndexItem>();
-            public List<IndexItem> Offsets { get { return _offsets; } }
+            public List<IndexItem> Offsets => _offsets;
             public readonly Dictionary<string, long> OffsetsMapNative = new Dictionary<string, long>();
             public readonly Dictionary<long, long> OffsetsMapInt = new Dictionary<long, long>();
             public readonly Dictionary<long, string> IdToNativeMap = new Dictionary<long, string>();
@@ -318,7 +318,7 @@ namespace PPMErrorCharter
         }
         #endregion
 
-        public int NumSpectra { get { return (int)_numSpectra; } }
+        public int NumSpectra => (int)_numSpectra;
 
         #region Constructor
         /// <summary>
