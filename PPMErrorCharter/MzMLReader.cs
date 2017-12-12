@@ -152,7 +152,7 @@ namespace PPMErrorCharter
 
         private class IndexList
         {
-            private long _artificialScanNum = 0;
+            private long _artificialScanNum;
             public class IndexItem // A struct would be faster, but it can also be a pain since it is a value type
             {
                 public readonly string Ref;
@@ -330,15 +330,14 @@ namespace PPMErrorCharter
         /// <param name="tryReducingMemoryUsage">If mzML reader should try to avoid reading all spectra into memory. This will reduce memory usage for a non-random access MzMLReader, as long as ReadMassSpectrum(int) isn't used.</param>
         public MzMLReader(string filePath, bool randomAccess = true, bool tryReducingMemoryUsage = true)
         {
-            _filePath = filePath;
             _instrument = Instrument.Unknown;
             _version = MzML_Version.mzML1_1_0;
             _randomAccess = randomAccess;
             _reduceMemoryUsage = tryReducingMemoryUsage;
-            _unzippedFilePath = _filePath;
+            _unzippedFilePath = filePath;
 
             // Set a very large read buffer, it does decrease the read times for uncompressed files.
-            _file = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
+            _file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
             /*****************************************************************************************************************************************************
              * TODO: Change how the file handles are used for safety purposes - open up each time, or what?
              *****************************************************************************************************************************************************/
@@ -350,7 +349,7 @@ namespace PPMErrorCharter
                 if (_randomAccess)
                 {
                     // Unzip the file to the temp path
-                    _unzippedFilePath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(_filePath));
+                    _unzippedFilePath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filePath));
                     using (_file)
                     using (
                         var tempFile = new FileStream(_unzippedFilePath, FileMode.Create, FileAccess.ReadWrite,
@@ -361,7 +360,7 @@ namespace PPMErrorCharter
                     _file = new FileStream(_unzippedFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
                 }
             }
-            _fileReader = new StreamReader(_file, System.Text.Encoding.UTF8, true, 65536);
+            _fileReader = new StreamReader(_file, Encoding.UTF8, true, 65536);
 
             if (!_isGzipped || _randomAccess) // can't reset the position on a gzipped file...
             {
@@ -407,7 +406,7 @@ namespace PPMErrorCharter
                 }
             }
         }
-        
+
 
         /*
         /// <summary>
@@ -1525,14 +1524,16 @@ namespace PPMErrorCharter
         private CVParam ReadCvParam(XmlReader reader)
         {
             reader.MoveToContent();
-            CVParam cvParam = new CVParam();
-            cvParam.Accession = reader.GetAttribute("accession");
-            cvParam.CVRef = reader.GetAttribute("cvRef");
-            cvParam.Name = reader.GetAttribute("name");
-            cvParam.Value = reader.GetAttribute("value");
-            cvParam.UnitAccession = reader.GetAttribute("unitAccession");
-            cvParam.UnitCVRef = reader.GetAttribute("unitCVRef");
-            cvParam.UnitName = reader.GetAttribute("unitName");
+            var cvParam = new CVParam
+            {
+                Accession = reader.GetAttribute("accession"),
+                CVRef = reader.GetAttribute("cvRef"),
+                Name = reader.GetAttribute("name"),
+                Value = reader.GetAttribute("value"),
+                UnitAccession = reader.GetAttribute("unitAccession"),
+                UnitCVRef = reader.GetAttribute("unitCVRef"),
+                UnitName = reader.GetAttribute("unitName")
+            };
 
             reader.Close();
             return cvParam;
@@ -1545,13 +1546,15 @@ namespace PPMErrorCharter
         private UserParam ReadUserParam(XmlReader reader)
         {
             reader.MoveToContent();
-            UserParam userParam = new UserParam();
-            userParam.Name = reader.GetAttribute("name");
-            userParam.Type = reader.GetAttribute("type");
-            userParam.Value = reader.GetAttribute("value");
-            userParam.UnitAccession = reader.GetAttribute("unitAccession");
-            userParam.UnitCVRef = reader.GetAttribute("unitCVRef");
-            userParam.UnitName = reader.GetAttribute("unitName");
+            var userParam = new UserParam
+            {
+                Name = reader.GetAttribute("name"),
+                Type = reader.GetAttribute("type"),
+                Value = reader.GetAttribute("value"),
+                UnitAccession = reader.GetAttribute("unitAccession"),
+                UnitCVRef = reader.GetAttribute("unitCVRef"),
+                UnitName = reader.GetAttribute("unitName")
+            };
 
             reader.Close();
             return userParam;
@@ -1728,12 +1731,12 @@ namespace PPMErrorCharter
                     reader.Read();
                     continue;
                 }
-                //////////////////////////////////////////////////////////////////////////////////////
-                /// 
-                /// MS1 Spectra: only need Spectrum data: scanNum, MSLevel, ElutionTime, mzArray, IntensityArray
-                /// 
-                /// MS2 Spectra: use ProductSpectrum; adds ActivationMethod and IsolationWindow
-                /// 
+                ///////////////////////////////////////////////////////////////////////////////////////
+                //
+                // MS1 Spectra: only need Spectrum data: scanNum, MSLevel, ElutionTime, mzArray, IntensityArray
+                //
+                // MS2 Spectra: use ProductSpectrum; adds ActivationMethod and IsolationWindow
+                //
                 //////////////////////////////////////////////////////////////////////////////////////
                 switch (reader.Name)
                 {
@@ -1855,7 +1858,7 @@ namespace PPMErrorCharter
                     intensities = bda;
                 }
             }
-            
+
             if (!centroided)
             {
                 // Centroid spectrum
@@ -2350,7 +2353,7 @@ namespace PPMErrorCharter
                         //             *   e.g.: MS:1000422 (high-energy collision-induced dissociation)
                         //             *   e.g.: MS:1000433 (low-energy collision-induced dissociation)
                         //             *   et al.
-                        //             *   
+                        //             *
                         //             *   e.g.: MS:1000133 "collision-induced dissociation"
                         //             *   e.g.: MS:1000134 "plasma desorption"
                         //             *   e.g.: MS:1000135 "post-source decay"
@@ -2733,7 +2736,7 @@ namespace PPMErrorCharter
         /*********************************************************************************************************************************************
          * TODO: Flesh out the algorithm/double check it, etc.
          * Do some more work here.
-         * 
+         *
          ********************************************************************************************************************************************/
         private byte[] DecompressZLib(byte[] compressedBytes, int expectedBytes)
         {
