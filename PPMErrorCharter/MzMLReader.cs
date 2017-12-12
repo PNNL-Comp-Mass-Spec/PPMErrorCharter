@@ -342,7 +342,7 @@ namespace PPMErrorCharter
              * TODO: Change how the file handles are used for safety purposes - open up each time, or what?
              *****************************************************************************************************************************************************/
 
-            if (_filePath.EndsWith(".mzML.gz"))
+            if (filePath.EndsWith(".mzML.gz", StringComparison.OrdinalIgnoreCase))
             {
                 _isGzipped = true;
                 _file = new GZipStream(_file, CompressionMode.Decompress);

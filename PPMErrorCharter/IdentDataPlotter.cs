@@ -19,7 +19,7 @@ namespace PPMErrorCharter
             return new PlotModel
             {
                 TitlePadding = 0,
-            };  
+            };
         }
 
         public static PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, string xTitle, OxyColor markerColor)
@@ -158,12 +158,12 @@ namespace PPMErrorCharter
             drawContext.DrawImage(OSN, new Rect(0, 0, width, height));
             drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
 
-            //var fileName = pngFile.Substring(0, pngFile.IndexOf(".png"));
+            //var fileName = pngFile.Substring(0, pngFile.IndexOf(".png", StringComparison.OrdinalIgnoreCase));
             //using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
             //{
             //  OxyPlot.Wpf.SvgExporter.Export(OrigScan, file, width, height, true);
             //}
-            
+
             // Only add the fixed files if the data file exists
             if (dataFileExists)
             {
@@ -185,7 +185,7 @@ namespace PPMErrorCharter
                 drawContext.DrawImage(FMZ, new Rect(width, height, width, height));
                 //drawContext.DrawImage(FSN, new Rect(width, 0, width, height));
             }
-            
+
             drawContext.Close();
 
             // Turn the canvas back into an image
@@ -497,7 +497,7 @@ namespace PPMErrorCharter
 
             drawContext.Close();
             image.Render(drawVisual);
-            
+
             /**/
 
             // Turn the canvas back into an image

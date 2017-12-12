@@ -10,7 +10,7 @@ namespace PPMErrorCharter
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Usage: " + System.AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz] [specEValueThreshold]");
+                Console.WriteLine("Usage: " + AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz] [specEValueThreshold]");
                 return;
             }
 
@@ -25,19 +25,19 @@ namespace PPMErrorCharter
                     useSetThreshold = true;
                 }
             }
+
             // Get the file name
-            if (!(identFile.EndsWith(".mzid") || identFile.EndsWith(".mzid.gz")))
             var identFilePath = args[0];
+            if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) || identFilePath.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase)))
             {
-                Console.WriteLine("Error: \"" + identFile + "\" is not an mzIdentML file.");
+                Console.WriteLine("Error: \"" + identFilePath + "\" is not an mzIdentML file.");
+                System.Threading.Thread.Sleep(1500);
                 return;
             }
-            string fixedDataFile = identFile.Substring(0, identFile.LastIndexOf(".mzid"));
-            if (fixedDataFile.EndsWith("_msgfplus"))
+
             var identFile = new FileInfo(identFilePath);
             if (!identFile.Exists)
             {
-                fixedDataFile = fixedDataFile.Substring(0, fixedDataFile.LastIndexOf("_msgfplus"));
                 Console.WriteLine("Error: Data file not found: \"" + identFilePath + "\"");
                 if (!Path.IsPathRooted(identFilePath))
                     Console.WriteLine("Full file path: " + identFile.FullName);
@@ -45,9 +45,16 @@ namespace PPMErrorCharter
                 System.Threading.Thread.Sleep(1500);
                 return;
             }
-            string outFileStub = fixedDataFile;
+
+            var fixedDataFile = identFile.FullName.Substring(0, identFile.FullName.LastIndexOf(".mzid", StringComparison.OrdinalIgnoreCase));
+            if (fixedDataFile.EndsWith("_msgfplus", StringComparison.OrdinalIgnoreCase))
+            {
+                fixedDataFile = fixedDataFile.Substring(0, fixedDataFile.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase));
+            }
+            var outFileStub = fixedDataFile;
             fixedDataFile += "_FIXED.mzML";
-            bool dataFileExists = true;
+
+            var dataFileExists = true;
             if (File.Exists(fixedDataFile + ".gz"))
             {
                 fixedDataFile += ".gz";
@@ -56,15 +63,16 @@ namespace PPMErrorCharter
             {
                 dataFileExists = false;
             }
-            Console.WriteLine("Creating plots for \"" + identFile + "\"");
+
+            Console.WriteLine("Creating plots for \"" + identFile.Name + "\"");
             if (dataFileExists)
             {
-                Console.WriteLine("\tUsing fixed data file \"" + fixedDataFile + "\"");
+                Console.WriteLine("  Using fixed data file \"" + fixedDataFile + "\"");
             }
             else
             {
-                Console.WriteLine("\tWarning: Could not find fixed data file \"" + fixedDataFile + "[.gz]\".");
-                Console.WriteLine("\tOutput will not include fixed data graphs.");
+                Console.WriteLine("  Warning: Could not find fixed data file \"" + fixedDataFile + "[.gz]\".");
+                Console.WriteLine("  Output will not include fixed data graphs.");
             }
 
             MzIdentMLReader reader;

@@ -125,7 +125,7 @@ namespace PPMErrorCharter
                 // Set a large buffer size. Doesn't affect gzip reading speed, but speeds up non-gzipped
                 Stream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
 
-                if (path.EndsWith(".mzid.gz"))
+                if (path.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase))
                 {
                     file = new GZipStream(file, CompressionMode.Decompress);
                 }
@@ -477,22 +477,22 @@ namespace PPMErrorCharter
             data.NativeId = nativeId;
             if (!string.IsNullOrWhiteSpace(nativeId))
             {
-                if (data.NativeId.LastIndexOf("scan=") != -1)
+                if (data.NativeId.LastIndexOf("scan=", StringComparison.Ordinal) != -1)
                 {
                     data.IdField = "id";
                     data.IdValue = data.NativeId;
-                    data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scan=") + 5));
+                    data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scan=", StringComparison.Ordinal) + 5));
                 }
-                else if (data.NativeId.LastIndexOf("scanId=") != -1)
+                else if (data.NativeId.LastIndexOf("scanId=", StringComparison.Ordinal) != -1)
                 {
                     data.IdField = "id";
                     data.IdValue = data.NativeId;
-                    data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scanId=") + 7));
+                    data.ScanId = Convert.ToUInt64(data.NativeId.Substring(data.NativeId.LastIndexOf("scanId=", StringComparison.Ordinal) + 7));
                 }
-                else if (data.NativeId.LastIndexOf("index=") != -1)
+                else if (data.NativeId.LastIndexOf("index=", StringComparison.Ordinal) != -1)
                 {
                     data.IdField = "index";
-                    data.IdValue = data.NativeId.Substring(data.NativeId.LastIndexOf("index=") + 6);
+                    data.IdValue = data.NativeId.Substring(data.NativeId.LastIndexOf("index=", StringComparison.Ordinal) + 6);
                     data.ScanId = Convert.ToUInt64(data.IdValue);
                     //data.IdValue = (data.ScanId + 1).ToString();
                 }
