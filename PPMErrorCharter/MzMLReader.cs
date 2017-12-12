@@ -11,24 +11,25 @@ namespace PPMErrorCharter
     {
         #region Private Members
 
-        private string _filePath;
-        private Stream _file = null;
-        private StreamReader _fileReader = null;
-        private XmlReader _xmlReaderForYield = null;
-        private bool _reduceMemoryUsage = false;
-        private long _artificialScanNum = 0;
+        private readonly Stream _file;
+        private readonly StreamReader _fileReader;
+        private XmlReader _xmlReaderForYield;
+        private readonly bool _reduceMemoryUsage;
+        // Unused: private long _artificialScanNum = 0;
         private long _numSpectra = -1;
-        private IndexList _spectrumOffsets = new IndexList() {IndexType = IndexList.IndexListType.Spectrum};
-        private IndexList _chromatogramOffsets = new IndexList() { IndexType = IndexList.IndexListType.Chromatogram };
-        private long _indexListOffset = 0;
-        private bool _haveIndex = false;
-        private bool _haveMetaData = false;
-        private bool _isGzipped = false;
-        private string _unzippedFilePath = string.Empty;
-        private bool _randomAccess = false;
-        private bool _allRead = false;
-        private XmlReaderSettings _xSettings = new XmlReaderSettings { IgnoreWhitespace = true };
-        private Encoding _encoding = null;
+        private readonly IndexList _spectrumOffsets = new IndexList() {IndexType = IndexList.IndexListType.Spectrum};
+        private readonly IndexList _chromatogramOffsets = new IndexList() { IndexType = IndexList.IndexListType.Chromatogram };
+        private long _indexListOffset;
+        private bool _haveIndex;
+        private bool _haveMetaData;
+        private readonly bool _isGzipped;
+        private readonly string _unzippedFilePath;
+        private readonly bool _randomAccess;
+#pragma warning disable 414
+        private bool _allRead;
+#pragma warning restore 414
+        private readonly XmlReaderSettings _xSettings = new XmlReaderSettings { IgnoreWhitespace = true };
+        private Encoding _encoding;
         //private readonly List<Spectrum> _spectra = new List<Spectrum>();
         #endregion
 
@@ -154,9 +155,9 @@ namespace PPMErrorCharter
             private long _artificialScanNum = 0;
             public class IndexItem // A struct would be faster, but it can also be a pain since it is a value type
             {
-                public string Ref;
-                public long Offset;
-                public long IdNum;
+                public readonly string Ref;
+                public readonly long Offset;
+                public readonly long IdNum;
 
                 public IndexItem(string idRef, long offset, long idNum)
                 {
@@ -187,8 +188,8 @@ namespace PPMErrorCharter
             public List<IndexItem> Offsets => _offsets;
             public readonly Dictionary<string, long> OffsetsMapNative = new Dictionary<string, long>();
             public readonly Dictionary<long, long> OffsetsMapInt = new Dictionary<long, long>();
-            public readonly Dictionary<long, string> IdToNativeMap = new Dictionary<long, string>();
-            public readonly Dictionary<string, long> NativeToIdMap = new Dictionary<string, long>();
+            private readonly Dictionary<long, string> IdToNativeMap = new Dictionary<long, string>();
+            private readonly Dictionary<string, long> NativeToIdMap = new Dictionary<string, long>();
 
             public void AddOffset(string idRef, string offset)
             {

@@ -5,7 +5,7 @@ namespace PPMErrorCharter
 {
     public class IdentDataStats
     {
-        private List<IdentData> _data;
+        private readonly List<IdentData> _data;
         public double Mean { get; private set; }
         public double Median { get; private set; }
         public double StDev { get; private set; }

@@ -16,7 +16,7 @@ namespace PPMErrorCharter
         public readonly double PpmErrorFilterWindow = 50.0;
 
         private readonly int _maxSteps = 3;
-        private int _currentSteps = 0;
+        private int _currentSteps;
 
         // MSGF+ Filtering
         private double _specEValueThreshold = 1e-10; // Less than
@@ -33,12 +33,12 @@ namespace PPMErrorCharter
         }
 
         // MyriMatch Filtering
-        private double _mvhThreshold = 35; // Greater than
-        private double _xCorrThreshold = 3; // Greater than
+        private readonly double _mvhThreshold = 35; // Greater than
+        private readonly double _xCorrThreshold = 3; // Greater than
         private string _myrim_Field = "MyriMatch:MVH"; // "xcorr", "MyriMatch:MVH"
-        //private string _myrim_Field = "xcorr"; // "xcorr", "MyriMatch:MVH"
-        private readonly double _mvhThresholdStep = 3; // Subtract
-        private readonly double _xCorrThresholdStep = 1; // Subtract
+        // Unused: private string _myrim_Field = "xcorr"; // "xcorr", "MyriMatch:MVH"
+        // Unused: private readonly double _mvhThresholdStep = 3; // Subtract
+        // Unused: private readonly double _xCorrThresholdStep = 1; // Subtract
 
         public bool AdjustThreshold()
         {
