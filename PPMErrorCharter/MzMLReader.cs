@@ -392,7 +392,7 @@ namespace PPMErrorCharter
 
                 // Assume the lists contain only a single element
                 datum.ExperMzRefined = spectrumData.Scans[0].MonoisotopicMz;
-                if (datum.ExperMzRefined == 0)
+                if (Math.Abs(datum.ExperMzRefined) < float.Epsilon)
                 {
                     if (spectrumData.Precursors.Count > 0 && spectrumData.Precursors[0].Ions.Count > 0)
                     {
