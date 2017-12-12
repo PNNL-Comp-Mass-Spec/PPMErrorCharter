@@ -34,8 +34,16 @@ namespace PPMErrorCharter
             }
             string fixedDataFile = identFile.Substring(0, identFile.LastIndexOf(".mzid"));
             if (fixedDataFile.EndsWith("_msgfplus"))
+            var identFile = new FileInfo(identFilePath);
+            if (!identFile.Exists)
             {
                 fixedDataFile = fixedDataFile.Substring(0, fixedDataFile.LastIndexOf("_msgfplus"));
+                Console.WriteLine("Error: Data file not found: \"" + identFilePath + "\"");
+                if (!Path.IsPathRooted(identFilePath))
+                    Console.WriteLine("Full file path: " + identFile.FullName);
+
+                System.Threading.Thread.Sleep(1500);
+                return;
             }
             string outFileStub = fixedDataFile;
             fixedDataFile += "_FIXED.mzML";
