@@ -1,13 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+﻿using System.IO;
 using System.Windows.Media.Imaging;
 using OxyPlot;
-using OxyPlot.Series;
-using OxyPlot.Wpf;
 using PPMErrorCharter;
 
 namespace PPMErrorCharterDisplay
@@ -63,9 +56,9 @@ namespace PPMErrorCharterDisplay
             mainWindow.Content = myParentCanvas;
             mainWindow.Show();
             /*/
-            var datasetPathName = "E:\\iPRG_2015\\pub_images\\sample4-B_BB5_01_924";
-            var identFile = datasetPathName + ".mzid";
-            var dataFileFixed = datasetPathName + "_FIXED.mzML";
+            var datasetPathName = @"..\..\..\ExampleData\2016-07-28_QC-digest_HCD_01";
+            var identFile = datasetPathName + "_msgfplus.mzid.gz";
+            var dataFileFixed = datasetPathName + "_FIXED.mzML.gz";
             var reader = new MzIdentMLReader();
             var scanData = reader.Read(identFile);
             var haveScanTimes = reader.HaveScanTimes;
