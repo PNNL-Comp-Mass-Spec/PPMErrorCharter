@@ -133,14 +133,14 @@ namespace PPMErrorCharter
 
         public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists, bool haveScanTimes)
         {
-            int width = 512;  // 1024 pixels final width
-            int height = 384; // 768 pixels final height
-            int resolution = 96; //96
-            
+            var width = 512;  // 1024 pixels final width
+            var height = 384; // 768 pixels final height
+            var resolution = 96; //96
+
             // Draw the bitmaps onto a new canvas internally
             // Allows us to combine them
-            DrawingVisual drawVisual = new DrawingVisual();
-            DrawingContext drawContext = drawVisual.RenderOpen();
+            var drawVisual = new DrawingVisual();
+            var drawContext = drawVisual.RenderOpen();
             PlotModel OrigScan;
             if (haveScanTimes)
             {
@@ -190,14 +190,14 @@ namespace PPMErrorCharter
 
             // Turn the canvas back into an image
             //RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, resolution, resolution, PixelFormats.Pbgra32);
-            // Setting the DPI of the PngExporter to a higher-than-normal resolution, with a larger image size, 
+            // Setting the DPI of the PngExporter to a higher-than-normal resolution, with a larger image size,
             //   then leaving this at standard 96 DPI will give a blown-up image; setting this to the same high DPI results in an odd image, without improving it.
-            RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
+            var image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
             //RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
             image.Render(drawVisual);
 
             // Turn the image into a png bitmap
-            PngBitmapEncoder png = new PngBitmapEncoder();
+            var png = new PngBitmapEncoder();
             png.Frames.Add(BitmapFrame.Create(image));
             using (Stream stream = File.Create(pngFile))
             {
@@ -215,8 +215,8 @@ namespace PPMErrorCharter
         /// <returns></returns>
         private static SortedDictionary<double, int> HistogramFrequencies(List<IdentData> data, string dataField, double binSize)
         {
-            Dictionary<double, int> counts = new Dictionary<double, int>();
-            int roundingDigits = Convert.ToInt32(Math.Ceiling((1.0 / binSize) / 2));
+            var counts = new Dictionary<double, int>();
+            var roundingDigits = Convert.ToInt32(Math.Ceiling((1.0 / binSize) / 2));
 
             var reflectItem = typeof(IdentData).GetProperty(dataField);
 
@@ -255,8 +255,8 @@ namespace PPMErrorCharter
             var model = ModelBaseConfig();
             model.Title = title;
 
-            double yStep = 50.0;
-            double xStep = 5.0;
+            var yStep = 50.0;
+            var xStep = 5.0;
             var yAxis = new LinearAxis()
             {
                 Position = AxisPosition.Left,
@@ -354,10 +354,10 @@ namespace PPMErrorCharter
             }
             var yAxes = new List<Axis>();
             var xAxes = new List<Axis>();
-            double yMax = 0.0;
-            double yStep = 0.0;
-            double xMin = 0.0;
-            double xMax = 0.0;
+            var yMax = 0.0;
+            var yStep = 0.0;
+            var xMin = 0.0;
+            var xMax = 0.0;
             foreach (var axis in axes)
             {
                 if (axis.IsVertical())
@@ -409,13 +409,13 @@ namespace PPMErrorCharter
                 axis.Minimum = xMin;
             }
 
-            int resolution = 96;
-            int width = 512;  // 1024 pixels final width
-            int height = 512; // 512 pixels final height
+            var resolution = 96;
+            var width = 512;  // 1024 pixels final width
+            var height = 512; // 512 pixels final height
 
             // Draw the bitmaps onto a new canvas internally
             // Allows us to combine them
-            RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
+            var image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
             /*/
             //RenderTargetBitmap image = new RenderTargetBitmap(4096, 4096, 256, 256, PixelFormats.Pbgra32);
             IPlotModel origModel = origError;
@@ -479,8 +479,8 @@ namespace PPMErrorCharter
 
             image.Render(fullCanvas);
             /*/
-            DrawingVisual drawVisual = new DrawingVisual();
-            DrawingContext drawContext = drawVisual.RenderOpen();
+            var drawVisual = new DrawingVisual();
+            var drawContext = drawVisual.RenderOpen();
 
             // Output the graph models to a context
             var oe = PngExporter.ExportToBitmap(origError, width, height, OxyColors.White);
@@ -504,7 +504,7 @@ namespace PPMErrorCharter
             //image.Render(drawVisual);
 
             // Turn the image into a png bitmap
-            PngBitmapEncoder png = new PngBitmapEncoder();
+            var png = new PngBitmapEncoder();
             png.Frames.Add(BitmapFrame.Create(image));
             using (Stream stream = File.Create(pngFile))
             {

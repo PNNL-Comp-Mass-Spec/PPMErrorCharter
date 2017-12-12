@@ -13,21 +13,21 @@ namespace PPMErrorCharter
                 Console.WriteLine("Usage: " + System.AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz] [specEValueThreshold]");
                 return;
             }
+
             // Set a solid, unchanging threshold if the user specifies one.
-            bool useSetThreshold = false;
+            var useSetThreshold = false;
             double setThreshold = 0;
             if (args.Length > 1)
             {
-                double possibleThreshold;
-                if (Double.TryParse(args[1], out possibleThreshold))
+                if (double.TryParse(args[1], out var possibleThreshold))
                 {
                     setThreshold = possibleThreshold;
                     useSetThreshold = true;
                 }
             }
             // Get the file name
-            string identFile = args[0];
             if (!(identFile.EndsWith(".mzid") || identFile.EndsWith(".mzid.gz")))
+            var identFilePath = args[0];
             {
                 Console.WriteLine("Error: \"" + identFile + "\" is not an mzIdentML file.");
                 return;
@@ -68,8 +68,8 @@ namespace PPMErrorCharter
             {
                 reader = new MzIdentMLReader();
             }
-            var scanData = reader.Read(identFile);
-            bool haveScanTimes = reader.HaveScanTimes;
+            var scanData = reader.Read(identFile.FullName);
+            var haveScanTimes = reader.HaveScanTimes;
             if (dataFileExists)
             {
                 var mzML = new MzMLReader(fixedDataFile);
@@ -81,9 +81,9 @@ namespace PPMErrorCharter
 
             stats.PrintStatsTable();
 
-            int origSize = scanData.Count;
-            int itemsRemoved = 0;
-            for (int i = 0; i < scanData.Count; i++)
+            var origSize = scanData.Count;
+            var itemsRemoved = 0;
+            for (var i = 0; i < scanData.Count; i++)
             {
                 if (scanData[i].OutOfRange())
                 {

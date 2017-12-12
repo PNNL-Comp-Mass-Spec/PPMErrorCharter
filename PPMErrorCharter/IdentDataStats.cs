@@ -34,8 +34,8 @@ namespace PPMErrorCharter
             const int widthOrig = 10;
             const int widthRefined = 10;
             const string decStr = "F3"; // 3 decimal places
-            string formatStringFlt = "\t{0," + widthTitle + "} {1," + widthOrig + ":" + decStr + "} {2," + widthRefined + ":" + decStr + "}";
-            string formatStringStr = "\t{0," + widthTitle + "} {1," + widthOrig + "} {2," + widthRefined + "}";
+            var formatStringFlt = "\t{0," + widthTitle + "} {1," + widthOrig + ":" + decStr + "} {2," + widthRefined + ":" + decStr + "}";
+            var formatStringStr = "\t{0," + widthTitle + "} {1," + widthOrig + "} {2," + widthRefined + "}";
             Console.WriteLine(formatStringStr, "Statistic", "Original", "Refined");
             Console.WriteLine(formatStringFlt, "MeanMassErrorPPM:", Mean, RefinedMean);
             Console.WriteLine(formatStringFlt, "MedianMassErrorPPM:", Median, RefinedMedian);
@@ -89,11 +89,11 @@ namespace PPMErrorCharter
                 sumVarRef += Math.Pow(data.PpmErrorRefined - RefinedMean, 2);
                 sumVarMedRef += Math.Pow(data.PpmErrorRefined - RefinedMedian, 2);
             }
-            double var = sumVar / _data.Count;
-            double varMed = sumVarMed / _data.Count;
-            double varRef = sumVarRef / _data.Count;
-            double varMedRef = sumVarMedRef / _data.Count;
-            
+            var var = sumVar / _data.Count;
+            var varMed = sumVarMed / _data.Count;
+            var varRef = sumVarRef / _data.Count;
+            var varMedRef = sumVarMedRef / _data.Count;
+
             // Calculate Standard Deviation: square root of variance
             StDev = Math.Sqrt(var);
             StDevMedian = Math.Sqrt(varMed);

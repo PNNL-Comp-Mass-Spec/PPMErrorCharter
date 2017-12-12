@@ -68,8 +68,8 @@ namespace PPMErrorCharterDisplay
             var dataFileFixed = datasetPathName + "_FIXED.mzML";
             var reader = new MzIdentMLReader();
             var scanData = reader.Read(identFile);
-            bool haveScanTimes = reader.HaveScanTimes;
-            bool dataFileExists = false;
+            var haveScanTimes = reader.HaveScanTimes;
+            var dataFileExists = false;
             if (File.Exists(dataFileFixed))
             {
                 var mzML = new MzMLReader(dataFileFixed);

@@ -69,8 +69,8 @@ namespace PPMErrorCharter
             {
                 _calcMz = value;
                 _isSetCalcMz = true;
-                bool runIsotopeCheck = false;
-                bool locked = _fixIsoLocked;
+                var runIsotopeCheck = false;
+                var locked = _fixIsoLocked;
                 _fixIsoLocked = true; // Value only changed if was false
                 if (_isSetExperMz && _calcMz != 0.0)
                 {
@@ -108,7 +108,7 @@ namespace PPMErrorCharter
                 {
                     MassError = _experMz - _calcMz;
                     PpmError = (MassError / _calcMz) * 1.0e6;
-                    bool locked = _fixIsoLocked;
+                    var locked = _fixIsoLocked;
                     _fixIsoLocked = true; // Value only changed if was false
                     if (!locked) // Will only run if was not locked
                     {
@@ -148,7 +148,7 @@ namespace PPMErrorCharter
                 }
                 if (_isSetCalcMz && _calcMz != 0.0)
                 {
-                    bool locked = _fixIsoLocked;
+                    var locked = _fixIsoLocked;
                     _fixIsoLocked = true; // Value only changed if was false
 
                     MassErrorRefined = _experMzRefined - _calcMz;
@@ -245,9 +245,9 @@ namespace PPMErrorCharter
             {
                 chargeWithSign = -chargeWithSign;
             }
-            for (int i = 1; i <= 5; ++i)
+            for (var i = 1; i <= 5; ++i)
             {
-                double adjustment = (double)i / chargeWithSign;
+                var adjustment = (double)i / chargeWithSign;
                 if ((adjustment - IsotopeErrorTestWindow) <= MassError && MassError <= (adjustment + IsotopeErrorTestWindow))
                 {
                     _hasIsotopeError = CheckedIsotopeError.Yes;
@@ -279,9 +279,9 @@ namespace PPMErrorCharter
             {
                 chargeWithSign = -chargeWithSign;
             }
-            for (int i = 1; i <= 5; ++i)
+            for (var i = 1; i <= 5; ++i)
             {
-                double adjustment = (double)i / chargeWithSign;
+                var adjustment = (double)i / chargeWithSign;
                 if ((adjustment - IsotopeErrorTestWindow) <= MassErrorRefined && MassErrorRefined <= (adjustment + IsotopeErrorTestWindow))
                 {
                     _hasRefinedIsotopeError = CheckedIsotopeError.Yes;
@@ -347,9 +347,9 @@ namespace PPMErrorCharter
 
         public bool OutOfRange()
         {
-            bool orig = (MassError < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassError) ||
+            var orig = (MassError < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassError) ||
                         (PpmError < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmError);
-            bool refined = (MassErrorRefined < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassErrorRefined) ||
+            var refined = (MassErrorRefined < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassErrorRefined) ||
                         (PpmErrorRefined < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmErrorRefined);
             return orig || refined;
         }
