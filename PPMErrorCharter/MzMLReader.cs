@@ -627,10 +627,7 @@ namespace PPMErrorCharter
         /// </summary>
         public void Close()
         {
-            if (_xmlReaderForYield != null)
-            {
-                _xmlReaderForYield.Close();
-            }
+            _xmlReaderForYield?.Close();
             _fileReader.Close();
             _file.Close();
         }
@@ -2586,6 +2583,7 @@ namespace PPMErrorCharter
                     case "referenceableParamGroupRef":
                         // Schema requirements: zero to many instances of this element
                         var rpgRef = reader.GetAttribute("ref");
+                        if (rpgRef != null) paramList.AddRange(_referenceableParamGroups[rpgRef]);
                         reader.Read();
                         break;
                     case "cvParam":
