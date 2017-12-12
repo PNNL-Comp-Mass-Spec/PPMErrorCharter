@@ -36,7 +36,7 @@ namespace PPMErrorCharter
                 ItemsSource = data,
                 //DataFieldX = xDataField,
                 //DataFieldY = yDataField,
-                Mapping = item => new ScatterPoint(Convert.ToDouble(typeof(IdentData).GetProperty(xDataField).GetValue(item)), Convert.ToDouble(typeof(IdentData).GetProperty(yDataField).GetValue(item))),
+                Mapping = item => new ScatterPoint(Convert.ToDouble(typeof(IdentData).GetProperty(xDataField)?.GetValue(item)), Convert.ToDouble(typeof(IdentData).GetProperty(yDataField)?.GetValue(item))),
             };
 
             var yAxis = new LinearAxis
@@ -219,6 +219,8 @@ namespace PPMErrorCharter
             var roundingDigits = Convert.ToInt32(Math.Ceiling((1.0 / binSize) / 2));
 
             var reflectItem = typeof(IdentData).GetProperty(dataField);
+            if (reflectItem == null)
+                return new SortedDictionary<double, int>(counts);
 
             foreach (var item in data)
             {

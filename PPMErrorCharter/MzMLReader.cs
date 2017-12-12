@@ -985,7 +985,7 @@ namespace PPMErrorCharter
             {
                 eType = IndexList.IndexListType.Spectrum;
             }
-            else if (iType.ToLower() == "chromatogram")
+            else if (iType != null && iType.ToLower() == "chromatogram")
             {
                 eType = IndexList.IndexListType.Chromatogram;
             }
@@ -1061,7 +1061,7 @@ namespace PPMErrorCharter
             var schemaName = reader.GetAttribute("xsi:schemaLocation");
             // We automatically assume it uses the mzML_1.1.0 schema. Check for the old version.
             //if (!schemaName.Contains("mzML1.1.0.xsd"))
-            if (schemaName.Contains("mzML1.0.0.xsd"))
+            if (schemaName != null && schemaName.IndexOf("mzML1.0.0.xsd", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 _version = MzML_Version.mzML1_0_0;
             }
@@ -1476,6 +1476,9 @@ namespace PPMErrorCharter
                 {
                     // Schema requirements: one to many instances of this element
                     var id = reader.GetAttribute("id");
+                    if (id == null)
+                        throw new Exception("id not defined for referenceableParamGroup");
+
                     var paramList = new List<Param>();
                     var innerReader = reader.ReadSubtree();
                     innerReader.MoveToContent();
