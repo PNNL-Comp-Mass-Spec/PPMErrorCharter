@@ -277,7 +277,7 @@ namespace PPMErrorCharter
             Precision64
         };
 
-        private enum ArrayType
+        private enum ArrayTypes
         {
             m_z_array,
             intensity_array,
@@ -305,14 +305,14 @@ namespace PPMErrorCharter
         {
             public int ArrayLength;
             public Precision Precision;
-            public ArrayType ArrayType;
+            public ArrayTypes ArrayType;
             public double[] Data;
 
             public BinaryDataArray()
             {
                 Data = null;
                 Precision = Precision.Precision32;
-                ArrayType = ArrayType.m_z_array;
+                ArrayType = ArrayTypes.m_z_array;
                 ArrayLength = 0;
             }
         }
@@ -2632,43 +2632,43 @@ namespace PPMErrorCharter
                                     // MUST supply a *child* term of MS:1000513 (binary data array) only once
                                 case "MS:1000514":
                                     //   e.g.: MS:1000514 (m/z array)
-                                    bda.ArrayType = ArrayType.m_z_array;
+                                    bda.ArrayType = ArrayTypes.m_z_array;
                                     break;
                                 case "MS:1000515":
                                     //   e.g.: MS:1000515 (intensity array)
-                                    bda.ArrayType = ArrayType.intensity_array;
+                                    bda.ArrayType = ArrayTypes.intensity_array;
                                     break;
                                 case "MS:1000516":
                                     //   e.g.: MS:1000516 (charge array)
-                                    bda.ArrayType = ArrayType.charge_array;
+                                    bda.ArrayType = ArrayTypes.charge_array;
                                     break;
                                 case "MS:1000517":
                                     //   e.g.: MS:1000517 (signal to noise array)
-                                    bda.ArrayType = ArrayType.signal_to_noise_array;
+                                    bda.ArrayType = ArrayTypes.signal_to_noise_array;
                                     break;
                                 case "MS:1000595":
                                     //   e.g.: MS:1000595 (time array)
-                                    bda.ArrayType = ArrayType.time_array;
+                                    bda.ArrayType = ArrayTypes.time_array;
                                     break;
                                 case "MS:1000617":
                                     //   e.g.: MS:1000617 (wavelength array)
-                                    bda.ArrayType = ArrayType.wavelength_array;
+                                    bda.ArrayType = ArrayTypes.wavelength_array;
                                     break;
                                 case "MS:1000786":
                                     //   e.g.: MS:1000786 (non-standard data array)
-                                    bda.ArrayType = ArrayType.non_standard_data_array;
+                                    bda.ArrayType = ArrayTypes.non_standard_data_array;
                                     break;
                                 case "MS:1000820":
                                     //   e.g.: MS:1000820 (flow rate array)
-                                    bda.ArrayType = ArrayType.flow_rate_array;
+                                    bda.ArrayType = ArrayTypes.flow_rate_array;
                                     break;
                                 case "MS:1000821":
                                     //   e.g.: MS:1000821 (pressure array)
-                                    bda.ArrayType = ArrayType.pressure_array;
+                                    bda.ArrayType = ArrayTypes.pressure_array;
                                     break;
                                 case "MS:1000822":
                                     //   e.g.: MS:1000822 (temperature array)
-                                    bda.ArrayType = ArrayType.temperature_array;
+                                    bda.ArrayType = ArrayTypes.temperature_array;
                                     break;
                                     // MUST supply a *child* term of MS:1000518 (binary data type) only once
                                 case "MS:1000521":
