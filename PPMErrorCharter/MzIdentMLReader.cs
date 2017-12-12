@@ -113,7 +113,7 @@ namespace PPMErrorCharter
         /// Read the MZIdentML file, map the data to MSGF+ data, compute the NETs, and return the LCMS DataSet
         /// </summary>
         /// <param name="path">Path to *.mzid/mzIdentML file</param>
-        /// <returns>List<ScanData></returns>
+        /// <returns>List of ScanData</returns>
         public List<IdentData> Read(string path)
         {
             var scanData = new List<IdentData>();
@@ -146,7 +146,7 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="reader">XmlReader object for the file to be read</param>
         /// <param name="scanData"></param>
-        private void ReadMzIdentMl(XmlReader reader, List<IdentData> scanData)
+        private void ReadMzIdentMl(XmlReader reader, ICollection<IdentData> scanData)
         {
             // Handle disposal of allocated object correctly
             using (reader)
@@ -282,7 +282,7 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="reader">XmlReader that is only valid for the scope of the single DataCollection element</param>
         /// <param name="scanData"></param>
-        private void ReadDataCollection(XmlReader reader, List<IdentData> scanData)
+        private void ReadDataCollection(XmlReader reader, ICollection<IdentData> scanData)
         {
             reader.MoveToContent();
             reader.ReadStartElement("DataCollection"); // Throws exception if we are not at the "DataCollection" tag.
@@ -316,7 +316,7 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="reader">XmlReader that is only valid for the scope of the single AnalysisData element</param>
         /// <param name="scanData"></param>
-        private void ReadAnalysisData(XmlReader reader, List<IdentData> scanData)
+        private void ReadAnalysisData(XmlReader reader, ICollection<IdentData> scanData)
         {
             reader.MoveToContent();
             reader.ReadStartElement("AnalysisData"); // Throws exception if we are not at the "AnalysisData" tag.
@@ -349,7 +349,7 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="reader">XmlReader that is only valid for the scope of the single SpectrumIdentificationList element</param>
         /// <param name="scanData"></param>
-        private void ReadSpectrumIdentificationList(XmlReader reader, List<IdentData> scanData)
+        private void ReadSpectrumIdentificationList(XmlReader reader, ICollection<IdentData> scanData)
         {
             reader.MoveToContent();
             reader.ReadStartElement("SpectrumIdentificationList"); // Throws exception if we are not at the "SpectrumIdentificationList" tag.
@@ -382,7 +382,7 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="reader">XmlReader that is only valid for the scope of the single SpectrumIdentificationResult element</param>
         /// <param name="scanData"></param>
-        private void ReadSpectrumIdentificationResult(XmlReader reader, List<IdentData> scanData)
+        private void ReadSpectrumIdentificationResult(XmlReader reader, ICollection<IdentData> scanData)
         {
             reader.MoveToContent();
             var nativeId = reader.GetAttribute("spectrumID");
@@ -468,7 +468,8 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="reader">XmlReader that is only valid for the scope of the single SpectrumIdentificationItem element</param>
         /// <param name="scanData"></param>
-        private void ReadSpectrumIdentificationItem(XmlReader reader, List<IdentData> scanData, string nativeId)
+        /// <param name="nativeId"></param>
+        private void ReadSpectrumIdentificationItem(XmlReader reader, ICollection<IdentData> scanData, string nativeId)
         {
             var data = new IdentData();
 
@@ -505,7 +506,7 @@ namespace PPMErrorCharter
             //data.PpmError = (data.MassError / data.CalcMz) * 1.0e6;
 
             reader.ReadStartElement("SpectrumIdentificationItem"); // Throws exception if we are not at the "SpectrumIdentificationItem" tag.
-            
+
             reader.ReadToNextSibling("cvParam");
             // Parse all of the cvParam/userParam fields
             while (reader.Name == "cvParam" || reader.Name == "userParam")
