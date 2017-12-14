@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PRISM;
 
 namespace PPMErrorCharter
 {
@@ -320,29 +321,37 @@ namespace PPMErrorCharter
 
         public int CompareToByCalcMz(IdentData compareData)
         {
-            return compareData == null ? 1 : this.CalcMz.CompareTo(compareData.CalcMz);
+            return compareData == null ? 1 : CalcMz.CompareTo(compareData.CalcMz);
         }
 
         public int CompareTo(IdentData compareData)
         {
-            return compareData == null ? 1 : this.ScanId.CompareTo(compareData.ScanId);
+            return compareData == null ? 1 : ScanId.CompareTo(compareData.ScanId);
         }
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return Convert.ToInt32(ScanId);
         }
 
         public bool Equals(IdentData other)
         {
-            return other != null && this.ScanId.Equals(other.ScanId);
+            return other != null && ScanId.Equals(other.ScanId);
         }
 
         public string ToDebugString()
         {
-            return NativeId + "\t" + CalcMz + "\t" + ExperMzIsotoped + "\t" + ExperMzRefinedIsotoped + 
-                "\t" + MassErrorIsotoped + "\t" + PpmErrorIsotoped + "\t" + MassErrorRefinedIsotoped + 
-                "\t" + PpmErrorRefinedIsotoped + "\t" + Charge;
+            return
+                NativeId + "\t" +
+                StringUtilities.DblToString(CalcMz, 4) + "\t" +
+                StringUtilities.DblToString(ExperMzIsotoped, 4) + "\t" +
+                StringUtilities.DblToString(ExperMzRefinedIsotoped, 4) + "\t" +
+                StringUtilities.DblToString(MassErrorIsotoped, 4) + "\t" +
+                StringUtilities.DblToString(PpmErrorIsotoped, 3) + "\t" +
+                StringUtilities.DblToString(MassErrorRefinedIsotoped, 4) + "\t" +
+                StringUtilities.DblToString(PpmErrorRefinedIsotoped, 3) + "\t" +
+                Charge;
         }
 
         public bool OutOfRange()
