@@ -12,6 +12,8 @@ namespace PPMErrorCharter
     /// </summary>
     public class MzIdentMLReader
     {
+        public const double DEFAULT_SPEC_EVALUE_THRESHOLD = 1e-10;
+
         public readonly double IsotopeErrorFilterWindow = 0.2;
         public readonly double PpmErrorFilterWindow = 50.0;
 
@@ -19,7 +21,7 @@ namespace PPMErrorCharter
         private int _currentSteps;
 
         // MSGF+ Filtering
-        private double _specEValueThreshold = 1e-10; // Less than
+        private double _specEValueThreshold = DEFAULT_SPEC_EVALUE_THRESHOLD; // Less than
         private readonly double _specEValueThresholdStep = 10; // Multiply by
 
         public double SpecEValueThreshold

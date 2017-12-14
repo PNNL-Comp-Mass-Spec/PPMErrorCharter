@@ -1,38 +1,94 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using PRISM;
 
 namespace PPMErrorCharter
 {
     class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            if (args.Length < 1)
+            try
             {
-                Console.WriteLine("Usage: " + AppDomain.CurrentDomain.FriendlyName + " file.mzid[.gz] [specEValueThreshold]");
-                return;
-            }
+                var asmName = typeof(Program).GetTypeInfo().Assembly.GetName();
+                var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
+                var version = ErrorCharterOptions.GetAppVersion();
 
-            // Set a solid, unchanging threshold if the user specifies one.
-            var useSetThreshold = false;
-            double setThreshold = 0;
-            if (args.Length > 1)
-            {
-                if (double.TryParse(args[1], out var possibleThreshold))
+                var parser = new CommandLineParser<ErrorCharterOptions>(asmName.Name, version)
                 {
-                    setThreshold = possibleThreshold;
-                    useSetThreshold = true;
+                    ProgramInfo = "This program generates plots of the mass measurement errors before and after processing with mzRefinery." + Environment.NewLine + Environment.NewLine +
+                                  "mzRefinery is a software tool for correcting systematic mass error biases " +
+                                  "in mass spectrometry data files. The software uses confident peptide spectrum matches " +
+                                  "from MSGF+ to evaluate three different calibration methods, then chooses the " +
+                                  "optimal transform function to remove systematic bias, typically resulting in a " +
+                                  "mass measurement error histogram centered at 0 ppm. MzRefinery is part of the " +
+                                  "ProteoWizard package (in the msconvert.exe tool) and it thus can read and write " +
+                                  "a wide variety of file formats.",
+
+                    ContactInfo = "Program written by Bryson Gibbons and Matthew Monroe for the Department of Energy (PNNL, Richland, WA) in 2014" +
+                                  Environment.NewLine + Environment.NewLine +
+                                  "E-mail: proteomics@pnnl.gov" + Environment.NewLine +
+                                  "Website: https://panomics.pnnl.gov/ or https://omics.pnl.gov or https://github.com/PNNL-Comp-Mass-Spec",
+
+                    UsageExamples = {
+                        exeName + "SearchResults_msgfplus.mzid.gz",
+                        exeName + "SearchResults_msgfplus.mzid.gz 1E-12",
+                        exeName + "SearchResults_msgfplus.mzid.gz /Python",
+                        exeName + "SearchResults_msgfplus.mzid.gz /Python /Debug"
+                    }
+                };
+
+                var parseResults = parser.ParseArgs(args);
+                var options = parseResults.ParsedResults;
+
+                if (!parseResults.Success)
+                {
+                    System.Threading.Thread.Sleep(1500);
+                    return -1;
                 }
+
+                if (!options.ValidateArgs())
+                {
+                    parser.PrintHelp();
+                    System.Threading.Thread.Sleep(1500);
+                    return -1;
+                }
+
+                options.OutputSetOptions();
+
+                var success = GeneratePlots(options);
+
+                if (success)
+                {
+                    Console.WriteLine("Processing completed successfully");
+                    System.Threading.Thread.Sleep(250);
+                    return 0;
+                }
+
+                System.Threading.Thread.Sleep(1500);
+                return -1;
             }
+            catch (Exception ex)
+            {
+                ShowErrorMessage("Error occurred in Program->Main: " + Environment.NewLine + ex.Message, ex);
+                System.Threading.Thread.Sleep(1000);
+                return -1;
+            }
+        }
+
+        private static bool GeneratePlots(ErrorCharterOptions options)
+        {
 
             // Get the file name
-            var identFilePath = args[0];
-            if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) || identFilePath.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase)))
+            var identFilePath = options.InputFilePath;
+            if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) ||
+                  identFilePath.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase)))
             {
                 Console.WriteLine("Error: \"" + identFilePath + "\" is not an mzIdentML file.");
-                System.Threading.Thread.Sleep(1500);
-                return;
+                return false;
             }
 
             var identFile = new FileInfo(identFilePath);
@@ -42,54 +98,48 @@ namespace PPMErrorCharter
                 if (!Path.IsPathRooted(identFilePath))
                     Console.WriteLine("Full file path: " + identFile.FullName);
 
-                System.Threading.Thread.Sleep(1500);
-                return;
+                return false;
             }
 
-            var fixedDataFile = identFile.FullName.Substring(0, identFile.FullName.LastIndexOf(".mzid", StringComparison.OrdinalIgnoreCase));
-            if (fixedDataFile.EndsWith("_msgfplus", StringComparison.OrdinalIgnoreCase))
+            var outFileStub = identFile.FullName.Substring(0, identFile.FullName.LastIndexOf(".mzid", StringComparison.OrdinalIgnoreCase));
+            if (outFileStub.EndsWith("_msgfplus", StringComparison.OrdinalIgnoreCase))
             {
-                fixedDataFile = fixedDataFile.Substring(0, fixedDataFile.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase));
-            }
-            var outFileStub = fixedDataFile;
-            fixedDataFile += "_FIXED.mzML";
-
-            var dataFileExists = true;
-            if (File.Exists(fixedDataFile + ".gz"))
-            {
-                fixedDataFile += ".gz";
-            }
-            else if (!File.Exists(fixedDataFile))
-            {
-                dataFileExists = false;
+                outFileStub = outFileStub.Substring(0, outFileStub.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase));
             }
 
+            var fixedMzMLFile = outFileStub + "_FIXED.mzML";
+
+            var fixedMzMLFileExists = true;
+            if (File.Exists(fixedMzMLFile + ".gz"))
+            {
+                fixedMzMLFile += ".gz";
+            }
+            else if (!File.Exists(fixedMzMLFile))
+            {
+                fixedMzMLFileExists = false;
+            }
+
+            Console.WriteLine();
             Console.WriteLine("Creating plots for \"" + identFile.Name + "\"");
-            if (dataFileExists)
+            if (fixedMzMLFileExists)
             {
-                Console.WriteLine("  Using fixed data file \"" + fixedDataFile + "\"");
+                Console.WriteLine("  Using fixed data file \"" + fixedMzMLFile + "\"");
             }
             else
             {
-                Console.WriteLine("  Warning: Could not find fixed data file \"" + fixedDataFile + "[.gz]\".");
+                Console.WriteLine("  Warning: Could not find fixed data file \"" + fixedMzMLFile + "[.gz]\".");
                 Console.WriteLine("  Output will not include fixed data graphs.");
             }
 
-            MzIdentMLReader reader;
-            if (useSetThreshold)
-            {
-                reader = new MzIdentMLReader(setThreshold);
-            }
-            else
-            {
-                reader = new MzIdentMLReader();
-            }
+            var reader = new MzIdentMLReader(options.SpecEValueThreshold);
+
             var scanData = reader.Read(identFile.FullName);
             var haveScanTimes = reader.HaveScanTimes;
-            if (dataFileExists)
+
+            if (fixedMzMLFileExists)
             {
-                var mzML = new MzMLReader(fixedDataFile);
-                mzML.ReadSpectraData(scanData);
+                var fixedDataReader = new MzMLReader(fixedMzMLFile);
+                fixedDataReader.ReadSpectraData(scanData);
                 haveScanTimes = true;
             }
 
@@ -110,22 +160,62 @@ namespace PPMErrorCharter
             }
             Console.WriteLine("Removed " + itemsRemoved + " out-of-range items from the original " + origSize + " items.");
 
-            IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists, haveScanTimes);
-            //IdentDataPlotter.ErrorScatterPlotsToPng(scanData, outFileStub + "_MZRefinery_MassErrors.png", dataFileExists, false);
-            IdentDataPlotter.ErrorHistogramsToPng(scanData, outFileStub + "_MZRefinery_Histograms.png", dataFileExists);
+            var scatterPlotFilePath = outFileStub + "_MZRefinery_MassErrors.png";
+            IdentDataPlotter.ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
+            Console.WriteLine("Created " + scatterPlotFilePath);
 
-            /*using (var file = new StreamWriter(new FileStream(outFileStub + "_debug.tsv", FileMode.Create, FileAccess.Write, FileShare.None)))
+            var histogramPlotFilePath = outFileStub + "_MZRefinery_Histograms.png";
+            IdentDataPlotter.ErrorHistogramsToPng(scanData, histogramPlotFilePath, fixedMzMLFileExists);
+            Console.WriteLine("Created " + histogramPlotFilePath);
+
+            if (!options.SaveMassErrorDetails)
+                return true;
+
+            var outFilePath = outFileStub + "_debug.tsv";
+
+            Console.WriteLine();
+            Console.WriteLine("Exporting data to " + outFilePath);
+            using (var outFile = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
-                file.WriteLine("NativeID\tCalcMZ\tExperMZ\tRefineMZ\tMassError\tPpmError\tRMassError\tRPpmError\tCharge");
+                var headerColumns = new List<string>
+                {
+                    "NativeID",
+                    "CalcMZ",
+                    "ExperMZ",
+                    "RefineMZ",
+                    "MassError",
+                    "PpmError",
+                    "RMassError",
+                    "RPpmError",
+                    "Charge"
+                };
+
+                outFile.WriteLine(string.Join("\t", headerColumns));
+
                 foreach (var data in scanData)
                 {
-                    double error = data.MassErrorIsotoped - data.MassErrorRefinedIsotoped;
-                    if (error < -0.2 || 0.2 < error)
+                    var error = data.MassErrorIsotoped - data.MassErrorRefinedIsotoped;
+                    string largeErrorSuffix;
+                    if (error < -0.2 || error > 0.2)
                     {
-                        file.WriteLine(data.ToDebugString());
+                        largeErrorSuffix = "\tLarge error: " + StringUtilities.DblToString(error, 2);
                     }
+                    else
+                    {
+                        largeErrorSuffix = string.Empty;
+                    }
+
+                    outFile.WriteLine(data.ToDebugString() + largeErrorSuffix);
                 }
-            }*/
+            }
+
+            return true;
         }
+
+        private static void ShowErrorMessage(string message, Exception ex = null)
+        {
+            ConsoleMsgUtils.ShowError(message, ex);
+        }
+
     }
 }
