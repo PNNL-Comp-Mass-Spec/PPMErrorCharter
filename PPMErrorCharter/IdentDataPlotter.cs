@@ -131,7 +131,7 @@ namespace PPMErrorCharter
             return model;
         }
 
-        public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists, bool haveScanTimes)
+        public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var width = 512;  // 1024 pixels final width
             var height = 384; // 768 pixels final height
@@ -141,49 +141,13 @@ namespace PPMErrorCharter
             // Allows us to combine them
             var drawVisual = new DrawingVisual();
             var drawContext = drawVisual.RenderOpen();
-            PlotModel OrigScan;
-            if (haveScanTimes)
-            {
-                //OrigScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmError", "Scan Time: Original", OxyColors.Blue);
-                OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError), "Scan Time: Original", "Scan Time (s)", OxyColors.Blue);
-            }
-            else
-            {
-                //OrigScan = ScatterPlot(scanData, "ScanIdInt", "PpmError", "Scan Number: Original", OxyColors.Blue);
-                OrigScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError), "Scan Number: Original", "Scan Number", OxyColors.Blue);
-            }
-            var OrigMz = ScatterPlot(scanData, "CalcMz", "PpmError", "M/Z: Original", "Mass Error (PPM)", OxyColors.Green);
-            var OSN = PngExporter.ExportToBitmap(OrigScan, width, height, OxyColors.White, resolution);
-            var OMZ = PngExporter.ExportToBitmap(OrigMz, width, height, OxyColors.White, resolution);
-            drawContext.DrawImage(OSN, new Rect(0, 0, width, height));
-            drawContext.DrawImage(OMZ, new Rect(width, 0, width, height));
 
-            //var fileName = pngFile.Substring(0, pngFile.IndexOf(".png", StringComparison.OrdinalIgnoreCase));
-            //using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
-            //{
-            //  OxyPlot.Wpf.SvgExporter.Export(OrigScan, file, width, height, true);
-            //}
+            AddScatterPlotData(drawContext, scanData, haveScanTimes, width, height, resolution, false);
 
-            // Only add the fixed files if the data file exists
-            if (dataFileExists)
+            // Only add the fixed data if the data file exists
+            if (fixedMzMLFileExists)
             {
-                PlotModel FixScan;
-                if (haveScanTimes)
-                {
-                    //FixScan = ScatterPlot(scanData, "ScanTimeSeconds", "PpmErrorRefined", "Scan Time: Refined", OxyColors.Blue);
-                    FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined), "Scan Time: Refined", "Scan Time (s)", OxyColors.Blue);
-                }
-                else
-                {
-                    //FixScan = ScatterPlot(scanData, "ScanIdInt", "PpmErrorRefined", "Scan Number: Refined", OxyColors.Blue);
-                    FixScan = ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined), "Scan Number: Refined", "Scan Number", OxyColors.Blue);
-                }
-                var FixMz = ScatterPlot(scanData, "CalcMz", "PpmErrorRefined", "M/Z: Refined", "Mass Error (PPM)", OxyColors.Green);
-                var FSN = PngExporter.ExportToBitmap(FixScan, width, height, OxyColors.White, resolution);
-                var FMZ = PngExporter.ExportToBitmap(FixMz, width, height, OxyColors.White, resolution);
-                drawContext.DrawImage(FSN, new Rect(0, height, width, height));
-                drawContext.DrawImage(FMZ, new Rect(width, height, width, height));
-                //drawContext.DrawImage(FSN, new Rect(width, 0, width, height));
+                AddScatterPlotData(drawContext,  scanData, haveScanTimes, width, height, resolution, true);
             }
 
             drawContext.Close();
@@ -192,8 +156,8 @@ namespace PPMErrorCharter
             //RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height * 2, resolution, resolution, PixelFormats.Pbgra32);
             // Setting the DPI of the PngExporter to a higher-than-normal resolution, with a larger image size,
             //   then leaving this at standard 96 DPI will give a blown-up image; setting this to the same high DPI results in an odd image, without improving it.
-            var image = new RenderTargetBitmap(width * 2, height * 2, 96, 96, PixelFormats.Pbgra32);
-            //RenderTargetBitmap image = new RenderTargetBitmap(width * 2, height, resolution, resolution, PixelFormats.Pbgra32);
+
+            var image = new RenderTargetBitmap(width * 2, height * 2, resolution, resolution, PixelFormats.Pbgra32);
             image.Render(drawVisual);
 
             // Turn the image into a png bitmap
@@ -204,6 +168,88 @@ namespace PPMErrorCharter
                 png.Save(stream);
             }
             return image;
+        }
+
+        private static void AddScatterPlotData(
+            DrawingContext drawContext,
+            List<IdentData> scanData,
+            bool haveScanTimes,
+            int width,
+            int height,
+            int resolution,
+            bool useRefinedData)
+        {
+            PlotModel massErrorsVsTimePlot;
+
+            string dataTypeSuffix;
+            string ppmErrorDataField;
+            int plotOffset;
+
+            if (useRefinedData)
+            {
+                dataTypeSuffix = "Refined";
+                ppmErrorDataField = "PpmErrorRefined";
+                plotOffset = height;
+            }
+            else
+            {
+                dataTypeSuffix = "Original";
+                ppmErrorDataField = "PpmError";
+                plotOffset = 0;
+            }
+
+            if (haveScanTimes)
+            {
+                var scanPlotTitle = "Scan Time: " + dataTypeSuffix;
+                var scanPlotXAxisLabel = "Scan Time (min)";
+
+                if (useRefinedData)
+                {
+                    massErrorsVsTimePlot =
+                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined),
+                                    scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
+                }
+                else
+                {
+                    massErrorsVsTimePlot =
+                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError),
+                                    scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
+                }
+
+            }
+            else
+            {
+                var scanPlotTitle = "Scan Number: " + dataTypeSuffix;
+                var scanPlotXAxisLabel = "Scan Number";
+
+                if (useRefinedData)
+                {
+                    massErrorsVsTimePlot =
+                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined),
+                                    scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
+
+                }
+                else
+                {
+                    massErrorsVsTimePlot =
+                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError),
+                                    scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
+                }
+            }
+
+            var massErrorsVsMzPlot = ScatterPlot(scanData, "CalcMz", ppmErrorDataField, "M/Z: " + dataTypeSuffix, "m/z", OxyColors.Green);
+            var massErrorsVsTimeBitmap = PngExporter.ExportToBitmap(massErrorsVsTimePlot, width, height, OxyColors.White, resolution);
+            var massErrorsVsMzBitmap = PngExporter.ExportToBitmap(massErrorsVsMzPlot, width, height, OxyColors.White, resolution);
+
+            drawContext.DrawImage(massErrorsVsTimeBitmap, new Rect(0, plotOffset, width, height));
+            drawContext.DrawImage(massErrorsVsMzBitmap, new Rect(width, plotOffset, width, height));
+
+            //var fileName = pngFile.Substring(0, pngFile.IndexOf(".png", StringComparison.OrdinalIgnoreCase));
+            //using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
+            //{
+            //  OxyPlot.Wpf.SvgExporter.Export(OrigScan, file, width, height, true);
+            //}
+
         }
 
         /// <summary>
