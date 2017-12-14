@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 using System.Xml;
 
 namespace PPMErrorCharter
@@ -63,7 +64,7 @@ namespace PPMErrorCharter
         {
             MSGFPlus,
             MyriMatch,
-            Unset,
+            Unset
         }
 
         public IdentProgramType IdentProg { get; private set; }
@@ -80,10 +81,7 @@ namespace PPMErrorCharter
                 {
                     return data.ThresholdValue >= _mvhThreshold;
                 }
-                else
-                {
-                    return data.ThresholdValue >= _xCorrThreshold;
-                }
+                return data.ThresholdValue >= _xCorrThreshold;
             }
             // If neither, return everything
             return true;
@@ -133,7 +131,7 @@ namespace PPMErrorCharter
                 }
 
                 var xSettings = new XmlReaderSettings {IgnoreWhitespace = true};
-                var reader = XmlReader.Create(new StreamReader(file, System.Text.Encoding.UTF8, true, 65536), xSettings);
+                var reader = XmlReader.Create(new StreamReader(file, Encoding.UTF8, true, 65536), xSettings);
 
                 // Read in the file
                 ReadMzIdentMl(reader, scanData);

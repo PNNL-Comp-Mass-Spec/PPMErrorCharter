@@ -17,8 +17,8 @@ namespace PPMErrorCharter
         private readonly bool _reduceMemoryUsage;
         // Unused: private long _artificialScanNum = 0;
         private long _numSpectra = -1;
-        private readonly IndexList _spectrumOffsets = new IndexList() {IndexType = IndexList.IndexListType.Spectrum};
-        private readonly IndexList _chromatogramOffsets = new IndexList() { IndexType = IndexList.IndexListType.Chromatogram };
+        private readonly IndexList _spectrumOffsets = new IndexList {IndexType = IndexList.IndexListType.Spectrum};
+        private readonly IndexList _chromatogramOffsets = new IndexList { IndexType = IndexList.IndexListType.Chromatogram };
         private long _indexListOffset;
         private bool _haveIndex;
         private bool _haveMetaData;
@@ -182,7 +182,7 @@ namespace PPMErrorCharter
             {
                 Spectrum,
                 Chromatogram,
-                Unknown,
+                Unknown
             }
             private readonly List<IndexItem> _offsets = new List<IndexItem>();
             public List<IndexItem> Offsets => _offsets;
@@ -276,7 +276,7 @@ namespace PPMErrorCharter
         {
             Precision32,
             Precision64
-        };
+        }
 
         private enum ArrayTypes
         {
@@ -290,7 +290,7 @@ namespace PPMErrorCharter
             flow_rate_array,
             pressure_array,
             temperature_array
-        };
+        }
 
         private enum Instrument
         {
@@ -298,7 +298,7 @@ namespace PPMErrorCharter
             Thermo_RAW_format, //MS_Thermo_RAW_format, "MS:1000563", "Thermo RAW format", "Thermo Scientific RAW file format."
             Waters_raw_format, //MS_Waters_raw_format, "MS:1000526", "Waters raw format", "Waters data file format found in a Waters RAW directory, generated from an MS acquisition."
             Unknown
-        };
+        }
 
         private Instrument _instrument;
 

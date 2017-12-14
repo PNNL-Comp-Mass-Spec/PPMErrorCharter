@@ -50,7 +50,7 @@ namespace PPMErrorCharter
         {
             return new PlotModel
             {
-                TitlePadding = 0,
+                TitlePadding = 0
             };
         }
 
@@ -68,7 +68,7 @@ namespace PPMErrorCharter
                 ItemsSource = data,
                 //DataFieldX = xDataField,
                 //DataFieldY = yDataField,
-                Mapping = item => new ScatterPoint(Convert.ToDouble(typeof(IdentData).GetProperty(xDataField)?.GetValue(item)), Convert.ToDouble(typeof(IdentData).GetProperty(yDataField)?.GetValue(item))),
+                Mapping = item => new ScatterPoint(Convert.ToDouble(typeof(IdentData).GetProperty(xDataField)?.GetValue(item)), Convert.ToDouble(typeof(IdentData).GetProperty(yDataField)?.GetValue(item)))
             };
 
             var yAxis = new LinearAxis
@@ -82,13 +82,13 @@ namespace PPMErrorCharter
                 Maximum = 20.0,
                 MinimumRange = 40.0,
                 FilterMinValue = -20.0,
-                FilterMaxValue = 20.0,
+                FilterMaxValue = 20.0
             };
 
             var xAxis = new LinearAxis
             {
                 Position = AxisPosition.Bottom,
-                Title = xTitle,
+                Title = xTitle
             };
 
             var xAxisCenter = new LinearAxis
@@ -98,7 +98,7 @@ namespace PPMErrorCharter
                 TickStyle = TickStyle.None, // To change to show a value, need to do axis synchronization
                 AxislineStyle = LineStyle.Solid,
                 AxislineThickness = 1.0,
-                TextColor = OxyColors.Undefined, // Force invisible labels
+                TextColor = OxyColors.Undefined // Force invisible labels
             };
 
             model.Axes.Add(yAxis);
@@ -121,7 +121,7 @@ namespace PPMErrorCharter
                 MarkerSize = 1.0,
                 MarkerFill = markerColor,
                 ItemsSource = data,
-                Mapping = mapping,
+                Mapping = mapping
             };
 
             var yAxis = new LinearAxis
@@ -135,13 +135,13 @@ namespace PPMErrorCharter
                 Maximum = 20.0,
                 MinimumRange = 40.0,
                 FilterMinValue = -20.0,
-                FilterMaxValue = 20.0,
+                FilterMaxValue = 20.0
             };
 
             var xAxis = new LinearAxis
             {
                 Position = AxisPosition.Bottom,
-                Title = xTitle,
+                Title = xTitle
                 //Minimum = 1000,
                 //Maximum = 4600,
             };
@@ -153,7 +153,7 @@ namespace PPMErrorCharter
                 TickStyle = TickStyle.None, // To change to show a value, need to do axis synchronization
                 AxislineStyle = LineStyle.Solid,
                 AxislineThickness = 1.0,
-                TextColor = OxyColors.Undefined, // Force invisible labels
+                TextColor = OxyColors.Undefined // Force invisible labels
             };
 
             model.Axes.Add(yAxis);
@@ -186,7 +186,7 @@ namespace PPMErrorCharter
             // Only add the fixed data if the data file exists
             if (fixedMzMLFileExists)
             {
-                AddScatterPlotData(drawContext,  scanData, haveScanTimes, width, height, resolution, true);
+                AddScatterPlotData(drawContext, scanData, haveScanTimes, width, height, resolution, true);
             }
 
             drawContext.Close();
@@ -308,7 +308,7 @@ namespace PPMErrorCharter
 
             var yStep = 50.0;
             var xStep = 5.0;
-            var yAxis = new LinearAxis()
+            var yAxis = new LinearAxis
             {
                 Position = AxisPosition.Left,
                 MajorGridlineStyle = LineStyle.Dash,
@@ -316,9 +316,10 @@ namespace PPMErrorCharter
                 Minimum = 0.0,
                 FilterMinValue = 0.0,
                 MajorStep = yStep,
-                Maximum = 0.0,
+                Maximum = 0.0
             };
-            var yAxisCenter = new LinearAxis()
+
+            var yAxisCenter = new LinearAxis
             {
                 Position = AxisPosition.Right,
                 PositionAtZeroCrossing = true,
@@ -328,9 +329,10 @@ namespace PPMErrorCharter
                 AxislineStyle = LineStyle.Solid,
                 AxislineThickness = 1.0,
                 MajorStep = yStep,
-                TextColor = OxyColors.Undefined, // Force invisible labels
+                TextColor = OxyColors.Undefined // Force invisible labels
             };
-            var xAxis = new LinearAxis()
+
+            var xAxis = new LinearAxis
             {
                 Position = AxisPosition.Bottom,
                 MajorStep = xStep,
@@ -341,8 +343,9 @@ namespace PPMErrorCharter
                 Maximum = 0.0,
                 Minimum = 0.0,
                 FilterMinValue = -51.0, // Prevent huge, hard to read plots
-                FilterMaxValue = 51.0, // Prevent huge, hard to read plots
+                FilterMaxValue = 51.0 // Prevent huge, hard to read plots
             };
+
             foreach (var frequency in frequencies)
             {
                 if (frequency.Value > yAxis.Maximum)
@@ -358,13 +361,14 @@ namespace PPMErrorCharter
                     xAxis.Maximum = Math.Ceiling(Convert.ToDouble(frequency.Key) / xStep) * xStep;
                 }
             }
+
             if (yAxis.Maximum > 500)
             {
                 yAxis.MajorStep = Math.Floor((yAxis.Maximum + 499) / 1000) * 100;
                 yAxis.Maximum = Math.Ceiling(yAxis.Maximum / yAxis.MajorStep) * yAxis.MajorStep;
             }
 
-            var s1 = new LineSeries()
+            var s1 = new LineSeries
             {
                 //MarkerFill = OxyColors.Undefined, //OxyColors.Black,
                 //MarkerSize = 2.0,
@@ -372,8 +376,9 @@ namespace PPMErrorCharter
                 Color = lineColor,
                 ItemsSource = frequencies,
                 DataFieldX = "Key",
-                DataFieldY = "Value",
+                DataFieldY = "Value"
             };
+
             model.Axes.Add(yAxis);
             model.Axes.Add(xAxis);
             model.Axes.Add(yAxisCenter);

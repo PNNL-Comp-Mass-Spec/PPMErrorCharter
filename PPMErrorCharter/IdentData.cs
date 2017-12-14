@@ -35,7 +35,7 @@ namespace PPMErrorCharter
         {
             Yes,
             No,
-            Unknown,
+            Unknown
         }
         private CheckedIsotopeError _hasIsotopeError;
         private int _isotopeErrorCount;
@@ -248,7 +248,7 @@ namespace PPMErrorCharter
             }
             for (var i = 1; i <= 5; ++i)
             {
-                var adjustment = (double)i / chargeWithSign;
+                var adjustment = i / chargeWithSign;
                 if ((adjustment - IsotopeErrorTestWindow) <= MassError && MassError <= (adjustment + IsotopeErrorTestWindow))
                 {
                     _hasIsotopeError = CheckedIsotopeError.Yes;
@@ -282,7 +282,7 @@ namespace PPMErrorCharter
             }
             for (var i = 1; i <= 5; ++i)
             {
-                var adjustment = (double)i / chargeWithSign;
+                var adjustment = i / chargeWithSign;
                 if ((adjustment - IsotopeErrorTestWindow) <= MassErrorRefined && MassErrorRefined <= (adjustment + IsotopeErrorTestWindow))
                 {
                     _hasRefinedIsotopeError = CheckedIsotopeError.Yes;
@@ -372,10 +372,7 @@ namespace PPMErrorCharter
             {
                 return right == null ? 0 : -1;
             }
-            else
-            {
-                return right == null ? 1 : left.CalcMz.CompareTo(right.CalcMz);
-            }
+            return right == null ? 1 : left.CalcMz.CompareTo(right.CalcMz);
         }
     }
 
@@ -387,10 +384,7 @@ namespace PPMErrorCharter
             {
                 return right == null ? 0 : -1;
             }
-            else
-            {
-                return right == null ? 1 : left.ScanTimeSeconds.CompareTo(right.ScanTimeSeconds);
-            }
+            return right == null ? 1 : left.ScanTimeSeconds.CompareTo(right.ScanTimeSeconds);
         }
     }
 
@@ -402,10 +396,7 @@ namespace PPMErrorCharter
             {
                 return right == null ? 0 : -1;
             }
-            else
-            {
-                return right == null ? 1 : left.PpmError.CompareTo(right.PpmError);
-            }
+            return right == null ? 1 : left.PpmError.CompareTo(right.PpmError);
         }
     }
 
@@ -417,10 +408,7 @@ namespace PPMErrorCharter
             {
                 return right == null ? 0 : -1;
             }
-            else
-            {
-                return right == null ? 1 : left.PpmErrorRefined.CompareTo(right.PpmErrorRefined);
-            }
+            return right == null ? 1 : left.PpmErrorRefined.CompareTo(right.PpmErrorRefined);
         }
     }
 }

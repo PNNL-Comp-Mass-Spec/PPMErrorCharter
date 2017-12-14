@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using PRISM;
 
 namespace PPMErrorCharter
@@ -46,14 +47,14 @@ namespace PPMErrorCharter
 
                 if (!parseResults.Success)
                 {
-                    System.Threading.Thread.Sleep(1500);
+                    Thread.Sleep(1500);
                     return -1;
                 }
 
                 if (!options.ValidateArgs())
                 {
                     parser.PrintHelp();
-                    System.Threading.Thread.Sleep(1500);
+                    Thread.Sleep(1500);
                     return -1;
                 }
 
@@ -64,17 +65,17 @@ namespace PPMErrorCharter
                 if (success)
                 {
                     Console.WriteLine("Processing completed successfully");
-                    System.Threading.Thread.Sleep(250);
+                    Thread.Sleep(250);
                     return 0;
                 }
 
-                System.Threading.Thread.Sleep(1500);
+                Thread.Sleep(1500);
                 return -1;
             }
             catch (Exception ex)
             {
                 ShowErrorMessage("Error occurred in Program->Main: " + Environment.NewLine + ex.Message, ex);
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(1000);
                 return -1;
             }
         }
@@ -182,7 +183,7 @@ namespace PPMErrorCharter
 
             Console.WriteLine();
             Console.WriteLine("Exporting data to " + outFilePath);
-            using (var outFile = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (var writer = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
                 var headerColumns = new List<string>
                 {
@@ -197,7 +198,7 @@ namespace PPMErrorCharter
                     "Charge"
                 };
 
-                outFile.WriteLine(string.Join("\t", headerColumns));
+                writer.WriteLine(string.Join("\t", headerColumns));
 
                 foreach (var data in scanData)
                 {
@@ -212,7 +213,7 @@ namespace PPMErrorCharter
                         largeErrorSuffix = string.Empty;
                     }
 
-                    outFile.WriteLine(data.ToDebugString() + largeErrorSuffix);
+                    writer.WriteLine(data.ToDebugString() + largeErrorSuffix);
                 }
             }
 
