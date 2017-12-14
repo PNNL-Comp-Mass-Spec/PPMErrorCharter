@@ -166,6 +166,11 @@ namespace PPMErrorCharter
 
             DataPlotterBase plotter;
 
+            if (options.PythonPlotting)
+            {
+                plotter = new PythonDataPlotter(options);
+            }
+            else
             {
                 plotter = new IdentDataPlotter(options);
             }
