@@ -161,12 +161,19 @@ namespace PPMErrorCharter
             Console.WriteLine("Removed " + itemsRemoved + " out-of-range items from the original " + origSize + " items.");
 
             var scatterPlotFilePath = outFileStub + "_MZRefinery_MassErrors.png";
-            IdentDataPlotter.ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
-            Console.WriteLine("Created " + scatterPlotFilePath);
-
             var histogramPlotFilePath = outFileStub + "_MZRefinery_Histograms.png";
-            IdentDataPlotter.ErrorHistogramsToPng(scanData, histogramPlotFilePath, fixedMzMLFileExists);
-            Console.WriteLine("Created " + histogramPlotFilePath);
+
+            DataPlotterBase plotter;
+
+            {
+                plotter = new IdentDataPlotter(options);
+            }
+
+            plotter.ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
+            Console.WriteLine("Generated " + scatterPlotFilePath);
+
+            plotter.ErrorHistogramsToPng(scanData, histogramPlotFilePath, fixedMzMLFileExists);
+            Console.WriteLine("Generated " + histogramPlotFilePath);
 
             if (!options.SaveMassErrorDetails)
                 return true;

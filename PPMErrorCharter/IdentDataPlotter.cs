@@ -5,16 +5,48 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using OxyPlot;
-using OxyPlot.Wpf; // Only used by the PNG Exporter
+using OxyPlot.Axes;
+using OxyPlot.Series;
+using OxyPlot.Wpf;
+using Axis = OxyPlot.Axes.Axis;
+using LinearAxis = OxyPlot.Axes.LinearAxis;
+using LineSeries = OxyPlot.Series.LineSeries;
+using ScatterSeries = OxyPlot.Series.ScatterSeries;
+
+// Only used by the PNG Exporter
 
 namespace PPMErrorCharter
 {
-    using OxyPlot.Axes;
-    using OxyPlot.Series;
-
-    public class IdentDataPlotter
+    /// <summary>
+    /// Generate mass error plots using OxyPlot
+    /// </summary>
+    public class IdentDataPlotter : DataPlotterBase
     {
-        private static PlotModel ModelBaseConfig()
+
+        /// <summary>
+        /// Bitmap of the graphic created by ErrorHistogramsToPng
+        /// </summary>
+        /// <remarks>Initially null</remarks>
+        public RenderTargetBitmap ErrorHistogramBitmap { get; private set; }
+
+        /// <summary>
+        /// Bitmap of the graphic created by ErrorScatterPlotsToPng
+        /// </summary>
+        /// <remarks>Initially null</remarks>
+        public RenderTargetBitmap ErrorScatterPlotBitmap { get; private set; }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="options"></param>
+        public IdentDataPlotter(ErrorCharterOptions options) : base(options)
+        {
+            ErrorHistogramBitmap = null;
+            ErrorScatterPlotBitmap = null;
+        }
+
+        private PlotModel ModelBaseConfig()
         {
             return new PlotModel
             {
@@ -22,7 +54,7 @@ namespace PPMErrorCharter
             };
         }
 
-        public static PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, string xTitle, OxyColor markerColor)
+        public PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, string xTitle, OxyColor markerColor)
         {
             var model = ModelBaseConfig();
             model.Title = title;
@@ -76,7 +108,7 @@ namespace PPMErrorCharter
             return model;
         }
 
-        public static PlotModel ScatterPlot(List<IdentData> data, Func<object, ScatterPoint> mapping, string title, string xTitle, OxyColor markerColor)
+        public PlotModel ScatterPlot(List<IdentData> data, Func<object, ScatterPoint> mapping, string title, string xTitle, OxyColor markerColor)
         {
             //series1.Mapping = item => new DataPoint(((MyType)item).Time,((MyType)item).Value)
             var model = ModelBaseConfig();
@@ -131,7 +163,14 @@ namespace PPMErrorCharter
             return model;
         }
 
-        public static BitmapSource ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool fixedMzMLFileExists, bool haveScanTimes)
+        /// <summary>
+        /// Generate the mass error scatter plots and save to a PNG file
+        /// </summary>
+        /// <param name="scanData"></param>
+        /// <param name="pngFile"></param>
+        /// <param name="fixedMzMLFileExists"></param>
+        /// <param name="haveScanTimes"></param>
+        public override void ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var width = 512;  // 1024 pixels final width
             var height = 384; // 768 pixels final height
@@ -167,10 +206,10 @@ namespace PPMErrorCharter
             {
                 png.Save(stream);
             }
-            return image;
+            ErrorScatterPlotBitmap = image;
         }
 
-        private static void AddScatterPlotData(
+        private void AddScatterPlotData(
             DrawingContext drawContext,
             List<IdentData> scanData,
             bool haveScanTimes,
@@ -253,52 +292,16 @@ namespace PPMErrorCharter
         }
 
         /// <summary>
-        /// Create the histogram binned data
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="dataField"></param>
-        /// <param name="binSize"></param>
-        /// <returns></returns>
-        private static SortedDictionary<double, int> HistogramFrequencies(List<IdentData> data, string dataField, double binSize)
-        {
-            var counts = new Dictionary<double, int>();
-            var roundingDigits = Convert.ToInt32(Math.Ceiling((1.0 / binSize) / 2));
-
-            var reflectItem = typeof(IdentData).GetProperty(dataField);
-            if (reflectItem == null)
-                return new SortedDictionary<double, int>(counts);
-
-            foreach (var item in data)
-            {
-                //var value = item.GetType().GetProperty(dataField).GetValue(item);
-                var value = reflectItem.GetValue(item);
-                var valueExpanded = Convert.ToDouble(value) * (1 / binSize);
-                var roundedExpanded = Math.Round(valueExpanded);
-                var roundedSmall = roundedExpanded / (1 / binSize);
-                var final = Math.Round(roundedSmall, roundingDigits);
-                if (!counts.ContainsKey(final))
-                {
-                    counts.Add(final, 0);
-                }
-                counts[final]++;
-            }
-
-            // Sort once?
-            return new SortedDictionary<double, int>(counts);
-        }
-
-        /// <summary>
         /// Generate a frequency histogram using the specified data field
         /// </summary>
         /// <param name="data"></param>
         /// <param name="dataField"></param>
         /// <param name="title"></param>
         /// <param name="lineColor"></param>
-        /// <param name="binSize"></param>
         /// <returns></returns>
-        public static PlotModel Histogram(List<IdentData> data, string dataField, string title, OxyColor lineColor, double binSize)
+        public PlotModel Histogram(List<IdentData> data, string dataField, string title, OxyColor lineColor)
         {
-            var frequencies = HistogramFrequencies(data, dataField, binSize);
+            var frequencies = HistogramFrequencies(data, dataField);
 
             var model = ModelBaseConfig();
             model.Title = title;
@@ -379,17 +382,17 @@ namespace PPMErrorCharter
         }
 
         /// <summary>
-        /// Output the original and refined ppm error histograms to a single file
+        /// Generate the mass error histogram plots and save to a PNG file
         /// </summary>
         /// <param name="scanData"></param>
         /// <param name="pngFile"></param>
         /// <param name="dataFileExists"></param>
         /// <returns></returns>
-        public static BitmapSource ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
+        public override void ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
         {
             // Create both histogram models to allow synchronizing the y-axis
-            var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
-            var fixError = Histogram(scanData, "PpmErrorRefined", "Refined", OxyColors.Green, 0.5);
+            var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue);
+            var fixError = Histogram(scanData, "PpmErrorRefined", "Refined", OxyColors.Green);
 
             // Synchronize the histogram plot areas - x and y axis ranges
             var axes = new List<Axis>();
@@ -558,7 +561,8 @@ namespace PPMErrorCharter
             {
                 png.Save(stream);
             }
-            return image;
+
+            ErrorHistogramBitmap = image;
         }
     }
 }

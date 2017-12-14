@@ -78,9 +78,15 @@ namespace PPMErrorCharterDisplay
             //this.OrigPpmErrorHist = IdentDataPlotter.Histogram(scanData, "PpmError", "Original", OxyColors.Blue, 0.5);
             //this.FixPpmErrorHist = IdentDataPlotter.Histogram(scanData, "PpmErrorFixed", "Refined", OxyColors.Green, 0.5);
 
-            this.AllVis = IdentDataPlotter.ErrorScatterPlotsToPng(scanData, datasetPathName + "_MZRefinery_MassErrors.png", dataFileExists, haveScanTimes);
-            this.ErrHist = IdentDataPlotter.ErrorHistogramsToPng(scanData, datasetPathName + "_MZRefinery_Histograms.png", dataFileExists);
-            /**/
+            var options = new ErrorCharterOptions();
+            var plotter = new IdentDataPlotter(options);
+
+            plotter.ErrorScatterPlotsToPng(scanData, datasetPathName + "_MZRefinery_MassErrors.png", dataFileExists, haveScanTimes);
+            plotter.ErrorHistogramsToPng(scanData, datasetPathName + "_MZRefinery_Histograms.png", dataFileExists);
+
+            this.AllVis = plotter.ErrorScatterPlotBitmap;
+            this.ErrHist = plotter.ErrorHistogramBitmap;
+
         }
 
         //public PlotModel OrigScanId { get; private set; }

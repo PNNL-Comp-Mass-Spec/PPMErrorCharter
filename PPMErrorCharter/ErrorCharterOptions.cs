@@ -12,6 +12,7 @@ namespace PPMErrorCharter
         {
             InputFilePath = string.Empty;
             SpecEValueThreshold = MzIdentMLReader.DEFAULT_SPEC_EVALUE_THRESHOLD;
+            PPMErrorHistogramBinSize = 0.5;
             PythonPlotting = false;
         }
 
@@ -21,6 +22,10 @@ namespace PPMErrorCharter
         [Option("EValue", "Threshold", ArgPosition = 2, HelpText = "Spec EValue Threshold",
             HelpShowsDefault = true, Min = 0, Max = 10)]
         public double SpecEValueThreshold { get; set; }
+
+        [Option("PPMBinSize", "Histogram", HelpText = "PPM mass error histogram bin size",
+            HelpShowsDefault = true, Min = 0.1, Max = 10)]
+        public double PPMErrorHistogramBinSize { get; set; }
 
         [Option("Python", "PythonPlot", HelpText = "Generate plots with Python")]
         public bool PythonPlotting { get; set; }
@@ -41,7 +46,9 @@ namespace PPMErrorCharter
 
             Console.WriteLine(" PSM results file: {0}", InputFilePath);
 
-            Console.WriteLine(" Spec EValue Threshold: {0}", StringUtilities.DblToString(SpecEValueThreshold, 1));
+            Console.WriteLine(" Spec EValue threshold: {0}", StringUtilities.DblToString(SpecEValueThreshold, 2));
+
+            Console.WriteLine(" PPM Error histogram bin size: {0}", StringUtilities.DblToString(PPMErrorHistogramBinSize, 2));
 
             if (PythonPlotting)
                 Console.WriteLine(" Generating plots with Python");
