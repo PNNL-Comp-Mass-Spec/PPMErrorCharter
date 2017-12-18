@@ -1,4 +1,5 @@
 import glob
+import math
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
@@ -225,10 +226,19 @@ def plot_histograms(outputFilePath, columnNames, mass_error_ppm, counts_original
 
     if xDataMax > 0 and xDataMax < 52:
         xDataMax = 50
+    
+    if len(counts_refined) == 0 or math.isnan(counts_refined[0]):
+        print("Note: counts_refined has NaN values; the Refined Histogram will be blank")
+        haveRefinedCounts = False
+    else:
+        haveRefinedCounts = True
 
     yDataMaxima = []
     yDataMaxima.append(np.max(counts_original))
-    yDataMaxima.append(np.max(counts_refined))
+    
+    if haveRefinedCounts:
+        yDataMaxima.append(np.max(counts_refined))
+        
     yDataMax = np.max(yDataMaxima)
 
     yDataMax = yDataMax + 0.05 * yDataMax
@@ -324,19 +334,40 @@ def plot_mass_errors(outputFilePath, errorVsTimeColumnNames, errorVsMassColumnNa
 
     mzMin -= mzAxisPadding
     mzMax += mzAxisPadding
-    
+
+    haveRefinedScanMassErrors = True
+    haveRefinedMzMassErrors = True
+            
+    if len(scan_mass_errors_refined) == 0 or math.isnan(scan_mass_errors_refined[0]):
+        print("Note: scan_mass_errors_refined has NaN values; the refined mass error vs. scan time plot will be blank")
+        haveRefinedScanMassErrors = False
+
+    if len(mz_mass_errors_refined) == 0 or math.isnan(mz_mass_errors_refined[0]):
+        print("Note: mz_mass_errors_refined has NaN values; the refined mass error vs. mass plot will be blank")
+        haveRefinedMzMassErrors = False
+        
     yDataMinima = []
     yDataMinima.append(np.min(scan_mass_errors_original))
-    yDataMinima.append(np.min(scan_mass_errors_refined))
     yDataMinima.append(np.min(mz_mass_errors_original))
-    yDataMinima.append(np.min(mz_mass_errors_refined))
+
+    if haveRefinedScanMassErrors:
+        yDataMinima.append(np.min(scan_mass_errors_refined))
+
+    if haveRefinedMzMassErrors:
+        yDataMinima.append(np.min(mz_mass_errors_refined))
+
     yDataMin = np.min(yDataMinima)
     
     yDataMaxima = []
     yDataMaxima.append(np.max(scan_mass_errors_original))
-    yDataMaxima.append(np.max(scan_mass_errors_refined))
     yDataMaxima.append(np.max(mz_mass_errors_original))
-    yDataMaxima.append(np.max(mz_mass_errors_refined))
+
+    if haveRefinedScanMassErrors:
+        yDataMaxima.append(np.max(scan_mass_errors_refined))
+
+    if haveRefinedMzMassErrors:
+        yDataMaxima.append(np.max(mz_mass_errors_refined))
+        
     yDataMax = np.max(yDataMaxima)
     
     # Assure that yDataMin to yDataMax spans at least -20 to 20
@@ -369,7 +400,7 @@ def plot_mass_errors(outputFilePath, errorVsTimeColumnNames, errorVsMassColumnNa
     ax2.set_title(scan_title_refined, fontsize=baseFontSize+2)
     ax3.set_title(mz_title_original, fontsize=baseFontSize+2)
     ax4.set_title(mz_title_refined, fontsize=baseFontSize+2)
-
+    
     # Make sure the X-axis range is the same for paired plots
     ax1.set_xlim(xmin = scanTimeMin, xmax = scanTimeMax)
     ax2.set_xlim(xmin = scanTimeMin, xmax = scanTimeMax)
