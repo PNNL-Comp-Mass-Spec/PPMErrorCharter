@@ -52,9 +52,41 @@ java.exe  -Xmx2000M -XX:+UseConcMarkSweepGC -cp MSGFPlus.jar edu.ucsd.msjava.ui.
           -i C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid -o C:\WorkDir\DatasetName_2016-09-28_msgfdb.tsv 
           -showQValue 1 -showDecoy 1 -unroll 1
 
+== Syntax ==
+
+Usage: PPMErrorCharter.exe
+
+  NOTE:               arg#1, arg#2, etc. refer to positional arguments, used
+                      like "myexe.exe [arg#1] [arg#2] [other args]".
+
+  -?, -help           Show this help screen
+
+  -I, arg#1           PSM results file; mzid or .mzid.gz (Default: "")
+
+  -EValue,            Spec EValue Threshold (Default: 1E-10, Min: 0, Max: 10)
+  -Threshold, arg#2
+
+  -PPMBinSize,        PPM mass error histogram bin size (Default: 0.5, Min: 0.1, Max: 10)
+  -Histogram
+
+  -Python,            Generate plots with Python (Default: False)
+  -PythonPlot
+
+  -Debug, -Verbose    Create a tab-delimited text file with detailed mass error
+                      information (Default: False)
+
+== Example Commands ==
+
+PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz
+
+PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz 1E-12
+
+PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz /Python
+
+PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz /Python /Debug
 
 -------------------------------------------------------------------------------
-Written by Bryson Gibbons for the Department of Energy (PNNL, Richland, WA)
+Written by Bryson Gibbons and Matthew Monroe for the Department of Energy (PNNL, Richland, WA)
 Copyright 2014, Battelle Memorial Institute.  All Rights Reserved.
 
 E-mail: bryson.gibbons@pnnl.gov or proteomics@pnnl.gov
