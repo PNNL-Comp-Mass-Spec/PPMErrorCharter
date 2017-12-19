@@ -178,7 +178,14 @@ namespace PPMErrorCharter
                     return false;
                 }
 
-                plotter = new PythonDataPlotter(options, outFileStub);
+                var pythonPlotter = new PythonDataPlotter(options, outFileStub);
+                plotter = pythonPlotter;
+
+                if (options.SaveMassErrorDetails)
+                {
+                    // Do not delete temp files when Debug mode is enabled
+                    pythonPlotter.DeleteTempFiles = false;
+                }
             }
             else
             {
