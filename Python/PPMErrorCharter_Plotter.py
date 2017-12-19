@@ -120,7 +120,7 @@ def process_file(metadataFilePath):
         errorVsTimeData, errorVsTimePlotLabels, errorVsTimeColumnOptions = read_file(errorVsTimeDataFile)
         errorVsMassData, errorVsMassPlotLabels, errorVsMassColumnOptions = read_file(errorVsMassDataFile)
     
-    histogramOutputFilePath  = baseNamePath + '_Histograms.png'
+    histogramOutputFilePath  = baseNamePath + '_MZRefinery_Histograms.png'
             
     print('\nOutput: ' + histogramOutputFilePath)
     print()
@@ -134,7 +134,7 @@ def process_file(metadataFilePath):
     if len(errorVsTimeDataFilePath) == 0:
         return
        
-    massErrorsOutputFilePath = baseNamePath + '_MassErrors.png'
+    massErrorsOutputFilePath = baseNamePath + '_MZRefinery_MassErrors.png'
 
     print('\nOutput: ' + massErrorsOutputFilePath)
     print()
