@@ -40,7 +40,8 @@ namespace PPMErrorCharter
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public IdentDataPlotter(ErrorCharterOptions options) : base(options)
+        /// <param name="baseOutputFilePath"></param>
+        public IdentDataPlotter(ErrorCharterOptions options, string baseOutputFilePath) : base(options, baseOutputFilePath)
         {
             ErrorHistogramBitmap = null;
             ErrorScatterPlotBitmap = null;
@@ -167,10 +168,10 @@ namespace PPMErrorCharter
         /// Generate the mass error scatter plots and save to a PNG file
         /// </summary>
         /// <param name="scanData"></param>
-        /// <param name="pngFile"></param>
+        /// <param name="pngFilePath"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="haveScanTimes"></param>
-        public override void ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool fixedMzMLFileExists, bool haveScanTimes)
+        private bool ErrorScatterPlotsToPng(IReadOnlyCollection<IdentData> scanData, string pngFilePath, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var width = 512;  // 1024 pixels final width
             var height = 384; // 768 pixels final height
@@ -202,11 +203,13 @@ namespace PPMErrorCharter
             // Turn the image into a png bitmap
             var png = new PngBitmapEncoder();
             png.Frames.Add(BitmapFrame.Create(image));
-            using (Stream stream = File.Create(pngFile))
+            using (Stream stream = File.Create(pngFilePath))
             {
                 png.Save(stream);
             }
             ErrorScatterPlotBitmap = image;
+
+            return true;
         }
 
         private void AddScatterPlotData(
@@ -283,7 +286,7 @@ namespace PPMErrorCharter
             drawContext.DrawImage(massErrorsVsTimeBitmap, new Rect(0, plotOffset, width, height));
             drawContext.DrawImage(massErrorsVsMzBitmap, new Rect(width, plotOffset, width, height));
 
-            //var fileName = pngFile.Substring(0, pngFile.IndexOf(".png", StringComparison.OrdinalIgnoreCase));
+            //var fileName = pngFilePath.Substring(0, pngFilePath.IndexOf(".png", StringComparison.OrdinalIgnoreCase));
             //using (var file = new FileStream(fileName + "_OrigScan.svg", FileMode.Create, FileAccess.Write, FileShare.None))
             //{
             //  OxyPlot.Wpf.SvgExporter.Export(OrigScan, file, width, height, true);
@@ -390,10 +393,10 @@ namespace PPMErrorCharter
         /// Generate the mass error histogram plots and save to a PNG file
         /// </summary>
         /// <param name="scanData"></param>
-        /// <param name="pngFile"></param>
-        /// <param name="dataFileExists"></param>
+        /// <param name="pngFilePath"></param>
+        /// <param name="fixedMzMLFileExists"></param>
         /// <returns></returns>
-        public override void ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
+        private bool ErrorHistogramsToPng(IReadOnlyCollection<IdentData> scanData, string pngFilePath, bool fixedMzMLFileExists)
         {
             // Create both histogram models to allow synchronizing the y-axis
             var origError = Histogram(scanData, "PpmError", "Original", OxyColors.Blue);
@@ -404,7 +407,7 @@ namespace PPMErrorCharter
             axes.AddRange(origError.Axes);
 
             // Don't include fixed axes if no fixed file was found
-            if (dataFileExists)
+            if (fixedMzMLFileExists)
             {
                 axes.AddRange(fixError.Axes);
             }
@@ -543,7 +546,7 @@ namespace PPMErrorCharter
             drawContext.DrawImage(oe, new Rect(0, 0, width, height));
 
             // Only add the fixed files if the data file exists
-            if (dataFileExists)
+            if (fixedMzMLFileExists)
             {
                 var fe = PngExporter.ExportToBitmap(fixError, width, height, OxyColors.White);
                 drawContext.DrawImage(fe, new Rect(width, 0, width, height));
@@ -562,12 +565,41 @@ namespace PPMErrorCharter
             // Turn the image into a png bitmap
             var png = new PngBitmapEncoder();
             png.Frames.Add(BitmapFrame.Create(image));
-            using (Stream stream = File.Create(pngFile))
+            using (Stream stream = File.Create(pngFilePath))
             {
                 png.Save(stream);
             }
 
             ErrorHistogramBitmap = image;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Generate the mass error scatter plots and mass error histogram plots, saving as PNG files
+        /// </summary>
+        /// <param name="scanData"></param>
+        /// <param name="fixedMzMLFileExists"></param>
+        /// <param name="haveScanTimes"></param>
+        /// <returns></returns>
+        public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> scanData, bool fixedMzMLFileExists, bool haveScanTimes)
+        {
+            var scatterPlotFilePath = BaseOutputFilePath + "_MZRefinery_MassErrors.png";
+            var histogramPlotFilePath = BaseOutputFilePath + "_MZRefinery_Histograms.png";
+
+            var scatterPlotSuccess = ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
+            if (scatterPlotSuccess)
+                Console.WriteLine("Generated " + scatterPlotFilePath);
+            else
+                Console.WriteLine("Error generating " + scatterPlotFilePath);
+
+            var histogramPlotSuccess = ErrorHistogramsToPng(scanData, histogramPlotFilePath, fixedMzMLFileExists);
+            if (histogramPlotSuccess)
+                Console.WriteLine("Generated " + histogramPlotFilePath);
+            else
+                Console.WriteLine("Error generating " + histogramPlotFilePath);
+
+            return scatterPlotSuccess && histogramPlotSuccess;
         }
     }
 }

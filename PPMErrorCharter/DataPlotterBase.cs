@@ -8,20 +8,28 @@ namespace PPMErrorCharter
     /// </summary>
     public abstract class DataPlotterBase
     {
+        /// <summary>
+        /// Base output fle path
+        /// </summary>
+        public string BaseOutputFilePath { get; }
+
+        /// <summary>
+        /// Plotting options
+        /// </summary>
         public ErrorCharterOptions Options { get; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        protected DataPlotterBase(ErrorCharterOptions options)
+        /// <param name="baseOutputFilePath"></param>
+        protected DataPlotterBase(ErrorCharterOptions options, string baseOutputFilePath)
         {
+            BaseOutputFilePath = baseOutputFilePath;
             Options = options;
         }
 
-        public abstract void ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool fixedMzMLFileExists, bool haveScanTimes);
-
-        public abstract void ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists);
+        public abstract bool GeneratePNGPlots(IReadOnlyCollection<IdentData> scanData, bool fixedMzMLFileExists, bool haveScanTimes);
 
         /// <summary>
         /// Create the histogram binned data

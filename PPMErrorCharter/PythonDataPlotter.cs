@@ -17,8 +17,14 @@ namespace PPMErrorCharter
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public PythonDataPlotter(ErrorCharterOptions options) : base(options)
+        /// <param name="baseOutputFilePath"></param>
+        public PythonDataPlotter(ErrorCharterOptions options, string baseOutputFilePath) : base(options, baseOutputFilePath)
         {
+
+            DeleteTempFiles = true;
+
+            if (PythonPath == null)
+                PythonPath = string.Empty;
         }
 
         /// <summary>
@@ -142,6 +148,55 @@ namespace PPMErrorCharter
                         item.Key,
                         item.Value.BinCountOriginal,
                         item.Value.BinCountRefined);
+
+        /// <summary>
+        /// Generate the mass error scatter plots and mass error histogram plots, saving as PNG files
+        /// </summary>
+        /// <param name="scanData"></param>
+        /// <param name="fixedMzMLFileExists"></param>
+        /// <param name="haveScanTimes"></param>
+        /// <returns></returns>
+        public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> scanData, bool fixedMzMLFileExists, bool haveScanTimes)
+        {
+            var metadataFilePaths = new MetadataFileNamesType
+            {
+                BaseOutputFile = new FileInfo(BaseOutputFilePath)
+            };
+
+            if (metadataFilePaths.BaseOutputFile.DirectoryName == null)
+            {
+                OnErrorEvent("Unable to determine the parent directory of the base output file: " + BaseOutputFilePath);
+                return false;
+            }
+
+            var histogramPlotDataExported = ExportHistogramPlotData(
+                scanData, metadataFilePaths.BaseOutputFile, fixedMzMLFileExists,
+                out var errorHistogramsExportFileName);
+
+            if (!histogramPlotDataExported)
+            {
+                return false;
+            }
+
+            var scatterPlotDataExported = ExportScatterPlotData(
+                scanData, fixedMzMLFileExists, haveScanTimes, metadataFilePaths.BaseOutputFile,
+                out var massErrorVsTimeExportFileName,
+                out var massErrorVsMassExportFileName);
+
+            if (!scatterPlotDataExported)
+            {
+                return false;
+            }
+
+            metadataFilePaths.ErrorHistogramsExportFileName = errorHistogramsExportFileName;
+            metadataFilePaths.MassErrorVsTimeExportFileName = massErrorVsTimeExportFileName;
+            metadataFilePaths.MassErrorVsMassExportFileName = massErrorVsMassExportFileName;
+
+            var success = GeneratePlotsWithPython(metadataFilePaths);
+
+            return success;
+        }
+
                 }
 
             }

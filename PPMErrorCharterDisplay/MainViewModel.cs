@@ -79,10 +79,9 @@ namespace PPMErrorCharterDisplay
             //this.FixPpmErrorHist = IdentDataPlotter.Histogram(scanData, "PpmErrorFixed", "Refined", OxyColors.Green, 0.5);
 
             var options = new ErrorCharterOptions();
-            var plotter = new IdentDataPlotter(options);
+            var plotter = new IdentDataPlotter(options, datasetPathName);
 
-            plotter.ErrorScatterPlotsToPng(scanData, datasetPathName + "_MZRefinery_MassErrors.png", dataFileExists, haveScanTimes);
-            plotter.ErrorHistogramsToPng(scanData, datasetPathName + "_MZRefinery_Histograms.png", dataFileExists);
+            plotter.GeneratePNGPlots(scanData, dataFileExists, haveScanTimes);
 
             this.AllVis = plotter.ErrorScatterPlotBitmap;
             this.ErrHist = plotter.ErrorHistogramBitmap;

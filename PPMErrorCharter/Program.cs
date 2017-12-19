@@ -169,17 +169,18 @@ namespace PPMErrorCharter
             if (options.PythonPlotting)
             {
                 plotter = new PythonDataPlotter(options);
+
+                plotter = new PythonDataPlotter(options, outFileStub);
             }
             else
             {
-                plotter = new IdentDataPlotter(options);
+                plotter = new IdentDataPlotter(options, outFileStub);
             }
 
             plotter.ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
             Console.WriteLine("Generated " + scatterPlotFilePath);
 
-            plotter.ErrorHistogramsToPng(scanData, histogramPlotFilePath, fixedMzMLFileExists);
-            Console.WriteLine("Generated " + histogramPlotFilePath);
+            var plotsSaved = plotter.GeneratePNGPlots(scanData, fixedMzMLFileExists, haveScanTimes);
 
             if (!options.SaveMassErrorDetails)
                 return true;
