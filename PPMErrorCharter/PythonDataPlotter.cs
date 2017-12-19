@@ -31,16 +31,44 @@ namespace PPMErrorCharter
         /// Generate the mass error scatter plots and save to a PNG file
         /// </summary>
         /// <param name="scanData"></param>
-        /// <param name="pngFile"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="haveScanTimes"></param>
-        public override void ErrorScatterPlotsToPng(List<IdentData> scanData, string pngFile, bool fixedMzMLFileExists, bool haveScanTimes)
+        /// <param name="baseOutputFile"></param>
+        /// <param name="massErrorVsTimeExportFileName"></param>
+        /// <param name="massErrorVsMassExportFileName"></param>
+        private bool ExportScatterPlotData(
+            IReadOnlyCollection<IdentData> scanData,
+            bool fixedMzMLFileExists,
+            bool haveScanTimes,
+            FileInfo baseOutputFile,
+            out string massErrorVsTimeExportFileName,
+            out string massErrorVsMassExportFileName)
         {
-            var errorVsTimeFilePath = "MassErrorsVsTime_TmpExportData.txt";
+            if (!PythonInstalled)
+            {
+                NotifyPythonNotFound("Could not find the python executable");
+                massErrorVsTimeExportFileName = string.Empty;
+                massErrorVsMassExportFileName = string.Empty;
+                return false;
+            }
+
+            if (baseOutputFile.DirectoryName == null)
+            {
+                OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFile.FullName);
+                massErrorVsTimeExportFileName = string.Empty;
+                massErrorVsMassExportFileName = string.Empty;
+                return false;
+            }
+
+            massErrorVsTimeExportFileName = Path.GetFileNameWithoutExtension(baseOutputFile.Name) + "_MassErrorsVsTime" + TMP_FILE_SUFFIX + ".txt";
+            var massErrorVsTimeDataExportFile = new FileInfo(Path.Combine(baseOutputFile.DirectoryName, massErrorVsTimeExportFileName));
 
             // Export data for the mass errors vs. Time plot
-            using (var writer = new StreamWriter(new FileStream(errorVsTimeFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (var writer = new StreamWriter(new FileStream(massErrorVsTimeDataExportFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
+                writer.WriteLine("[Title1=Scan Time: Original;Title2=Scan Time: Refined]");
+                writer.WriteLine("Autoscale=true;Minimum=0;Maximum=1496298880;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1	Autoscale=false;Minimum=-20;Maximum=20;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1");
+
                 var headerColumns = new List<string>
                 {
                     "Scan Time (minutes)",
@@ -54,10 +82,12 @@ namespace PPMErrorCharter
                 {
                     foreach (var item in from x in scanData orderby x.ScanTimeSeconds select x)
                     {
+                        var ppmErrorRefined = fixedMzMLFileExists ? StringUtilities.DblToString(item.PpmErrorRefined, 3) : string.Empty;
+
                         writer.WriteLine("{0}\t{1}\t{2}",
-                            PRISM.StringUtilities.DblToString(item.ScanTimeSeconds, 3),
-                            PRISM.StringUtilities.DblToString(item.PpmError, 3),
-                            PRISM.StringUtilities.DblToString(item.PpmErrorRefined, 3));
+                            StringUtilities.DblToString(item.ScanTimeSeconds, 3),
+                            StringUtilities.DblToString(item.PpmError, 3),
+                            ppmErrorRefined);
                     }
 
                 }
@@ -65,17 +95,24 @@ namespace PPMErrorCharter
                 {
                     foreach (var item in from x in scanData orderby x.ScanIdInt select x)
                     {
+                        var ppmErrorRefined = fixedMzMLFileExists ? StringUtilities.DblToString(item.PpmErrorRefined, 3) : string.Empty;
+
                         writer.WriteLine("{0}\t{1}\t{2}",
                             item.ScanIdInt,
-                            PRISM.StringUtilities.DblToString(item.PpmError, 3),
-                            PRISM.StringUtilities.DblToString(item.PpmErrorRefined, 3));
+                            StringUtilities.DblToString(item.PpmError, 3),
+                            ppmErrorRefined);
                     }
                 }
             }
 
-            var errorVsMassFilePath = "MassErrorsVsMass_TmpExportData.txt";
-            using (var writer = new StreamWriter(new FileStream(errorVsMassFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            massErrorVsMassExportFileName = Path.GetFileNameWithoutExtension(baseOutputFile.Name) + "_MassErrorsVsMass" + TMP_FILE_SUFFIX + ".txt";
+            var massErrorVsMassDataExportFile = new FileInfo(Path.Combine(baseOutputFile.DirectoryName, massErrorVsMassExportFileName));
+
+            using (var writer = new StreamWriter(new FileStream(massErrorVsMassDataExportFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
+                writer.WriteLine("[Title1=M/Z: Original;Title2=M/Z: Refined]");
+                writer.WriteLine("Autoscale=true;Minimum=0;Maximum=1496298880;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1	Autoscale=false;Minimum=-20;Maximum=20;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1");
+
                 var headerColumns = new List<string>
                 {
                     "m/z",
@@ -87,12 +124,16 @@ namespace PPMErrorCharter
 
                 foreach (var item in from x in scanData orderby x.CalcMz select x)
                 {
+                    var ppmErrorRefined = fixedMzMLFileExists ? StringUtilities.DblToString(item.PpmErrorRefined, 3) : string.Empty;
+
                     writer.WriteLine("{0}\t{1}\t{2}",
-                        PRISM.StringUtilities.DblToString(item.CalcMz, 4),
-                        PRISM.StringUtilities.DblToString(item.PpmError,3),
-                        PRISM.StringUtilities.DblToString(item.PpmErrorRefined, 3));
+                        StringUtilities.DblToString(item.CalcMz, 4),
+                        StringUtilities.DblToString(item.PpmError, 3),
+                        ppmErrorRefined);
                 }
             }
+
+            return true;
 
         }
 
@@ -100,11 +141,24 @@ namespace PPMErrorCharter
         /// Generate the mass error histogram plots and save to a PNG file
         /// </summary>
         /// <param name="scanData"></param>
-        /// <param name="pngFile"></param>
-        /// <param name="dataFileExists"></param>
+        /// <param name="baseOutputFile"></param>
+        /// <param name="fixedMzMLFileExists"></param>
+        /// <param name="massErrorHistogramsExportFileName"></param>
         /// <returns></returns>
-        public override void ErrorHistogramsToPng(List<IdentData> scanData, string pngFile, bool dataFileExists)
+        private bool ExportHistogramPlotData(
+            IReadOnlyCollection<IdentData> scanData,
+            FileInfo baseOutputFile,
+            bool fixedMzMLFileExists,
+            out string massErrorHistogramsExportFileName)
         {
+
+            if (baseOutputFile.DirectoryName == null)
+            {
+                OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFile.FullName);
+                massErrorHistogramsExportFileName = string.Empty;
+                return false;
+            }
+
             var massErrorHistogram = HistogramFrequencies(scanData, "PpmError");
 
             var refinedMassErrorHistogram = HistogramFrequencies(scanData, "PpmErrorRefined");
@@ -128,26 +182,43 @@ namespace PPMErrorCharter
                 }
             }
 
-            var exportFilePath = "Histograms_TmpExportData.txt";
+            massErrorHistogramsExportFileName = Path.GetFileNameWithoutExtension(baseOutputFile.Name) + "_Histograms" + TMP_FILE_SUFFIX + ".txt";
+            var massErrorHistogramsExportFile = new FileInfo(Path.Combine(baseOutputFile.DirectoryName, massErrorHistogramsExportFileName));
 
             // Export data for the mass errors vs. Time plot
-            using (var writer = new StreamWriter(new FileStream(exportFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using (var writer = new StreamWriter(new FileStream(massErrorHistogramsExportFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
+                writer.WriteLine("[Title1=Original;Title2=Refined]");
+                writer.WriteLine("Autoscale=false;Minimum=-50;Maximum=50;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1	Autoscale=true;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1");
+
                 var headerColumns = new List<string>
                 {
-                    "m/z",
-                    "Original: Mass Error (PPM)",
-                    "Refined: Mass Error (PPM)"
+                    "Mass error (PPM)",
+                    "Original: Counts",
+                    "Refined: Counts"
                 };
 
                 writer.WriteLine(string.Join("\t", headerColumns));
 
                 foreach (var item in mergedHistogramData)
                 {
+                    string refinedMassError;
+                    if (fixedMzMLFileExists)
+                        refinedMassError = item.Value.BinCountRefined.ToString();
+                    else
+                        refinedMassError = string.Empty;
+
                     writer.WriteLine("{0}\t{1}\t{2}",
-                        item.Key,
-                        item.Value.BinCountOriginal,
-                        item.Value.BinCountRefined);
+                                     item.Key,
+                                     item.Value.BinCountOriginal,
+                                     refinedMassError);
+                }
+
+            }
+
+            return true;
+
+        }
 
         /// <summary>
         /// Generate the mass error scatter plots and mass error histogram plots, saving as PNG files
