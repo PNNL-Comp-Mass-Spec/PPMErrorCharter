@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using PRISM;
 
 namespace PPMErrorCharter
 {
     /// <summary>
     /// Base class for mass error plot generation
     /// </summary>
-    public abstract class DataPlotterBase
+    public abstract class DataPlotterBase : clsEventNotifier
     {
         /// <summary>
         /// Base output fle path

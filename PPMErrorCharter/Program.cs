@@ -177,8 +177,10 @@ namespace PPMErrorCharter
                 plotter = new IdentDataPlotter(options, outFileStub);
             }
 
-            plotter.ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
-            Console.WriteLine("Generated " + scatterPlotFilePath);
+            plotter.DebugEvent += Plotter_DebugEvent;
+            plotter.ErrorEvent += Plotter_ErrorEvent;
+            plotter.WarningEvent += Plotter_WarningEvent;
+            plotter.StatusEvent += Plotter_MessageEvent;
 
             var plotsSaved = plotter.GeneratePNGPlots(scanData, fixedMzMLFileExists, haveScanTimes);
 
@@ -224,6 +226,25 @@ namespace PPMErrorCharter
             }
 
             return true;
+
+        private static void Plotter_DebugEvent(string message)
+        {
+            ConsoleMsgUtils.ShowDebug(message);
+        }
+
+        private static void Plotter_ErrorEvent(string message, Exception ex)
+        {
+            ConsoleMsgUtils.ShowError(message, ex, false);
+        }
+
+        private static void Plotter_MessageEvent(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        private static void Plotter_WarningEvent(string message)
+        {
+            ConsoleMsgUtils.ShowWarning(message);
         }
 
         private static void ShowErrorMessage(string message, Exception ex = null)
