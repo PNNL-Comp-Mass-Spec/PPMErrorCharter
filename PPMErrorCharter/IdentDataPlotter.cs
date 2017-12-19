@@ -55,7 +55,7 @@ namespace PPMErrorCharter
             };
         }
 
-        public PlotModel ScatterPlot(List<IdentData> data, string xDataField, string yDataField, string title, string xTitle, OxyColor markerColor)
+        public PlotModel ScatterPlot(IReadOnlyCollection<IdentData> data, string xDataField, string yDataField, string title, string xTitle, OxyColor markerColor)
         {
             var model = ModelBaseConfig();
             model.Title = title;
@@ -109,7 +109,7 @@ namespace PPMErrorCharter
             return model;
         }
 
-        public PlotModel ScatterPlot(List<IdentData> data, Func<object, ScatterPoint> mapping, string title, string xTitle, OxyColor markerColor)
+        public PlotModel ScatterPlot(IReadOnlyCollection<IdentData> data, Func<object, ScatterPoint> mapping, string title, string xTitle, OxyColor markerColor)
         {
             //series1.Mapping = item => new DataPoint(((MyType)item).Time,((MyType)item).Value)
             var model = ModelBaseConfig();
@@ -214,7 +214,7 @@ namespace PPMErrorCharter
 
         private void AddScatterPlotData(
             DrawingContext drawContext,
-            List<IdentData> scanData,
+            IReadOnlyCollection<IdentData> scanData,
             bool haveScanTimes,
             int width,
             int height,
@@ -302,7 +302,7 @@ namespace PPMErrorCharter
         /// <param name="title"></param>
         /// <param name="lineColor"></param>
         /// <returns></returns>
-        public PlotModel Histogram(List<IdentData> data, string dataField, string title, OxyColor lineColor)
+        public PlotModel Histogram(IReadOnlyCollection<IdentData> data, string dataField, string title, OxyColor lineColor)
         {
             var frequencies = HistogramFrequencies(data, dataField);
 
@@ -315,6 +315,7 @@ namespace PPMErrorCharter
             {
                 Position = AxisPosition.Left,
                 MajorGridlineStyle = LineStyle.Dash,
+                MinorGridlineStyle = LineStyle.None,
                 Title = "Counts",
                 Minimum = 0.0,
                 FilterMinValue = 0.0,

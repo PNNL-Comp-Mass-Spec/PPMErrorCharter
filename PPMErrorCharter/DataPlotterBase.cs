@@ -38,7 +38,7 @@ namespace PPMErrorCharter
         /// <param name="data"></param>
         /// <param name="dataField"></param>
         /// <returns></returns>
-        protected SortedDictionary<double, int> HistogramFrequencies(List<IdentData> data, string dataField)
+        protected SortedDictionary<double, int> HistogramFrequencies(IReadOnlyCollection<IdentData> data, string dataField)
         {
             var binSize = Options.PPMErrorHistogramBinSize;
             if (binSize < 0.1)
