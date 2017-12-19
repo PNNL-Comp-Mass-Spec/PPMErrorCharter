@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OxyPlot;
-using OxyPlot.Series;
+using PRISM;
 
 namespace PPMErrorCharter
 {
@@ -12,6 +11,35 @@ namespace PPMErrorCharter
     /// </summary>
     public class PythonDataPlotter : DataPlotterBase
     {
+        private struct MetadataFileNamesType
+        {
+            /// <summary>
+            /// Base output file, e.g. DatasetName_HCD_01_MZRefinery
+            /// </summary>
+            public FileInfo BaseOutputFile;
+
+            /// <summary>
+            /// Histogram data, e.g. DatasetName_HCD_01_MZRefinery_Histograms_TmpExportData.txt
+            /// </summary>
+            public string ErrorHistogramsExportFileName;
+
+            /// <summary>
+            /// Mass error vs. time data, e.g. DatasetName_HCD_01_MZRefinery_MassErrorsVsTime_TmpExportData.txt
+            /// </summary>
+            public string MassErrorVsTimeExportFileName;
+
+            /// <summary>
+            /// Mass error vs. mass data, e.g. DatasetName_HCD_01_MZRefinery_MassErrorsVsMass_TmpExportData.txt
+            /// </summary>
+            public string MassErrorVsMassExportFileName;
+        }
+
+        protected const string TMP_FILE_SUFFIX = "_TmpExportData";
+
+        /// <summary>
+        /// When true, delete the temporary text files that contain data for Python to plot
+        /// </summary>
+        public bool DeleteTempFiles { get; set; }
 
         /// <summary>
         /// Path to the python executable
@@ -345,9 +373,139 @@ namespace PPMErrorCharter
             return success;
         }
 
+        /// <summary>
+        /// Call the Python script to create the plots
+        /// </summary>
+        /// <returns>True if success, otherwise false</returns>
+        /// <remarks>Call ErrorHistogramsToPng and ErrorScatterPlotsToPng prior to calling this method</remarks>
+        private bool GeneratePlotsWithPython(MetadataFileNamesType metadataFilePaths)
+        {
+
+            if (!PythonInstalled)
+            {
+                NotifyPythonNotFound("Could not find the python executable");
+                return false;
+            }
+
+            if (metadataFilePaths.BaseOutputFile.DirectoryName == null)
+            {
+                OnErrorEvent("Unable to determine the parent directory of the base output file: " + metadataFilePaths.BaseOutputFile.FullName);
+                return false;
+            }
+
+            var workDir = metadataFilePaths.BaseOutputFile.DirectoryName;
+
+            var exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (exeDirectory == null)
+            {
+                OnErrorEvent("Unable to determine the path to the directory with the PPMErrorCharter executable");
+                return false;
+            }
+
+            var pythonScriptFile = new FileInfo(Path.Combine(exeDirectory, "PPMErrorCharter_Plotter.py"));
+            if (!pythonScriptFile.Exists)
+            {
+                OnErrorEvent("Python plotting script not found: " + pythonScriptFile.FullName);
+                return false;
+            }
+
+            var baseOutputName = metadataFilePaths.BaseOutputFile.Name;
+
+            var metadataFile = new FileInfo(Path.Combine(workDir, "MZRefinery_Plotting_Metadata.txt"));
+            using (var writer = new StreamWriter(new FileStream(metadataFile.FullName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)))
+            {
+                writer.WriteLine("BaseOutputName=" + baseOutputName);
+                writer.WriteLine("HistogramData=" + metadataFilePaths.ErrorHistogramsExportFileName);
+                writer.WriteLine("MassErrorVsTimeData=" + metadataFilePaths.MassErrorVsTimeExportFileName);
+                writer.WriteLine("MassErrorVsMassData=" + metadataFilePaths.MassErrorVsMassExportFileName);
+            }
+
+            var args = clsPathUtils.PossiblyQuotePath(pythonScriptFile.FullName) + " " + clsPathUtils.PossiblyQuotePath(metadataFile.FullName);
+
+            OnDebugEvent(string.Format("{0} {1}", PythonPath, args));
+
+            var progRunner = new clsProgRunner
+            {
+                Arguments = args,
+                CreateNoWindow = true,
+                MonitoringInterval = 2000,
+                Name = "PythonPlotter",
+                Program = PythonPath,
+                Repeat = false,
+                RepeatHoldOffTime = 0,
+                WorkDir = workDir
+            };
+
+            RegisterEvents(progRunner);
+
+            const int MAX_RUNTIME_SECONDS = 600;
+            const int MONITOR_INTERVAL_MILLISECONDS = 1000;
+            var runtimeExceeded = false;
+
+            try
+            {
+                // Start the program executing
+                progRunner.StartAndMonitorProgram();
+
+                var startTime = DateTime.UtcNow;
+
+                // Loop until program is complete, or until MAX_RUNTIME_SECONDS seconds elapses
+                while (progRunner.State != clsProgRunner.States.NotMonitoring)
+                {
+                    clsProgRunner.SleepMilliseconds(MONITOR_INTERVAL_MILLISECONDS);
+
+                    if (DateTime.UtcNow.Subtract(startTime).TotalSeconds < MAX_RUNTIME_SECONDS)
+                        continue;
+
+                    OnErrorEvent(string.Format("Plot creation with Python has taken more than {0:F0} minutes; aborting", MAX_RUNTIME_SECONDS / 60.0));
+                    progRunner.StopMonitoringProgram(kill: true);
+
+                    runtimeExceeded = true;
+                    break;
                 }
 
+
             }
+            catch (Exception ex)
+            {
+                OnErrorEvent("Exception creating plots using Python", ex);
+                return false;
+            }
+
+            if (runtimeExceeded)
+                return false;
+
+            // Examine the exit code
+            if (progRunner.ExitCode == 0)
+            {
+                var histogramPlotFile = new FileInfo(Path.Combine(metadataFilePaths.BaseOutputFile.FullName, baseOutputName + "_Histograms.png"));
+                var scatterPlotFile = new FileInfo(Path.Combine(metadataFilePaths.BaseOutputFile.FullName, baseOutputName + "_MassErrors.png"));
+
+                OnStatusEvent("Generated plots; see: " + histogramPlotFile.FullName + " and " + scatterPlotFile.FullName);
+
+                if (DeleteTempFiles)
+                {
+                    // Delete the temp export files
+
+                    try
+                    {
+                        metadataFile.Delete();
+                        File.Delete(Path.Combine(workDir, metadataFilePaths.ErrorHistogramsExportFileName));
+                        File.Delete(Path.Combine(workDir, metadataFilePaths.MassErrorVsTimeExportFileName));
+                        File.Delete(Path.Combine(workDir, metadataFilePaths.MassErrorVsMassExportFileName));
+                    }
+                    catch (Exception ex)
+                    {
+                        OnErrorEvent("Error deleting files: " + ex.Message);
+                    }
+
+                }
+
+                return true;
+            }
+
+            OnErrorEvent("Python ExitCode = " + progRunner.ExitCode);
+            return false;
 
         }
 
