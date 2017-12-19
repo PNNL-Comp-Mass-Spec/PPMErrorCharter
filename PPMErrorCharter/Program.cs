@@ -168,7 +168,18 @@ namespace PPMErrorCharter
 
             if (options.PythonPlotting)
             {
-                plotter = new PythonDataPlotter(options);
+                // Make sure that Python exists
+                if (!PythonDataPlotter.PythonInstalled)
+                {
+                    ShowErrorMessage("Could not find the python executable");
+                    var debugMsg = "Paths searched:";
+                    foreach (var item in PythonDataPlotter.PythonPathsToCheck())
+                    {
+                        debugMsg += "\n  " + item;
+                    }
+                    ConsoleMsgUtils.ShowDebug(debugMsg);
+                    return false;
+                }
 
                 plotter = new PythonDataPlotter(options, outFileStub);
             }

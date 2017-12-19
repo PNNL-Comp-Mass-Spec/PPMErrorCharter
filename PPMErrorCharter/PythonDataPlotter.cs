@@ -14,6 +14,17 @@ namespace PPMErrorCharter
     {
 
         /// <summary>
+        /// Path to the python executable
+        /// </summary>
+        public static string PythonPath { get; private set; }
+
+        /// <summary>
+        /// True if the Python .exe could be found, otherwise false
+        /// </summary>
+        public static bool PythonInstalled => FindPython();
+
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
@@ -151,6 +162,12 @@ namespace PPMErrorCharter
             bool fixedMzMLFileExists,
             out string massErrorHistogramsExportFileName)
         {
+            if (!PythonInstalled)
+            {
+                NotifyPythonNotFound("Could not find the python executable");
+                massErrorHistogramsExportFileName = string.Empty;
+                return false;
+            }
 
             if (baseOutputFile.DirectoryName == null)
             {
@@ -221,6 +238,66 @@ namespace PPMErrorCharter
         }
 
         /// <summary>
+        /// Find the best candidate folder with Python 3.x
+        /// </summary>
+        /// <returns>True if Python could be found, otherwise false</returns>
+        protected static bool FindPython()
+        {
+            if (!string.IsNullOrWhiteSpace(PythonPath))
+                return true;
+
+            var pathsToCheck = PythonPathsToCheck();
+
+            foreach (var folderPath in pathsToCheck)
+            {
+                var exePath = FindPythonExe(folderPath);
+                if (string.IsNullOrWhiteSpace(exePath))
+                    continue;
+
+                PythonPath = exePath;
+                break;
+            }
+
+            return !string.IsNullOrWhiteSpace(PythonPath);
+
+        }
+
+        /// <summary>
+        /// Find the best candidate folder with Python 3.x
+        /// </summary>
+        /// <returns>Path to the python executable, otherwise an empty string</returns>
+        private static string FindPythonExe(string folderPath)
+        {
+            var directory = new DirectoryInfo(folderPath);
+            if (!directory.Exists)
+                return string.Empty;
+
+            var subDirectories = directory.GetDirectories("Python3*").ToList();
+            subDirectories.AddRange(directory.GetDirectories("Python 3*"));
+            subDirectories.Add(directory);
+
+            var candidates = new List<FileInfo>();
+
+            foreach (var subDirectory in subDirectories)
+            {
+                var files = subDirectory.GetFiles("python.exe");
+                if (files.Length == 0)
+                    continue;
+
+                candidates.Add(files.First());
+            }
+
+            if (candidates.Count == 0)
+                return string.Empty;
+
+            // Find the newest .exe
+            var query = (from item in candidates orderby item.LastWriteTime select item.FullName);
+
+            return query.First();
+
+        }
+
+        /// <summary>
         /// Generate the mass error scatter plots and mass error histogram plots, saving as PNG files
         /// </summary>
         /// <param name="scanData"></param>
@@ -273,5 +350,32 @@ namespace PPMErrorCharter
             }
 
         }
+
+        protected void NotifyPythonNotFound(string currentTask)
+        {
+            OnErrorEvent(currentTask + "; Python not found");
+
+            var debugMsg = "Paths searched:";
+            foreach (var item in PythonPathsToCheck())
+            {
+                debugMsg += "\n  " + item;
+            }
+
+            OnDebugEvent(debugMsg);
+
+        }
+
+        public static IEnumerable<string> PythonPathsToCheck()
+        {
+            return new List<string>
+            {
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs"),
+                @"C:\ProgramData\Anaconda3",
+                @"C:\"
+            };
+        }
+
     }
 }
