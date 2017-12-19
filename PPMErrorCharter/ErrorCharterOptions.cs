@@ -6,7 +6,7 @@ namespace PPMErrorCharter
 {
     public class ErrorCharterOptions
     {
-        private const string PROGRAM_DATE = "December 13, 2017";
+        private const string PROGRAM_DATE = "December 18, 2017";
 
         public ErrorCharterOptions()
         {

@@ -161,9 +161,6 @@ namespace PPMErrorCharter
             }
             Console.WriteLine("Removed " + itemsRemoved + " out-of-range items from the original " + origSize + " items.");
 
-            var scatterPlotFilePath = outFileStub + "_MZRefinery_MassErrors.png";
-            var histogramPlotFilePath = outFileStub + "_MZRefinery_Histograms.png";
-
             DataPlotterBase plotter;
 
             if (options.PythonPlotting)
@@ -196,7 +193,7 @@ namespace PPMErrorCharter
             var plotsSaved = plotter.GeneratePNGPlots(scanData, fixedMzMLFileExists, haveScanTimes);
 
             if (!options.SaveMassErrorDetails)
-                return true;
+                return plotsSaved;
 
             var outFilePath = outFileStub + "_debug.tsv";
 
@@ -236,7 +233,8 @@ namespace PPMErrorCharter
                 }
             }
 
-            return true;
+            return plotsSaved;
+        }
 
         private static void Plotter_DebugEvent(string message)
         {
