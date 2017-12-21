@@ -334,7 +334,7 @@ namespace PPMErrorCharter
             _version = MzML_Version.mzML1_1_0;
             _randomAccess = randomAccess;
             _reduceMemoryUsage = tryReducingMemoryUsage;
-            _unzippedFilePath = filePath;
+            _unzippedFilePath = string.Empty;
 
             // Set a very large read buffer, it does decrease the read times for uncompressed files.
             _file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
@@ -626,17 +626,52 @@ namespace PPMErrorCharter
         /// </summary>
         public void Close()
         {
-            _xmlReaderForYield?.Close();
-            _fileReader.Close();
-            _file.Close();
+            try
+            {
+                _xmlReaderForYield?.Close();
+            }
+            catch
+            {
+                // Ignore errors here
+            }
+
+            try
+            {
+                _fileReader.Close();
+            }
+            catch
+            {
+                // Ignore errors here
+            }
+
+            try
+            {
+                _file.Close();
+            }
+            catch
+            {
+                // Ignore errors here
+            }
+
         }
 
         public void Cleanup()
         {
-            if (_randomAccess && _isGzipped)
+            if (!_randomAccess || !_isGzipped)
+                return;
+
+            if (string.IsNullOrWhiteSpace(_unzippedFilePath) || !File.Exists(_unzippedFilePath))
+                return;
+
+            try
             {
                 File.Delete(_unzippedFilePath);
             }
+            catch (Exception ex)
+            {
+                PRISM.ConsoleMsgUtils.ShowWarning("Warning: unable to delete the unzipped .mzML.gz file in the temp directory: " + ex.Message);
+            }
+
         }
 
         public void Dispose()
