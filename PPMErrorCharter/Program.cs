@@ -108,27 +108,38 @@ namespace PPMErrorCharter
                 outFileStub = outFileStub.Substring(0, outFileStub.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase));
             }
 
-            var fixedMzMLFile = outFileStub + "_FIXED.mzML";
+            var fixedMzMLFilePath = outFileStub + "_FIXED.mzML";
 
             var fixedMzMLFileExists = true;
-            if (File.Exists(fixedMzMLFile + ".gz"))
+            if (File.Exists(fixedMzMLFilePath + ".gz"))
             {
-                fixedMzMLFile += ".gz";
+                fixedMzMLFilePath += ".gz";
             }
-            else if (!File.Exists(fixedMzMLFile))
+            else if (!File.Exists(fixedMzMLFilePath))
             {
                 fixedMzMLFileExists = false;
+            }
+
+            FileInfo tempFixedMzMLFile = null;
+
+            if (!fixedMzMLFileExists)
+            {
+                fixedMzMLFileExists = RetrieveCachedMzMLFile(outFileStub, out tempFixedMzMLFile);
+                if (fixedMzMLFileExists)
+                {
+                    fixedMzMLFilePath = tempFixedMzMLFile.FullName;
+                }
             }
 
             Console.WriteLine();
             Console.WriteLine("Creating plots for \"" + identFile.Name + "\"");
             if (fixedMzMLFileExists)
             {
-                Console.WriteLine("  Using fixed data file \"" + fixedMzMLFile + "\"");
+                Console.WriteLine("  Using fixed data file \"" + fixedMzMLFilePath + "\"");
             }
             else
             {
-                Console.WriteLine("  Warning: Could not find fixed data file \"" + fixedMzMLFile + "[.gz]\".");
+                Console.WriteLine("  Warning: Could not find fixed data file \"" + fixedMzMLFilePath + "[.gz]\".");
                 Console.WriteLine("  Output will not include fixed data graphs.");
             }
 
@@ -137,9 +148,11 @@ namespace PPMErrorCharter
             var scanData = reader.Read(identFile.FullName);
             var haveScanTimes = reader.HaveScanTimes;
 
+            MzMLReader fixedDataReader = null;
+
             if (fixedMzMLFileExists)
             {
-                var fixedDataReader = new MzMLReader(fixedMzMLFile);
+                fixedDataReader = new MzMLReader(fixedMzMLFilePath);
                 fixedDataReader.ReadSpectraData(scanData);
                 haveScanTimes = true;
             }
@@ -199,6 +212,13 @@ namespace PPMErrorCharter
 
             var plotsSaved = plotter.GeneratePNGPlots(scanData, fixedMzMLFileExists, haveScanTimes);
 
+            if (fixedMzMLFileExists && tempFixedMzMLFile != null)
+            {
+                // Delete the .mzML.gz file that was copied based on info in the CacheInfo file
+                ConsoleMsgUtils.ShowDebug("Deleting " + tempFixedMzMLFile.FullName);
+                tempFixedMzMLFile.Delete();
+            }
+
             if (!options.SaveMassErrorDetails)
                 return plotsSaved;
 
@@ -238,9 +258,83 @@ namespace PPMErrorCharter
 
                     writer.WriteLine(data.ToDebugString() + largeErrorSuffix);
                 }
+
+                if (!fixedMzMLFileExists)
+                {
+                    return plotsSaved;
+                }
+
+                try
+                {
+                    fixedDataReader.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorMessage("Error disposing the MzML data reader: " + ex.Message);
+                }
             }
 
             return plotsSaved;
+        }
+
+        /// <summary>
+        /// Look for the mzML CacheInfo file
+        /// If it exists, retrieve the .mzML.gz file that it points to
+        /// </summary>
+        /// <param name="outFileStub"></param>
+        /// <param name="fixedMzMLFile"></param>
+        /// <returns>True if the CacheInfo file was found and the .mzML.gz file was successfully retrieved; otherwise false</returns>
+        private static bool RetrieveCachedMzMLFile(string outFileStub, out FileInfo fixedMzMLFile)
+        {
+            try
+            {
+                var cacheInfoFile = new FileInfo(outFileStub + ".mzML.gz_CacheInfo.txt");
+                if (!cacheInfoFile.Exists)
+                {
+                    fixedMzMLFile = null;
+                    return false;
+                }
+
+                string cachedMzMLFilePath;
+
+                using (var reader = new StreamReader(new FileStream(cacheInfoFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                {
+                    if (reader.EndOfStream)
+                        cachedMzMLFilePath = string.Empty;
+                    else
+                        cachedMzMLFilePath = reader.ReadLine();
+                }
+
+                if (string.IsNullOrWhiteSpace(cachedMzMLFilePath))
+                {
+                    fixedMzMLFile = null;
+                    return false;
+                }
+
+                var cachedMzMLFile = new FileInfo(cachedMzMLFilePath);
+                if (!cachedMzMLFile.Exists)
+                {
+                    ConsoleMsgUtils.ShowWarning("Cached .mzML.gz file not found; cannot retrieve: " + cachedMzMLFilePath);
+                    fixedMzMLFile = null;
+                    return false;
+                }
+
+                fixedMzMLFile = new FileInfo(outFileStub + "_FIXED.mzML.gz");
+
+                ConsoleMsgUtils.ShowDebug("Copying cached .mzML.gz file to " + fixedMzMLFile.FullName);
+
+                cachedMzMLFile.CopyTo(fixedMzMLFile.FullName, true);
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage("Error looking for and retrieving the fixed mzML file using the CacheInfo file: " + ex.Message);
+                fixedMzMLFile = null;
+                return false;
+            }
+
         }
 
         private static void Plotter_DebugEvent(string message)

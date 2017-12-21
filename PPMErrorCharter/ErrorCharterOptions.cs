@@ -52,6 +52,8 @@ namespace PPMErrorCharter
 
             if (PythonPlotting)
                 Console.WriteLine(" Generating plots with Python");
+            else
+                Console.WriteLine(" Generating plots with OxyPlot");
 
         }
 
