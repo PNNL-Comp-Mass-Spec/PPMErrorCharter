@@ -672,6 +672,30 @@ namespace PPMErrorCharter
                 PRISM.ConsoleMsgUtils.ShowWarning("Warning: unable to delete the unzipped .mzML.gz file in the temp directory: " + ex.Message);
             }
 
+            var fileToSkip = Path.GetFileName(_unzippedFilePath);
+
+            // Look for any other unzipped .mzML files in the temp directory
+            // Try to delete any over 5 minutes old
+
+            var tempFolder = new DirectoryInfo(Path.GetTempPath());
+            foreach (var mzMLFile in tempFolder.GetFiles("*.mzML"))
+            {
+                if (string.Equals(mzMLFile.Name, fileToSkip))
+                    continue;
+
+                if (DateTime.UtcNow.Subtract(mzMLFile.LastWriteTimeUtc).TotalMinutes < 5)
+                    continue;
+
+                try
+                {
+                    PRISM.ConsoleMsgUtils.ShowDebug("Deleting " + mzMLFile.FullName);
+                    mzMLFile.Delete();
+                }
+                catch
+                {
+                    PRISM.ConsoleMsgUtils.ShowDebug("  deletion attempt failed");
+                }
+            }
         }
 
         public void Dispose()
