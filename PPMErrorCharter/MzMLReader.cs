@@ -334,7 +334,7 @@ namespace PPMErrorCharter
             _version = MzML_Version.mzML1_1_0;
             _randomAccess = randomAccess;
             _reduceMemoryUsage = tryReducingMemoryUsage;
-            _unzippedFilePath = string.Empty;
+            _unzippedFilePath = filePath;
 
             // Set a very large read buffer, it does decrease the read times for uncompressed files.
             _file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
