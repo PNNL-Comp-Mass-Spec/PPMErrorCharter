@@ -669,10 +669,18 @@ namespace PPMErrorCharter
             }
             catch (Exception ex)
             {
-                PRISM.ConsoleMsgUtils.ShowWarning("Warning: unable to delete the unzipped .mzML.gz file in the temp directory: " + ex.Message);
+                PRISM.ConsoleMsgUtils.ShowWarning("Warning: unable to delete the decompressed .mzML file in the temp directory: " + ex.Message);
+                PRISM.clsProgRunner.GarbageCollectNow();
+                try
+                {
+                    File.Delete(_unzippedFilePath);
+                    PRISM.ConsoleMsgUtils.ShowDebug("Successfully deleted the file after garbage collection");
+                }
+                catch (Exception)
+                {
+                    // The second attempt failed; that's OK
+                }
             }
-
-            var fileToSkip = Path.GetFileName(_unzippedFilePath);
 
             // Look for any other unzipped .mzML files in the temp directory
             // Try to delete any over 5 minutes old
@@ -680,8 +688,6 @@ namespace PPMErrorCharter
             var tempFolder = new DirectoryInfo(Path.GetTempPath());
             foreach (var mzMLFile in tempFolder.GetFiles("*.mzML"))
             {
-                if (string.Equals(mzMLFile.Name, fileToSkip))
-                    continue;
 
                 if (DateTime.UtcNow.Subtract(mzMLFile.LastWriteTimeUtc).TotalMinutes < 5)
                     continue;
