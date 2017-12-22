@@ -6,7 +6,7 @@ namespace PPMErrorCharter
 {
     public class ErrorCharterOptions
     {
-        private const string PROGRAM_DATE = "December 18, 2017";
+        private const string PROGRAM_DATE = "December 22, 2017";
 
         public ErrorCharterOptions()
         {
@@ -42,6 +42,8 @@ namespace PPMErrorCharter
 
         public void OutputSetOptions()
         {
+            Console.WriteLine("PPMErrorCharter, version " + GetAppVersion());
+            Console.WriteLine();
             Console.WriteLine("Using options:");
 
             Console.WriteLine(" PSM results file: {0}", InputFilePath);
