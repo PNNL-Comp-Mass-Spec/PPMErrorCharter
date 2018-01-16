@@ -35,10 +35,10 @@ namespace PPMErrorCharter
                                   "Website: https://panomics.pnnl.gov/ or https://omics.pnl.gov or https://github.com/PNNL-Comp-Mass-Spec",
 
                     UsageExamples = {
-                        exeName + "SearchResults_msgfplus.mzid.gz",
-                        exeName + "SearchResults_msgfplus.mzid.gz 1E-12",
-                        exeName + "SearchResults_msgfplus.mzid.gz /Python",
-                        exeName + "SearchResults_msgfplus.mzid.gz /Python /Debug"
+                        exeName + " SearchResults_msgfplus.mzid.gz",
+                        exeName + " SearchResults_msgfplus.mzid.gz 1E-12",
+                        exeName + " SearchResults_msgfplus.mzid.gz /Python",
+                        exeName + " SearchResults_msgfplus.mzid.gz /Python /Debug"
                     }
                 };
 
