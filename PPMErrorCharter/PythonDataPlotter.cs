@@ -420,11 +420,11 @@ namespace PPMErrorCharter
                 writer.WriteLine("MassErrorVsMassData=" + metadataFilePaths.MassErrorVsMassExportFileName);
             }
 
-            var args = clsPathUtils.PossiblyQuotePath(pythonScriptFile.FullName) + " " + clsPathUtils.PossiblyQuotePath(metadataFile.FullName);
+            var args = PathUtils.PossiblyQuotePath(pythonScriptFile.FullName) + " " + PathUtils.PossiblyQuotePath(metadataFile.FullName);
 
             OnDebugEvent(string.Format("{0} {1}", PythonPath, args));
 
-            var progRunner = new clsProgRunner
+            var progRunner = new ProgRunner
             {
                 Arguments = args,
                 CreateNoWindow = true,
@@ -450,9 +450,9 @@ namespace PPMErrorCharter
                 var startTime = DateTime.UtcNow;
 
                 // Loop until program is complete, or until MAX_RUNTIME_SECONDS seconds elapses
-                while (progRunner.State != clsProgRunner.States.NotMonitoring)
+                while (progRunner.State != ProgRunner.States.NotMonitoring)
                 {
-                    clsProgRunner.SleepMilliseconds(MONITOR_INTERVAL_MILLISECONDS);
+                    ProgRunner.SleepMilliseconds(MONITOR_INTERVAL_MILLISECONDS);
 
                     if (DateTime.UtcNow.Subtract(startTime).TotalSeconds < MAX_RUNTIME_SECONDS)
                         continue;

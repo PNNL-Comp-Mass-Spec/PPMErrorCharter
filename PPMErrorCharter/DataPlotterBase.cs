@@ -7,7 +7,7 @@ namespace PPMErrorCharter
     /// <summary>
     /// Base class for mass error plot generation
     /// </summary>
-    public abstract class DataPlotterBase : clsEventNotifier
+    public abstract class DataPlotterBase : EventNotifier
     {
         /// <summary>
         /// Base output fle path

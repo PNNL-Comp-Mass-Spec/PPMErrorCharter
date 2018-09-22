@@ -670,7 +670,7 @@ namespace PPMErrorCharter
             catch (Exception ex)
             {
                 PRISM.ConsoleMsgUtils.ShowWarning("Warning: unable to delete the decompressed .mzML file in the temp directory: " + ex.Message);
-                PRISM.clsProgRunner.GarbageCollectNow();
+                PRISM.ProgRunner.GarbageCollectNow();
                 try
                 {
                     File.Delete(_unzippedFilePath);
