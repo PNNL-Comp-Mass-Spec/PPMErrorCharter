@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Media.Imaging;
 using OxyPlot;
 using PPMErrorCharter;
@@ -60,6 +61,8 @@ namespace PPMErrorCharterDisplay
             var identFile = datasetPathName + "_msgfplus.mzid.gz";
             var dataFileFixed = datasetPathName + "_FIXED.mzML.gz";
 
+            Console.WriteLine("Loading data from " + identFile);
+
             var reader = new MzIdentMLReader();
             var psmResults = reader.Read(identFile);
 
@@ -67,6 +70,8 @@ namespace PPMErrorCharterDisplay
             var dataFileExists = false;
             if (File.Exists(dataFileFixed))
             {
+                Console.WriteLine();
+                Console.WriteLine("Loading data from " + dataFileFixed);
                 var mzML = new MzMLReader(dataFileFixed);
                 mzML.ReadSpectraData(psmResults);
                 dataFileExists = true;

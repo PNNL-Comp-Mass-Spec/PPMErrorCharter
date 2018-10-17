@@ -74,7 +74,7 @@ namespace PPMErrorCharter
             }
             catch (Exception ex)
             {
-                ShowErrorMessage("Error occurred in Program->Main: " + Environment.NewLine + ex.Message, ex);
+                ShowErrorMessage("Error occurred in Program->Main", ex);
                 Thread.Sleep(1000);
                 return -1;
             }
@@ -143,6 +143,9 @@ namespace PPMErrorCharter
                 Console.WriteLine("  Output will not include fixed data graphs.");
             }
 
+            Console.WriteLine();
+            Console.WriteLine("Loading data from the .mzid file");
+
             var reader = new MzIdentMLReader(options.SpecEValueThreshold);
 
             var psmResults = reader.Read(identFile.FullName);
@@ -150,9 +153,14 @@ namespace PPMErrorCharter
 
             if (fixedMzMLFileExists)
             {
+                Console.WriteLine();
+                Console.WriteLine("Loading data from " + Path.GetFileName(fixedMzMLFilePath));
                 var fixedDataReader = new MzMLReader(fixedMzMLFilePath);
                 fixedDataReader.ReadSpectraData(psmResults);
+
+                // mzML files are guaranteed to have scan time
                 haveScanTimes = true;
+                Console.WriteLine();
             }
 
             var stats = new IdentDataStats(psmResults);
@@ -230,6 +238,7 @@ namespace PPMErrorCharter
                 {
                     "NativeID",
                     "CalcMZ",
+                    // ReSharper disable once StringLiteralTypo
                     "ExperMZ",
                     "RefineMZ",
                     "MassError",
