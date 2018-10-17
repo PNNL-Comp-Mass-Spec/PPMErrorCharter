@@ -148,8 +148,6 @@ namespace PPMErrorCharter
             var psmResults = reader.Read(identFile.FullName);
             var haveScanTimes = reader.HaveScanTimes;
 
-            MzMLReader fixedDataReader = null;
-
             if (fixedMzMLFileExists)
             {
                 var fixedDataReader = new MzMLReader(fixedMzMLFilePath);
@@ -264,14 +262,6 @@ namespace PPMErrorCharter
                     return plotsSaved;
                 }
 
-                try
-                {
-                    fixedDataReader.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    ShowErrorMessage("Error disposing the MzML data reader: " + ex.Message);
-                }
             }
 
             return plotsSaved;
