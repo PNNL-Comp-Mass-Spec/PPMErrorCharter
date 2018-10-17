@@ -145,29 +145,29 @@ namespace PPMErrorCharter
 
             var reader = new MzIdentMLReader(options.SpecEValueThreshold);
 
-            var scanData = reader.Read(identFile.FullName);
+            var psmResults = reader.Read(identFile.FullName);
             var haveScanTimes = reader.HaveScanTimes;
 
             MzMLReader fixedDataReader = null;
 
             if (fixedMzMLFileExists)
             {
-                fixedDataReader = new MzMLReader(fixedMzMLFilePath);
-                fixedDataReader.ReadSpectraData(scanData);
+                var fixedDataReader = new MzMLReader(fixedMzMLFilePath);
+                fixedDataReader.ReadSpectraData(psmResults);
                 haveScanTimes = true;
             }
 
-            var stats = new IdentDataStats(scanData);
+            var stats = new IdentDataStats(psmResults);
 
             stats.PrintStatsTable();
 
-            var origSize = scanData.Count;
+            var origSize = psmResults.Count;
             var itemsRemoved = 0;
-            for (var i = 0; i < scanData.Count; i++)
+            for (var i = 0; i < psmResults.Count; i++)
             {
-                if (scanData[i].OutOfRange())
+                if (psmResults[i].OutOfRange())
                 {
-                    scanData.RemoveAt(i);
+                    psmResults.RemoveAt(i);
                     i--; // Step back one value, to hit this same index again
                     itemsRemoved++;
                 }
@@ -210,7 +210,7 @@ namespace PPMErrorCharter
             plotter.WarningEvent += Plotter_WarningEvent;
             plotter.StatusEvent += Plotter_MessageEvent;
 
-            var plotsSaved = plotter.GeneratePNGPlots(scanData, fixedMzMLFileExists, haveScanTimes);
+            var plotsSaved = plotter.GeneratePNGPlots(psmResults, fixedMzMLFileExists, haveScanTimes);
 
             if (fixedMzMLFileExists && tempFixedMzMLFile != null)
             {
@@ -243,7 +243,7 @@ namespace PPMErrorCharter
 
                 writer.WriteLine(string.Join("\t", headerColumns));
 
-                foreach (var data in scanData)
+                foreach (var data in psmResults)
                 {
                     var error = data.MassErrorIsotoped - data.MassErrorRefinedIsotoped;
                     string largeErrorSuffix;

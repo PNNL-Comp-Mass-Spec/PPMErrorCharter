@@ -59,14 +59,16 @@ namespace PPMErrorCharterDisplay
             var datasetPathName = @"..\..\..\ExampleData\2016-07-28_QC-digest_HCD_01";
             var identFile = datasetPathName + "_msgfplus.mzid.gz";
             var dataFileFixed = datasetPathName + "_FIXED.mzML.gz";
+
             var reader = new MzIdentMLReader();
-            var scanData = reader.Read(identFile);
+            var psmResults = reader.Read(identFile);
+
             var haveScanTimes = reader.HaveScanTimes;
             var dataFileExists = false;
             if (File.Exists(dataFileFixed))
             {
                 var mzML = new MzMLReader(dataFileFixed);
-                mzML.ReadSpectraData(scanData);
+                mzML.ReadSpectraData(psmResults);
                 dataFileExists = true;
                 haveScanTimes = true;
             }
@@ -81,7 +83,7 @@ namespace PPMErrorCharterDisplay
             var options = new ErrorCharterOptions();
             var plotter = new IdentDataPlotter(options, datasetPathName);
 
-            plotter.GeneratePNGPlots(scanData, dataFileExists, haveScanTimes);
+            plotter.GeneratePNGPlots(psmResults, dataFileExists, haveScanTimes);
 
             this.AllVis = plotter.ErrorScatterPlotBitmap;
             this.ErrHist = plotter.ErrorHistogramBitmap;

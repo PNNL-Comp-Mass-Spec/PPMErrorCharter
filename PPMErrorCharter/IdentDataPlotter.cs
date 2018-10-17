@@ -167,11 +167,11 @@ namespace PPMErrorCharter
         /// <summary>
         /// Generate the mass error scatter plots and save to a PNG file
         /// </summary>
-        /// <param name="scanData"></param>
+        /// <param name="psmResults"></param>
         /// <param name="pngFilePath"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="haveScanTimes"></param>
-        private bool ErrorScatterPlotsToPng(IReadOnlyCollection<IdentData> scanData, string pngFilePath, bool fixedMzMLFileExists, bool haveScanTimes)
+        private bool ErrorScatterPlotsToPng(IReadOnlyCollection<IdentData> psmResults, string pngFilePath, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var width = 512;  // 1024 pixels final width
             var height = 384; // 768 pixels final height
@@ -182,12 +182,12 @@ namespace PPMErrorCharter
             var drawVisual = new DrawingVisual();
             var drawContext = drawVisual.RenderOpen();
 
-            AddScatterPlotData(drawContext, scanData, haveScanTimes, width, height, resolution, false);
+            AddScatterPlotData(drawContext, psmResults, haveScanTimes, width, height, resolution, false);
 
             // Only add the fixed data if the data file exists
             if (fixedMzMLFileExists)
             {
-                AddScatterPlotData(drawContext, scanData, haveScanTimes, width, height, resolution, true);
+                AddScatterPlotData(drawContext, psmResults, haveScanTimes, width, height, resolution, true);
             }
 
             drawContext.Close();
@@ -214,7 +214,7 @@ namespace PPMErrorCharter
 
         private void AddScatterPlotData(
             DrawingContext drawContext,
-            IReadOnlyCollection<IdentData> scanData,
+            IReadOnlyCollection<IdentData> psmResults,
             bool haveScanTimes,
             int width,
             int height,
@@ -248,13 +248,13 @@ namespace PPMErrorCharter
                 if (useRefinedData)
                 {
                     massErrorsVsTimePlot =
-                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined),
+                        ScatterPlot(psmResults, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmErrorRefined),
                                     scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
                 }
                 else
                 {
                     massErrorsVsTimePlot =
-                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError),
+                        ScatterPlot(psmResults, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError),
                                     scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
                 }
 
@@ -267,19 +267,19 @@ namespace PPMErrorCharter
                 if (useRefinedData)
                 {
                     massErrorsVsTimePlot =
-                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined),
+                        ScatterPlot(psmResults, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined),
                                     scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
 
                 }
                 else
                 {
                     massErrorsVsTimePlot =
-                        ScatterPlot(scanData, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError),
+                        ScatterPlot(psmResults, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmError),
                                     scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
                 }
             }
 
-            var massErrorsVsMzPlot = ScatterPlot(scanData, "CalcMz", ppmErrorDataField, "M/Z: " + dataTypeSuffix, "m/z", OxyColors.Green);
+            var massErrorsVsMzPlot = ScatterPlot(psmResults, "CalcMz", ppmErrorDataField, "M/Z: " + dataTypeSuffix, "m/z", OxyColors.Green);
             var massErrorsVsTimeBitmap = PngExporter.ExportToBitmap(massErrorsVsTimePlot, width, height, OxyColors.White, resolution);
             var massErrorsVsMzBitmap = PngExporter.ExportToBitmap(massErrorsVsMzPlot, width, height, OxyColors.White, resolution);
 
@@ -579,22 +579,22 @@ namespace PPMErrorCharter
         /// <summary>
         /// Generate the mass error scatter plots and mass error histogram plots, saving as PNG files
         /// </summary>
-        /// <param name="scanData"></param>
+        /// <param name="psmResults"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="haveScanTimes"></param>
         /// <returns></returns>
-        public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> scanData, bool fixedMzMLFileExists, bool haveScanTimes)
+        public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> psmResults, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var scatterPlotFilePath = BaseOutputFilePath + "_MZRefinery_MassErrors.png";
             var histogramPlotFilePath = BaseOutputFilePath + "_MZRefinery_Histograms.png";
 
-            var scatterPlotSuccess = ErrorScatterPlotsToPng(scanData, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
+            var scatterPlotSuccess = ErrorScatterPlotsToPng(psmResults, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
             if (scatterPlotSuccess)
                 Console.WriteLine("Generated " + scatterPlotFilePath);
             else
                 Console.WriteLine("Error generating " + scatterPlotFilePath);
 
-            var histogramPlotSuccess = ErrorHistogramsToPng(scanData, histogramPlotFilePath, fixedMzMLFileExists);
+            var histogramPlotSuccess = ErrorHistogramsToPng(psmResults, histogramPlotFilePath, fixedMzMLFileExists);
             if (histogramPlotSuccess)
                 Console.WriteLine("Generated " + histogramPlotFilePath);
             else
