@@ -99,9 +99,9 @@ namespace PPMErrorCharterDisplay
         //public PlotModel OrigCalcMz { get; private set; }
         //public PlotModel FixScanId { get; private set; }
         //public PlotModel FixCalcMz { get; private set; }
-        public PlotModel OrigPpmErrorHist { get; private set; }
-        public PlotModel FixPpmErrorHist { get; private set; }
-        public BitmapSource AllVis { get; private set; }
-        public BitmapSource ErrHist { get; private set; }
+        //public PlotModel OrigPpmErrorHist { get; private set; }
+        //public PlotModel FixPpmErrorHist { get; private set; }
+        public BitmapSource AllVis { get; }
+        public BitmapSource ErrHist { get; }
     }
 }

@@ -38,10 +38,10 @@ namespace PPMErrorCharter
             Unknown
         }
         private CheckedIsotopeError _hasIsotopeError;
-        private int _isotopeErrorCount;
+        // Unused: private int _isotopeErrorCount;
         private double _isotopeErrorAdjustment;
         private CheckedIsotopeError _hasRefinedIsotopeError;
-        private int _refinedIsotopeErrorCount;
+        // Unused: private int _refinedIsotopeErrorCount;
         private double _refinedIsotopeErrorAdjustment;
 
         public int ScanIdInt => Convert.ToInt32(ScanId);
@@ -204,10 +204,10 @@ namespace PPMErrorCharter
             _isSetExperMz = false;
             _isSetExperMzRefined = false;
             _hasIsotopeError = CheckedIsotopeError.Unknown;
-            _isotopeErrorCount = 0;
+            // Unused: _isotopeErrorCount = 0;
             _isotopeErrorAdjustment = 0.0;
             _hasRefinedIsotopeError = CheckedIsotopeError.Unknown;
-            _refinedIsotopeErrorCount = 0;
+            // Unused: _refinedIsotopeErrorCount = 0;
             _refinedIsotopeErrorAdjustment = 0.0;
             _experMzIsotoped = 0.0;
             _experMzRefinedIsotoped = 0.0;
@@ -252,7 +252,7 @@ namespace PPMErrorCharter
                 if ((adjustment - IsotopeErrorTestWindow) <= MassError && MassError <= (adjustment + IsotopeErrorTestWindow))
                 {
                     _hasIsotopeError = CheckedIsotopeError.Yes;
-                    _isotopeErrorCount = MassError < 0 ? -i : i;
+                    // Unused: _isotopeErrorCount = MassError < 0 ? -i : i;
                     _isotopeErrorAdjustment = adjustment;
                     break;
                 }
@@ -286,7 +286,7 @@ namespace PPMErrorCharter
                 if ((adjustment - IsotopeErrorTestWindow) <= MassErrorRefined && MassErrorRefined <= (adjustment + IsotopeErrorTestWindow))
                 {
                     _hasRefinedIsotopeError = CheckedIsotopeError.Yes;
-                    _refinedIsotopeErrorCount = MassError < 0 ? -i : i;
+                    // Unused: _refinedIsotopeErrorCount = MassError < 0 ? -i : i;
                     _refinedIsotopeErrorAdjustment = adjustment;
                     break;
                 }
