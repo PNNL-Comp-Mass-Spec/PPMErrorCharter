@@ -73,13 +73,13 @@ namespace PPMErrorCharter
                 var runIsotopeCheck = false;
                 var locked = _fixIsoLocked;
                 _fixIsoLocked = true; // Value only changed if was false
-                if (_isSetExperMz && _calcMz != 0.0)
+                if (_isSetExperMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     runIsotopeCheck = true;
                     MassError = _experMz - _calcMz;
                     PpmError = (MassError / _calcMz) * 1.0e6;
                 }
-                if (_isSetExperMzRefined && _calcMz != 0.0)
+                if (_isSetExperMzRefined && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     runIsotopeCheck = true;
                     MassErrorRefined = _experMzRefined - _calcMz;
@@ -105,7 +105,7 @@ namespace PPMErrorCharter
                 {
                     _isStoredExperMz = false;
                 }
-                if (_isSetCalcMz && _calcMz != 0.0)
+                if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     MassError = _experMz - _calcMz;
                     PpmError = (MassError / _calcMz) * 1.0e6;
@@ -128,7 +128,7 @@ namespace PPMErrorCharter
             {
                 _experMzIsotoped = value;
                 _isStoredExperMz = true;
-                if (_isSetCalcMz && _calcMz != 0.0)
+                if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     MassErrorIsotoped = _experMzIsotoped - _calcMz;
                     PpmErrorIsotoped = (MassErrorIsotoped / _calcMz) * 1.0e6;
@@ -147,7 +147,7 @@ namespace PPMErrorCharter
                 {
                     _isStoredExperMzRefined = false;
                 }
-                if (_isSetCalcMz && _calcMz != 0.0)
+                if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     var locked = _fixIsoLocked;
                     _fixIsoLocked = true; // Value only changed if was false
@@ -171,7 +171,7 @@ namespace PPMErrorCharter
             private set
             {
                 _experMzRefinedIsotoped = value;
-                if (_isSetCalcMz && _calcMz != 0.0)
+                if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     MassErrorRefinedIsotoped = _experMzRefinedIsotoped - _calcMz;
                     PpmErrorRefinedIsotoped = (MassErrorRefinedIsotoped / _calcMz) * 1.0e6;
