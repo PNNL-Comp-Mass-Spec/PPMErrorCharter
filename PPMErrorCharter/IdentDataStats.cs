@@ -50,7 +50,7 @@ namespace PPMErrorCharter
         {
             GetMeans();
             GetMedians();
-            GetStDevs();
+            GetStdDev();
             GetPercent99s();
         }
 
@@ -75,7 +75,7 @@ namespace PPMErrorCharter
             RefinedMedian = _data[_data.Count / 2].PpmErrorRefined;
         }
 
-        private void GetStDevs()
+        private void GetStdDev()
         {
             double sumVar = 0;
             double sumVarMed = 0;
