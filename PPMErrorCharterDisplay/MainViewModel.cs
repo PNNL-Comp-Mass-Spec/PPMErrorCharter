@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Media.Imaging;
-using OxyPlot;
 using PPMErrorCharter;
 
 namespace PPMErrorCharterDisplay
@@ -90,8 +89,8 @@ namespace PPMErrorCharterDisplay
 
             plotter.GeneratePNGPlots(psmResults, dataFileExists, haveScanTimes);
 
-            this.AllVis = plotter.ErrorScatterPlotBitmap;
-            this.ErrHist = plotter.ErrorHistogramBitmap;
+            AllVis = plotter.ErrorScatterPlotBitmap;
+            ErrHist = plotter.ErrorHistogramBitmap;
 
         }
 
