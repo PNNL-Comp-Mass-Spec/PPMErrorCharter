@@ -12,7 +12,7 @@ a mass measurement error histogram centered at 0 ppm. MzRefinery is part of the
 ProteoWizard package (in the msconvert.exe tool) and it thus can read and write 
 a wide variety of file formats.
 
-Download ProteoWizard from http://proteowizard.sourceforge.net/downloads.shtml
+Download ProteoWizard from http://proteowizard.sourceforge.net/
 
 For more information on the algorithms employed by mzRefinery, see also http://www.ncbi.nlm.nih.gov/pubmed/26243018
 
