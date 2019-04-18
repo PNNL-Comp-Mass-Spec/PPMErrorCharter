@@ -183,7 +183,7 @@ def update_ticks_and_axes(ax, plt, baseFontSize, yAxisFormatString, allowNegativ
         ymin, ymax = plt.ylim()
     
         if ymin < 0:
-            plt.ylim(ymin = 0)
+            plt.ylim(bottom = 0)
 
     # plt.xticks(fontsize=baseFontSize-2)
     # plt.yticks(fontsize=baseFontSize-2)
@@ -263,11 +263,11 @@ def plot_histograms(outputFilePath, columnNames, mass_error_ppm, counts_original
     ax2.set_title(title_refined, fontsize=baseFontSize+2)
 
     # Define a fixed X-axis range so that each subplot has the same X range
-    ax1.set_xlim(xmin = xDataMin, xmax = xDataMax)
-    ax2.set_xlim(xmin = xDataMin, xmax = xDataMax)
+    ax1.set_xlim(left = xDataMin, right = xDataMax)
+    ax2.set_xlim(left = xDataMin, right = xDataMax)
 
-    ax1.set_ylim(ymin = 0, ymax = yDataMax)
-    ax2.set_ylim(ymin = 0, ymax = yDataMax)
+    ax1.set_ylim(bottom = 0, top = yDataMax)
+    ax2.set_ylim(bottom = 0, top = yDataMax)
     
     ax1.xaxis.set_label_text(xAxisLabel, fontsize=baseFontSize)
     ax2.xaxis.set_label_text(xAxisLabel, fontsize=baseFontSize)
@@ -402,17 +402,17 @@ def plot_mass_errors(outputFilePath, errorVsTimeColumnNames, errorVsMassColumnNa
     ax4.set_title(mz_title_refined, fontsize=baseFontSize+2)
     
     # Make sure the X-axis range is the same for paired plots
-    ax1.set_xlim(xmin = scanTimeMin, xmax = scanTimeMax)
-    ax2.set_xlim(xmin = scanTimeMin, xmax = scanTimeMax)
+    ax1.set_xlim(left = scanTimeMin, right = scanTimeMax)
+    ax2.set_xlim(left = scanTimeMin, right = scanTimeMax)
     
-    ax3.set_xlim(xmin = mzMin, xmax = mzMax)
-    ax4.set_xlim(xmin = mzMin, xmax = mzMax)
+    ax3.set_xlim(left = mzMin, right = mzMax)
+    ax4.set_xlim(left = mzMin, right = mzMax)
     
     # Define a fixed Y-axis range so that each subplot has the same Y range
-    ax1.set_ylim(ymin = yDataMin, ymax = yDataMax)
-    ax2.set_ylim(ymin = yDataMin, ymax = yDataMax)
-    ax3.set_ylim(ymin = yDataMin, ymax = yDataMax)
-    ax4.set_ylim(ymin = yDataMin, ymax = yDataMax)
+    ax1.set_ylim(bottom = yDataMin, top = yDataMax)
+    ax2.set_ylim(bottom = yDataMin, top = yDataMax)
+    ax3.set_ylim(bottom = yDataMin, top = yDataMax)
+    ax4.set_ylim(bottom = yDataMin, top = yDataMax)
     
     ax2.xaxis.set_label_text(timeBasedXAxisLabel, fontsize=baseFontSize)
     ax4.xaxis.set_label_text(massBasedXAxisLabel, fontsize=baseFontSize)
