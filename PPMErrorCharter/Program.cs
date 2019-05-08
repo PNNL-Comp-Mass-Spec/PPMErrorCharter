@@ -343,7 +343,7 @@ namespace PPMErrorCharter
 
         private static void Plotter_ErrorEvent(string message, Exception ex)
         {
-            ConsoleMsgUtils.ShowError(message, ex, false);
+            ConsoleMsgUtils.ShowErrorCustom(message, ex, false);
         }
 
         private static void Plotter_MessageEvent(string message)
