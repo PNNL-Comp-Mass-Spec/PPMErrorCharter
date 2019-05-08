@@ -6,7 +6,7 @@ namespace PPMErrorCharter
 {
     public class ErrorCharterOptions
     {
-        private const string PROGRAM_DATE = "May 7, 2019";
+        private const string PROGRAM_DATE = "May 8, 2019";
 
         public ErrorCharterOptions()
         {
@@ -59,14 +59,15 @@ namespace PPMErrorCharter
 
         }
 
-        public bool ValidateArgs()
+        public bool ValidateArgs(out string errorMessage)
         {
             if (string.IsNullOrWhiteSpace(InputFilePath))
             {
-                Console.WriteLine("PSM results file not specified");
+                errorMessage = "PSM results file not specified";
                 return false;
             }
 
+            errorMessage = string.Empty;
             return true;
         }
 
