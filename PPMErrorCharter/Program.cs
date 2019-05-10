@@ -144,8 +144,8 @@ namespace PPMErrorCharter
             }
             else
             {
-                Console.WriteLine("  Warning: Could not find fixed data file \"" + fixedMzMLFilePath + "[.gz]\".");
-                Console.WriteLine("  Output will not include fixed data graphs.");
+                ConsoleMsgUtils.ShowWarning("  Warning: Could not find fixed data file \"" + fixedMzMLFilePath + "[.gz]\".");
+                ConsoleMsgUtils.ShowWarning("  Output will not include fixed data graphs.");
             }
 
             Console.WriteLine();
