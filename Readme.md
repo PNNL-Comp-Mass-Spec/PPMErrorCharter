@@ -14,7 +14,7 @@ a wide variety of file formats.
 
 Download ProteoWizard from http://proteowizard.sourceforge.net/
 
-For more information on the algorithms employed by mzRefinery, see also http://www.ncbi.nlm.nih.gov/pubmed/26243018
+For more information on the algorithms employed by mzRefinery, see http://www.ncbi.nlm.nih.gov/pubmed/26243018
 
 ## Usage
 
@@ -22,7 +22,9 @@ The following is a typical workflow for using mzRefinery
 
 1. Create a centroided .mzML file
 
-`MSConvert.exe C:\WorkDir\DatasetName_2016-09-28.raw --filter "peakPicking true 1-" --mzML --32  -o C:\WorkDir`
+```
+MSConvert.exe C:\WorkDir\DatasetName_2016-09-28.raw --filter "peakPicking true 1-" --mzML --32  -o C:\WorkDir
+```
 
 
 2. Search the .mzML file using MSGF+ and a fully tryptic search and no dynamic mods (do include alkylation of cysteine if applicable):
@@ -38,12 +40,19 @@ java.exe  -Xmx1500M -jar MSGFPlus.jar -s DatasetName_2016-09-28.mzML -o DatasetN
 ```
 msconvert.exe C:\WorkDir\DatasetName_2016-09-28.mzML --outfile DatasetName_2016-09-28_FIXED.mzML 
    --filter "mzRefiner C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid thresholdValue=-1e-10 thresholdStep=10 maxSteps=2" 
-   --32 –mzML
- ```
+   --32 -mzML
+```
 
 4. Visualize the results from MzRefinery:
 
-`PPMErrorCharter.exe C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid 1E-10`
+```
+PPMErrorCharter.exe C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid 1E-10
+```
+
+On Linux, use PPMErrorCharterPython with mono
+```
+mono PPMErrorCharterPython.exe -I:C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid -Evalue:1E-10
+```
  
 
 5. Run MSGF+ again, this time using a more thorough search, for example using partially tryptic or non-tryptic, or adding additional dynamic mods.
@@ -62,7 +71,7 @@ java.exe  -Xmx2000M -XX:+UseConcMarkSweepGC -cp MSGFPlus.jar edu.ucsd.msjava.ui.
 
 ## Syntax
 
-Usage: PPMErrorCharter.exe
+Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 `-I` (or the first non-switch argument)
 * PSM results file; mzid or .mzid.gz (Default: "")
@@ -74,20 +83,25 @@ Usage: PPMErrorCharter.exe
 * PPM mass error histogram bin size (Default: 0.5, Min: 0.1, Max: 10)
 
 `-Python` or `-PythonPlot`
-Generate plots with Python (Default: False)
+* Generate plots with Python
+* Defaults to False for PPMErrorCharter.exe
+* Always True for PPMErrorCharterPython.exe
 
 `-Debug` or `-Verbose`
 * Create a tab-delimited text file with detailed mass error information (Default: False)
 
 ## Example Commands
 
-`PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz`
+`PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz`
 
-`PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz 1E-12`
+`PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz 1E-12`
 
-`PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz /Python`
+`PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz /Python`
 
-`PPMErrorCharter.exeSearchResults_msgfplus.mzid.gz /Python /Debug`
+`PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz /Python /Debug`
+
+`PPMErrorCharterPython.exe -I:SearchResults_msgfplus.mzid.gz -EValue:1E-13`
+
 
 ## Contacts
 
@@ -101,4 +115,4 @@ The PPMErrorCharter is licensed under the 2-Clause BSD License;
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://opensource.org/licenses/BSD-2-Clause
 
-Copyright 2018 Battelle Memorial Institute
+Copyright 2019 Battelle Memorial Institute
