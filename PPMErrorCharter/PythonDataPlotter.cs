@@ -274,11 +274,18 @@ namespace PPMErrorCharter
             if (!string.IsNullOrWhiteSpace(PythonPath))
                 return true;
 
+            if (PRISM.SystemInfo.IsLinux)
+            {
+                PythonPath = "/usr/bin/python3";
+                ConsoleMsgUtils.ShowDebug("Assuming Python 3 is at {0}", PythonPath);
+                return true;
+            }
+
             var pathsToCheck = PythonPathsToCheck();
 
-            foreach (var folderPath in pathsToCheck)
+            foreach (var directoryPath in pathsToCheck)
             {
-                var exePath = FindPythonExe(folderPath);
+                var exePath = FindPythonExe(directoryPath);
                 if (string.IsNullOrWhiteSpace(exePath))
                     continue;
 
@@ -294,9 +301,9 @@ namespace PPMErrorCharter
         /// Find the best candidate folder with Python 3.x
         /// </summary>
         /// <returns>Path to the python executable, otherwise an empty string</returns>
-        private static string FindPythonExe(string folderPath)
+        private static string FindPythonExe(string directoryPath)
         {
-            var directory = new DirectoryInfo(folderPath);
+            var directory = new DirectoryInfo(directoryPath);
             if (!directory.Exists)
                 return string.Empty;
 
