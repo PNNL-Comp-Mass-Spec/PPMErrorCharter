@@ -187,7 +187,14 @@ namespace PPMErrorCharter
 
             DataPlotterBase plotter;
 
-            if (options.PythonPlotting)
+#if DISABLE_OXYPLOT
+            var usePythonPlotting = true;
+#else
+            var usePythonPlotting = options.PythonPlotting;
+#endif
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (usePythonPlotting)
             {
                 // Make sure that Python exists
                 if (!PythonDataPlotter.PythonInstalled)
@@ -213,7 +220,11 @@ namespace PPMErrorCharter
             }
             else
             {
+#if DISABLE_OXYPLOT
+                throw new Exception("Oxyplot is disabled; use switch /Python");
+#else
                 plotter = new IdentDataPlotter(options, outFileStub);
+#endif
             }
 
             plotter.DebugEvent += Plotter_DebugEvent;
