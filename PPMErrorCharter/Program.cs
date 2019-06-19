@@ -113,27 +113,34 @@ namespace PPMErrorCharter
                 outFileStub = outFileStub.Substring(0, outFileStub.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase));
             }
 
-            var fixedMzMLFilePath = outFileStub + "_FIXED.mzML";
+            string fixedMzMLFilePath;
+            bool fixedMzMLFileExists;
+            var cachedMzMLFileRetrieved = false;
 
-            var fixedMzMLFileExists = true;
-            if (File.Exists(fixedMzMLFilePath + ".gz"))
+            if (File.Exists(outFileStub + "_FIXED.mzML"))
             {
-                fixedMzMLFilePath += ".gz";
+                fixedMzMLFilePath = outFileStub + "_FIXED.mzML";
+                fixedMzMLFileExists = true;
             }
-            else if (!File.Exists(fixedMzMLFilePath))
+            else if (File.Exists(outFileStub + "_FIXED.mzML.gz"))
             {
-                fixedMzMLFileExists = false;
+                fixedMzMLFilePath = outFileStub + "_FIXED.mzML.gz";
+                fixedMzMLFileExists = true;
             }
-
-            FileInfo tempFixedMzMLFile = null;
-
-            if (!fixedMzMLFileExists)
+            else
             {
-                fixedMzMLFileExists = RetrieveCachedMzMLFile(outFileStub, out tempFixedMzMLFile);
-                if (fixedMzMLFileExists)
+                cachedMzMLFileRetrieved = RetrieveCachedMzMLFile(outFileStub, out var tempFixedMzMLFile);
+                if (cachedMzMLFileRetrieved)
                 {
                     fixedMzMLFilePath = tempFixedMzMLFile.FullName;
+                    fixedMzMLFileExists = true;
                 }
+                else
+                {
+                    fixedMzMLFilePath = string.Empty;
+                    fixedMzMLFileExists = false;
+                }
+
             }
 
             Console.WriteLine();
@@ -154,7 +161,7 @@ namespace PPMErrorCharter
             var reader = new MzIdentMLReader(options.SpecEValueThreshold);
 
             var psmResults = reader.Read(identFile.FullName);
-            var haveScanTimes = reader.HaveScanTimes;
+            bool haveScanTimes;
 
             if (fixedMzMLFileExists)
             {
@@ -166,6 +173,10 @@ namespace PPMErrorCharter
                 // mzML files are guaranteed to have scan time
                 haveScanTimes = true;
                 Console.WriteLine();
+            }
+            else
+            {
+                haveScanTimes = reader.HaveScanTimes;
             }
 
             var stats = new IdentDataStats(psmResults);
@@ -236,11 +247,11 @@ namespace PPMErrorCharter
 
             var plotsSaved = plotter.GeneratePNGPlots(psmResults, fixedMzMLFileExists, haveScanTimes);
 
-            if (fixedMzMLFileExists && tempFixedMzMLFile != null)
+            if (fixedMzMLFileExists && cachedMzMLFileRetrieved)
             {
                 // Delete the .mzML.gz file that was copied based on info in the CacheInfo file
-                ConsoleMsgUtils.ShowDebug("Deleting " + tempFixedMzMLFile.FullName);
-                tempFixedMzMLFile.Delete();
+                ConsoleMsgUtils.ShowDebug("Deleting " + fixedMzMLFilePath);
+                File.Delete(fixedMzMLFilePath);
             }
 
             if (!options.SaveMassErrorDetails)
