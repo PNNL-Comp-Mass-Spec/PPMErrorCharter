@@ -65,7 +65,7 @@ namespace PPMErrorCharter
                         break;
                     }
 
-                    if (!(spectrum is SimpleMzMLReader.SimpleProductSpectrum productSpectrum))
+                    if (spectrum.MsLevel <= 1)
                     {
                         continue;
                     }
@@ -78,12 +78,25 @@ namespace PPMErrorCharter
 
                     foreach (var psm in psmsForSpectrum)
                     {
-                        psm.ExperMzRefined = productSpectrum.MonoisotopicMz;
+
+                        psm.ExperMzRefined = spectrum.GetThermoMonoisotopicMz();
+
+                        if (Math.Abs(psm.ExperMzRefined) < float.Epsilon)
+                        {
+                            if (spectrum.Precursors.Any() && spectrum.Precursors.First().SelectedIons.Any())
+                            {
+                                psm.ExperMzRefined = spectrum.Precursors.First().SelectedIons.First().SelectedIonMz;
+                            }
+                            else
+                            {
+                                PRISM.ConsoleMsgUtils.ShowWarning("Could not determine the experimental precursor m/z for scan {0}", spectrum.ScanNumber);
+                            }
+                        }
 
                         if (psm.ScanTimeSeconds <= 0)
                         {
                             // StartTime is stored in minutes, we've been using seconds.
-                            psm.ScanTimeSeconds = spectrum.ElutionTime * 60;
+                            psm.ScanTimeSeconds = spectrum.ScanStartTime * 60;
                         }
                     }
 
