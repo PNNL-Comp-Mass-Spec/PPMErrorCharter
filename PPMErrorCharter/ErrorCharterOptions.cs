@@ -42,7 +42,7 @@ namespace PPMErrorCharter
 
         public void OutputSetOptions()
         {
-            Console.WriteLine("PPMErrorCharter, version " + GetAppVersion());
+            Console.WriteLine("PPMErrorCharter, version {0}", GetAppVersion());
             Console.WriteLine();
             Console.WriteLine("Using options:");
 

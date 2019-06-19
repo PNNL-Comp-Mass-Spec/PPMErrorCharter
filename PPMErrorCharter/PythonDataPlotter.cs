@@ -488,7 +488,7 @@ namespace PPMErrorCharter
                 var histogramPlotFile = new FileInfo(Path.Combine(metadataFilePaths.BaseOutputFile.FullName, baseOutputName + "_Histograms.png"));
                 var scatterPlotFile = new FileInfo(Path.Combine(metadataFilePaths.BaseOutputFile.FullName, baseOutputName + "_MassErrors.png"));
 
-                OnStatusEvent("Generated plots; see: " + histogramPlotFile.FullName + " and " + scatterPlotFile.FullName);
+                OnStatusEvent("Generated plots; see:\n  " + histogramPlotFile.FullName + "\nand\n  " + scatterPlotFile.FullName);
 
                 if (DeleteTempFiles)
                 {

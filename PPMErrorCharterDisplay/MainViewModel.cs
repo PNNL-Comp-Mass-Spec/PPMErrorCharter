@@ -60,7 +60,7 @@ namespace PPMErrorCharterDisplay
             var identFile = datasetPathName + "_msgfplus.mzid.gz";
             var dataFileFixed = datasetPathName + "_FIXED.mzML.gz";
 
-            Console.WriteLine("Loading data from " + identFile);
+            Console.WriteLine("Loading data from {0}", identFile);
 
             var reader = new MzIdentMLReader();
             var psmResults = reader.Read(identFile);
@@ -70,7 +70,7 @@ namespace PPMErrorCharterDisplay
             if (File.Exists(dataFileFixed))
             {
                 Console.WriteLine();
-                Console.WriteLine("Loading data from " + dataFileFixed);
+                Console.WriteLine("Loading data from {0}", dataFileFixed);
                 var mzML = new MzMLReader(dataFileFixed);
                 mzML.ReadSpectraData(psmResults);
                 dataFileExists = true;

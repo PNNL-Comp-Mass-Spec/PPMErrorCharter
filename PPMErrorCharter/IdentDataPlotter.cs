@@ -590,15 +590,15 @@ namespace PPMErrorCharter
 
             var scatterPlotSuccess = ErrorScatterPlotsToPng(psmResults, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
             if (scatterPlotSuccess)
-                Console.WriteLine("Generated " + scatterPlotFilePath);
+                Console.WriteLine("Generated {0}", scatterPlotFilePath);
             else
-                Console.WriteLine("Error generating " + scatterPlotFilePath);
+                Console.WriteLine("Error generating {0}", scatterPlotFilePath);
 
             var histogramPlotSuccess = ErrorHistogramsToPng(psmResults, histogramPlotFilePath, fixedMzMLFileExists);
             if (histogramPlotSuccess)
-                Console.WriteLine("Generated " + histogramPlotFilePath);
+                Console.WriteLine("Generated {0}", histogramPlotFilePath);
             else
-                Console.WriteLine("Error generating " + histogramPlotFilePath);
+                Console.WriteLine("Error generating {0}", histogramPlotFilePath);
 
             return scatterPlotSuccess && histogramPlotSuccess;
         }

@@ -93,16 +93,16 @@ namespace PPMErrorCharter
             if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) ||
                   identFilePath.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase)))
             {
-                Console.WriteLine("Error: \"" + identFilePath + "\" is not an mzIdentML file.");
+                ConsoleMsgUtils.ShowWarning("Error: \"{0}\" is not an mzIdentML file.", identFilePath);
                 return false;
             }
 
             var identFile = new FileInfo(identFilePath);
             if (!identFile.Exists)
             {
-                Console.WriteLine("Error: Data file not found: \"" + identFilePath + "\"");
+                ConsoleMsgUtils.ShowWarning("Error: Data file not found: \"{0}\"", identFilePath);
                 if (!Path.IsPathRooted(identFilePath))
-                    Console.WriteLine("Full file path: " + identFile.FullName);
+                    Console.WriteLine("Full file path: {0}", identFile.FullName);
 
                 return false;
             }
@@ -137,15 +137,15 @@ namespace PPMErrorCharter
             }
 
             Console.WriteLine();
-            Console.WriteLine("Creating plots for \"" + identFile.Name + "\"");
+            Console.WriteLine("Creating plots for \"{0}\"", identFile.Name);
             if (fixedMzMLFileExists)
             {
-                Console.WriteLine("  Using fixed data file \"" + fixedMzMLFilePath + "\"");
+                Console.WriteLine("  Using fixed data file \"{0}\"", fixedMzMLFilePath);
             }
             else
             {
-                ConsoleMsgUtils.ShowWarning("  Warning: Could not find fixed data file \"" + fixedMzMLFilePath + "[.gz]\".");
-                ConsoleMsgUtils.ShowWarning("  Output will not include fixed data graphs.");
+                ConsoleMsgUtils.ShowWarning("  Warning: Could not find fixed data file \"{0}[.gz]\".", fixedMzMLFilePath);
+                ConsoleMsgUtils.ShowWarning("  Output will not include fixed data plots.");
             }
 
             Console.WriteLine();
@@ -159,7 +159,7 @@ namespace PPMErrorCharter
             if (fixedMzMLFileExists)
             {
                 Console.WriteLine();
-                Console.WriteLine("Loading data from " + Path.GetFileName(fixedMzMLFilePath));
+                Console.WriteLine("Loading data from {0}", Path.GetFileName(fixedMzMLFilePath));
                 var fixedDataReader = new MzMLReader(fixedMzMLFilePath);
                 fixedDataReader.ReadSpectraData(psmResults);
 
@@ -183,7 +183,9 @@ namespace PPMErrorCharter
                     itemsRemoved++;
                 }
             }
-            Console.WriteLine("Removed " + itemsRemoved + " out-of-range items from the original " + origSize + " items.");
+
+            Console.WriteLine();
+            Console.WriteLine("Removed {0:N0} out-of-range items from the original {1:N0} items.", itemsRemoved, origSize);
 
             DataPlotterBase plotter;
 
@@ -247,7 +249,7 @@ namespace PPMErrorCharter
             var outFilePath = outFileStub + "_debug.tsv";
 
             Console.WriteLine();
-            Console.WriteLine("Exporting data to " + outFilePath);
+            Console.WriteLine("Exporting data to {0}", outFilePath);
             using (var writer = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
             {
                 var headerColumns = new List<string>
@@ -345,7 +347,7 @@ namespace PPMErrorCharter
             }
             catch (Exception ex)
             {
-                ShowErrorMessage("Error looking for and retrieving the fixed mzML file using the CacheInfo file: " + ex.Message);
+                ShowErrorMessage("Error looking for and retrieving the fixed mzML file using the CacheInfo file", ex);
                 fixedMzMLFile = null;
                 return false;
             }
