@@ -507,6 +507,15 @@ namespace PPMErrorCharter
                     }
 
                 }
+                else
+                {
+                    ConsoleMsgUtils.ShowDebug("{0}\n    {1}\n    {2}\n    {3}\n    {4}",
+                                              "Not deleting the following temporary files since debug mode is enabled",
+                                              metadataFile.FullName,
+                                              Path.Combine(workDir, metadataFilePaths.ErrorHistogramsExportFileName),
+                                              Path.Combine(workDir, metadataFilePaths.MassErrorVsTimeExportFileName),
+                                              Path.Combine(workDir, metadataFilePaths.MassErrorVsMassExportFileName));
+                }
 
                 return true;
             }
