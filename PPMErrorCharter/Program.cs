@@ -23,7 +23,7 @@ namespace PPMErrorCharter
                     ProgramInfo = "This program generates plots of the mass measurement errors before and after processing with mzRefinery." + Environment.NewLine + Environment.NewLine +
                                   "mzRefinery is a software tool for correcting systematic mass error biases " +
                                   "in mass spectrometry data files. The software uses confident peptide spectrum matches " +
-                                  "from MSGF+ to evaluate three different calibration methods, then chooses the " +
+                                  "from MS-GF+ to evaluate three different calibration methods, then chooses the " +
                                   "optimal transform function to remove systematic bias, typically resulting in a " +
                                   "mass measurement error histogram centered at 0 ppm. MzRefinery is part of the " +
                                   "ProteoWizard package (in the msconvert.exe tool) and it thus can read and write " +

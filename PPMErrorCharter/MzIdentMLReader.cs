@@ -21,7 +21,7 @@ namespace PPMErrorCharter
         private readonly int _maxSteps = 3;
         private int _currentSteps;
 
-        // MSGF+ Filtering
+        // MS-GF+ Filtering
         private double _specEValueThreshold = DEFAULT_SPEC_EVALUE_THRESHOLD; // Less than
         private readonly double _specEValueThresholdStep = 10; // Multiply by
 
