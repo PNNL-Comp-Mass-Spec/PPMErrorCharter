@@ -43,7 +43,7 @@ def process_file(metadataFilePath):
     #   MassErrorVsMassData=MassErrorsVsMass_Data_File_Name
     
     metadata = {}
-    with open(metadataFile, 'r') as f:
+    with open(str(metadataFile), 'r') as f:
         for line in f:
             if len(line.strip()) == 0:
                 continue
