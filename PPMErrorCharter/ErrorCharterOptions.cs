@@ -6,7 +6,7 @@ namespace PPMErrorCharter
 {
     public class ErrorCharterOptions
     {
-        private const string PROGRAM_DATE = "June 19, 2019";
+        private const string PROGRAM_DATE = "June 20, 2019";
 
         public ErrorCharterOptions()
         {
@@ -30,7 +30,10 @@ namespace PPMErrorCharter
         [Option("Python", "PythonPlot", HelpText = "Generate plots with Python")]
         public bool PythonPlotting { get; set; }
 
-        [Option("Debug", "Verbose", HelpText = "Create a tab-delimited text file with detailed mass error information")]
+        [Option("Debug", "Verbose", "Keep",
+            HelpText = "Create a tab-delimited text file with detailed mass error information. " +
+                       "When /Debug is enabled, PPMErrorCharter will not delete the _TmpExportData.txt files " +
+                       "used to pass data to Python for plotting")]
         public bool SaveMassErrorDetails { get; set; }
 
         public static string GetAppVersion()
