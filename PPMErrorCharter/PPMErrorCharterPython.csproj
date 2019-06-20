@@ -65,6 +65,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)..\Python\PPMErrorCharter_Plotter.py"  "$(TargetDir)" /D /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(ProjectDir)..\Python\PPMErrorCharter_Plotter.py"  "$(TargetDir)" /D /Y
+
+echo Deleting OxyPlot DLLs that Visual Studio erroneously copies to the bin\PythonPlot directory
+del "$(TargetDir)OxyPlot*.dll
+del "$(TargetDir)OxyPlot*.pdb
+</PostBuildEvent>
   </PropertyGroup>
 </Project>
