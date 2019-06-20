@@ -16,6 +16,32 @@ Download ProteoWizard from http://proteowizard.sourceforge.net/
 
 For more information on the algorithms employed by mzRefinery, see http://www.ncbi.nlm.nih.gov/pubmed/26243018
 
+### Requirements
+
+On Windows, plots can be generated with either OxyPlot or Python.
+On Linux, plots can only be generated with Python, and you must use PPMErrorCharterPython.exe with mono (see below)
+
+To use Python, install Python 3.x (preferably Python 3.6 or newer) along with these three packages:
+* `numpy` 
+* `matplotlib`
+* `pandas`
+
+An example command to install these packages is
+```
+C:\ProgramData\Anaconda3\Scripts\pip.exe install numpy matplotlib pandas
+```
+
+On Windows, PPMErrorCharter searches for `python.exe` by looking for subdirectories starting with "Python3" or "Python 3" below the following directories.
+It also looks for `python.exe` within each of the following directories (e.g. `C:\ProgramData\Anaconda3\python.exe`)
+* C:\Program Files
+* C:\Program Files (x86)
+* C:\Users\CurrentUser\AppData\Local\Programs
+* C:\ProgramData\Anaconda3
+* C:\
+
+On Linux, python3 must be at `/usr/bin/python3`\
+This is typically a symbolic link to the actual Python 3.x program
+
 ## Usage
 
 The following is a typical workflow for using mzRefinery

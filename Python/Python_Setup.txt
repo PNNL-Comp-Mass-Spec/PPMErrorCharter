@@ -4,4 +4,15 @@ From an admin level command prompt:
 python-3.6.2.exe /passive InstallAllUsers=1 DefaultAllUsersTargetDir=C:\Python36 CompileAll=1
 
 After that finishes:
-C:\Python36\Scripts\pip install numpy matplotlib pandas
+C:\Python36\Scripts\pip.exe install numpy matplotlib pandas
+
+
+Alternatively, install Anaconda, which includes Python
+To install packages, start the Anaconda Prompt, then use
+
+cd C:\ProgramData\Anaconda3\Scripts\
+pip.exe install numpy matplotlib pandas
+
+
+To run Python without starting the Anaconda Prompt, update the Windows Path variable to include
+C:\ProgramData\Anaconda3\Library\bin
