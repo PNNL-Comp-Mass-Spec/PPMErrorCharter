@@ -79,9 +79,13 @@ namespace PPMErrorCharter
                     foreach (var psm in psmsForSpectrum)
                     {
 
-                        psm.ExperMzRefined = spectrum.GetThermoMonoisotopicMz();
+                        var experimentalMzRefined = spectrum.GetThermoMonoisotopicMz();
 
-                        if (Math.Abs(psm.ExperMzRefined) < float.Epsilon)
+                        if (Math.Abs(experimentalMzRefined) > 0)
+                        {
+                            psm.ExperMzRefined = experimentalMzRefined;
+                        }
+                        else
                         {
                             if (spectrum.Precursors.Any() && spectrum.Precursors.First().SelectedIons.Any())
                             {
