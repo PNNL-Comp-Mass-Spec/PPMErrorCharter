@@ -25,7 +25,7 @@ namespace PPMErrorCharter
             RefinedMedian = -500;
             RefinedStDev = -500;
             RefinedStDevMedian = -500;
-            GetStats();
+            GetStats(false);
         }
 
         public void PrintStatsTable()
@@ -46,49 +46,86 @@ namespace PPMErrorCharter
             Console.WriteLine(formatStringFlt, "PPM Window for 99%:  low:", Median - (StDevMedian * 3), RefinedMedian - (RefinedStDevMedian * 3));
         }
 
-        private void GetStats()
+        private void GetStats(bool useIsotoped)
         {
-            GetMeans();
-            GetMedians();
-            GetStdDev();
+            GetMeans(useIsotoped);
+            GetMedians(useIsotoped);
+            GetStdDev(useIsotoped);
             GetPercent99s();
         }
 
-        private void GetMeans()
+        private void GetMeans(bool useIsotoped)
         {
             double sum = 0;
             double sumRefined = 0;
             foreach (var data in _data)
             {
-                sum += data.PpmError;
-                sumRefined += data.PpmErrorRefined;
+                if (useIsotoped)
+                {
+                    sum += data.PpmErrorIsotoped;
+                    sumRefined += data.PpmErrorRefinedIsotoped;
+                }
+                else
+                {
+                    sum += data.PpmError;
+                    sumRefined += data.PpmErrorRefined;
+                }
             }
+
             Mean = sum / _data.Count;
             RefinedMean = sumRefined / _data.Count;
         }
 
-        private void GetMedians()
+        private void GetMedians(bool useIsotoped)
         {
-            _data.Sort(new IdentDataByPpmError()); // Sort by the PpmError
-            Median = _data[_data.Count / 2].PpmError;
-            _data.Sort(new IdentDataByPpmErrorRefined()); // Sort by the fixed PpmError
-            RefinedMedian = _data[_data.Count / 2].PpmErrorRefined;
+            if (useIsotoped)
+            {
+                // Sort by the PpmErrorIsotoped
+                _data.Sort(new IdentDataByPpmErrorIsotoped());
+                Median = _data[_data.Count / 2].PpmErrorIsotoped;
+
+                // Sort by the fixed PpmErrorRefinedIsotoped
+                _data.Sort(new IdentDataByPpmErrorIsotopedRefined());
+                RefinedMedian = _data[_data.Count / 2].PpmErrorRefinedIsotoped;
+            }
+            else
+            {
+                // Sort by the PpmError
+                _data.Sort(new IdentDataByPpmErrorIsotopedRefined());
+                Median = _data[_data.Count / 2].PpmError;
+
+                // Sort by the fixed PpmError
+                _data.Sort(new IdentDataByPpmErrorRefined());
+                RefinedMedian = _data[_data.Count / 2].PpmErrorRefined;
+            }
         }
 
-        private void GetStdDev()
+        private void GetStdDev(bool useIsotoped)
         {
             double sumVar = 0;
             double sumVarMed = 0;
             double sumVarRef = 0;
             double sumVarMedRef = 0;
+
             // Calculate Variance: average of squared differences from center point
             foreach (var data in _data)
             {
-                sumVar += Math.Pow(data.PpmError - Mean, 2);
-                sumVarMed += Math.Pow(data.PpmError - Median, 2);
-                sumVarRef += Math.Pow(data.PpmErrorRefined - RefinedMean, 2);
-                sumVarMedRef += Math.Pow(data.PpmErrorRefined - RefinedMedian, 2);
+                if (useIsotoped)
+                {
+                    sumVar += Math.Pow(data.PpmErrorIsotoped - Mean, 2);
+                    sumVarMed += Math.Pow(data.PpmErrorIsotoped - Median, 2);
+                    sumVarRef += Math.Pow(data.PpmErrorRefinedIsotoped - RefinedMean, 2);
+                    sumVarMedRef += Math.Pow(data.PpmErrorRefinedIsotoped - RefinedMedian, 2);
+                }
+                else
+                {
+                    sumVar += Math.Pow(data.PpmError - Mean, 2);
+                    sumVarMed += Math.Pow(data.PpmError - Median, 2);
+                    sumVarRef += Math.Pow(data.PpmErrorRefined - RefinedMean, 2);
+                    sumVarMedRef += Math.Pow(data.PpmErrorRefined - RefinedMedian, 2);
+                }
             }
+
             var var = sumVar / _data.Count;
             var varMed = sumVarMed / _data.Count;
             var varRef = sumVarRef / _data.Count;

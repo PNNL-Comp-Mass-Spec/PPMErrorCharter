@@ -411,4 +411,28 @@ namespace PPMErrorCharter
             return right == null ? 1 : left.PpmErrorRefined.CompareTo(right.PpmErrorRefined);
         }
     }
+
+    public class IdentDataByPpmErrorIsotoped : IComparer<IdentData>
+    {
+        public int Compare(IdentData left, IdentData right)
+        {
+            if (left == null)
+            {
+                return right == null ? 0 : -1;
+            }
+            return right == null ? 1 : left.PpmErrorIsotoped.CompareTo(right.PpmErrorIsotoped);
+        }
+    }
+
+    public class IdentDataByPpmErrorIsotopedRefined : IComparer<IdentData>
+    {
+        public int Compare(IdentData left, IdentData right)
+        {
+            if (left == null)
+            {
+                return right == null ? 0 : -1;
+            }
+            return right == null ? 1 : left.PpmErrorRefinedIsotoped.CompareTo(right.PpmErrorRefinedIsotoped);
+        }
+    }
 }
