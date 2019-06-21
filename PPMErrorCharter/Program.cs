@@ -179,6 +179,12 @@ namespace PPMErrorCharter
                 haveScanTimes = reader.HaveScanTimes;
             }
 
+            if (psmResults.Count == 0)
+            {
+                ConsoleMsgUtils.ShowWarning("No PSM results were read from {0}; nothing to plot", identFile.Name);
+                return false;
+            }
+
             var stats = new IdentDataStats(psmResults);
 
             stats.PrintStatsTable();
