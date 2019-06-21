@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using PRISM;
@@ -188,6 +189,15 @@ namespace PPMErrorCharter
             var stats = new IdentDataStats(psmResults);
 
             stats.PrintStatsTable();
+
+            var firstResult = psmResults.First();
+
+            Console.WriteLine();
+            Console.WriteLine("Using data points with original and refined MassError between {0} and {1} Da",
+                              -firstResult.IsotopeErrorFilterWindow, firstResult.IsotopeErrorFilterWindow);
+
+            Console.WriteLine("Using data points with original and refined PpmError between {0} and {1} ppm",
+                              -firstResult.PpmErrorFilterWindow, firstResult.PpmErrorFilterWindow);
 
             var origSize = psmResults.Count;
             var itemsRemoved = 0;
