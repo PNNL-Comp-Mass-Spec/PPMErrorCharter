@@ -10,7 +10,7 @@ namespace PPMErrorCharter
     public abstract class DataPlotterBase : EventNotifier
     {
         /// <summary>
-        /// Base output fle path
+        /// Base output file path
         /// </summary>
         public string BaseOutputFilePath { get; }
 
