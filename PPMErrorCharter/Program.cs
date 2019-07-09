@@ -39,7 +39,9 @@ namespace PPMErrorCharter
                         exeName + " SearchResults_msgfplus.mzid.gz",
                         exeName + " SearchResults_msgfplus.mzid.gz 1E-12",
                         exeName + " SearchResults_msgfplus.mzid.gz /Python",
-                        exeName + " SearchResults_msgfplus.mzid.gz /Python /Debug"
+                        exeName + " SearchResults_msgfplus.mzid.gz /Python /Debug",
+                        exeName + " SearchResults_msgfplus.mzid.gz /F:C:\\InstrumentFiles\\SearchResults_msgfplus.mzML.gz 1E-12",
+                        exeName + " -I:SearchResults_msgfplus.mzid.gz -EValue:1E-13"
                     }
                 };
 
@@ -97,7 +99,7 @@ namespace PPMErrorCharter
             if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) ||
                   identFilePath.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase)))
             {
-                ConsoleMsgUtils.ShowWarning("Error: \"{0}\" is not an mzIdentML file.", identFilePath);
+                ConsoleMsgUtils.ShowWarning("Error: \"{0}\" is not an mzIdentML file.\nThe filename should end in .mzid or .mzid.gz", identFilePath);
                 return false;
             }
 
