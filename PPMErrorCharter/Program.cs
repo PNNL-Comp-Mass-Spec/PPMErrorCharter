@@ -111,52 +111,40 @@ namespace PPMErrorCharter
                 return false;
             }
 
-            var outFileStub = identFile.FullName.Substring(0, identFile.FullName.LastIndexOf(".mzid", StringComparison.OrdinalIgnoreCase));
-            if (outFileStub.EndsWith("_msgfplus", StringComparison.OrdinalIgnoreCase))
-            {
-                outFileStub = outFileStub.Substring(0, outFileStub.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase));
-            }
-
-            string fixedMzMLFilePath;
             bool fixedMzMLFileExists;
-            var cachedMzMLFileRetrieved = false;
-
-            if (File.Exists(outFileStub + "_FIXED.mzML"))
+            if (string.IsNullOrWhiteSpace(options.FixedMzMLFilePath))
             {
-                fixedMzMLFilePath = outFileStub + "_FIXED.mzML";
-                fixedMzMLFileExists = true;
-            }
-            else if (File.Exists(outFileStub + "_FIXED.mzML.gz"))
-            {
-                fixedMzMLFilePath = outFileStub + "_FIXED.mzML.gz";
-                fixedMzMLFileExists = true;
+                fixedMzMLFileExists = false;
             }
             else
             {
-                cachedMzMLFileRetrieved = RetrieveCachedMzMLFile(outFileStub, out var tempFixedMzMLFile);
-                if (cachedMzMLFileRetrieved)
-                {
-                    fixedMzMLFilePath = tempFixedMzMLFile.FullName;
-                    fixedMzMLFileExists = true;
-                }
-                else
-                {
-                    fixedMzMLFilePath = string.Empty;
-                    fixedMzMLFileExists = false;
-                }
+                fixedMzMLFileExists = File.Exists(options.FixedMzMLFilePath);
 
+                if (!fixedMzMLFileExists)
+                {
+                    ConsoleMsgUtils.ShowWarning("Error: Data file not found: \"{0}\"", options.FixedMzMLFilePath);
+                    if (!Path.IsPathRooted(options.FixedMzMLFilePath))
+                        Console.WriteLine("Full file path: {0}", options.FixedMzMLFilePath);
+
+                    return false;
+                }
             }
 
             Console.WriteLine();
             Console.WriteLine("Creating plots for \"{0}\"", identFile.Name);
-            if (fixedMzMLFileExists)
+            if (!fixedMzMLFileExists)
             {
-                Console.WriteLine("  Using fixed data file \"{0}\"", fixedMzMLFilePath);
-            }
-            else
-            {
-                ConsoleMsgUtils.ShowWarning("  Warning: Could not find fixed data file \"{0}[.gz]\".", fixedMzMLFilePath);
-                ConsoleMsgUtils.ShowWarning("  Output will not include fixed data plots.");
+                if (string.IsNullOrWhiteSpace(options.BaseOutputFilePath) || string.IsNullOrWhiteSpace(options.DefaultFixedMzMLFileName))
+                {
+                    ConsoleMsgUtils.ShowWarning("  Warning: Could not find fixed data file \"{0}[.gz]\"\n  " +
+                                                "  Output will not include fixed data plots.",
+                                                Path.GetFileNameWithoutExtension(identFile.Name) + "_FIXED.mzML");
+                }
+                else
+                {
+                    // A message with the expected filename should have already been shown by OutputSetOptions
+                    ConsoleMsgUtils.ShowWarning("  Output will not include fixed data plots since the fixed .mzML file is not defined");
+                }
             }
 
             Console.WriteLine();
@@ -170,8 +158,8 @@ namespace PPMErrorCharter
             if (fixedMzMLFileExists)
             {
                 Console.WriteLine();
-                Console.WriteLine("Loading data from {0}", Path.GetFileName(fixedMzMLFilePath));
-                var fixedDataReader = new MzMLReader(fixedMzMLFilePath);
+                Console.WriteLine("Loading data from \"{0}\"", PRISM.PathUtils.CompactPathString(options.FixedMzMLFilePath, 80));
+                var fixedDataReader = new MzMLReader(options.FixedMzMLFilePath);
                 fixedDataReader.ReadSpectraData(psmResults);
 
                 // mzML files are guaranteed to have scan time
@@ -219,6 +207,24 @@ namespace PPMErrorCharter
 
             DataPlotterBase plotter;
 
+            string baseOutputFilePath;
+            if (string.IsNullOrWhiteSpace(options.BaseOutputFilePath))
+            {
+                if (string.IsNullOrWhiteSpace(options.OutputDirectoryPath))
+                {
+                    var inputFile = new FileInfo(options.InputFilePath);
+                    baseOutputFilePath = ErrorCharterOptions.GetBaseOutputFilePath(options.InputFilePath, inputFile.DirectoryName);
+                }
+                else
+                {
+                    baseOutputFilePath = ErrorCharterOptions.GetBaseOutputFilePath(options.InputFilePath, options.OutputDirectoryPath);
+                }
+            }
+            else
+            {
+                baseOutputFilePath = options.BaseOutputFilePath;
+            }
+
 #if DISABLE_OXYPLOT
             var usePythonPlotting = true;
 #else
@@ -241,7 +247,7 @@ namespace PPMErrorCharter
                     return false;
                 }
 
-                var pythonPlotter = new PythonDataPlotter(options, outFileStub);
+                var pythonPlotter = new PythonDataPlotter(options, baseOutputFilePath);
                 plotter = pythonPlotter;
 
                 if (options.SaveMassErrorDetails)
@@ -255,7 +261,7 @@ namespace PPMErrorCharter
 #if DISABLE_OXYPLOT
                 throw new Exception("Oxyplot is disabled; use switch /Python");
 #else
-                plotter = new IdentDataPlotter(options, outFileStub);
+                plotter = new IdentDataPlotter(options, baseOutputFilePath);
 #endif
             }
 
@@ -266,17 +272,10 @@ namespace PPMErrorCharter
 
             var plotsSaved = plotter.GeneratePNGPlots(psmResults, fixedMzMLFileExists, haveScanTimes);
 
-            if (fixedMzMLFileExists && cachedMzMLFileRetrieved)
-            {
-                // Delete the .mzML.gz file that was copied based on info in the CacheInfo file
-                ConsoleMsgUtils.ShowDebug("Deleting " + fixedMzMLFilePath);
-                File.Delete(fixedMzMLFilePath);
-            }
-
             if (!options.SaveMassErrorDetails)
                 return plotsSaved;
 
-            var outFilePath = outFileStub + "_debug.tsv";
+            var outFilePath = baseOutputFilePath + "_debug.tsv";
 
             Console.WriteLine();
             Console.WriteLine("Exporting data to {0}", outFilePath);
@@ -408,6 +407,5 @@ namespace PPMErrorCharter
         {
             ConsoleMsgUtils.ShowError(message, ex);
         }
-
     }
 }

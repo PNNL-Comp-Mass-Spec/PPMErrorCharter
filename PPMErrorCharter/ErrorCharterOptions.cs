@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using PRISM;
 
@@ -16,7 +18,13 @@ namespace PPMErrorCharter
         /// </summary>
         public ErrorCharterOptions()
         {
+            BaseOutputFilePath = string.Empty;
+            DefaultFixedMzMLFileName = string.Empty;
+
             InputFilePath = string.Empty;
+            FixedMzMLFilePath = string.Empty;
+            OutputDirectoryPath = string.Empty;
+
             SpecEValueThreshold = MzIdentMLReader.DEFAULT_SPEC_EVALUE_THRESHOLD;
             PPMErrorHistogramBinSize = 0.5;
             PythonPlotting = false;
@@ -35,6 +43,18 @@ namespace PPMErrorCharter
             HelpShowsDefault = true, Min = 0, Max = 10)]
         public double SpecEValueThreshold { get; set; }
 
+        /// <summary>
+        /// Fixed .mzML file path (optional)
+        /// </summary>
+        [Option("F", "Fixed", "FixedMzML", HelpText = "Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter). " +
+                                                      "If this switch is not used, the program will try to auto-find this file")]
+        public string FixedMzMLFilePath { get; set; }
+
+        /// <summary>
+        /// Output directory path (optional)
+        /// </summary>
+        [Option("O", "Output", HelpText = "Path to the directory where plots should be created; by default, plots are created in the same directory as the input file")]
+        public string OutputDirectoryPath { get; set; }
 
         /// <summary>
         /// Mass error histogram bin size (in ppm)
@@ -58,6 +78,49 @@ namespace PPMErrorCharter
                        "used to pass data to Python for plotting")]
         public bool SaveMassErrorDetails { get; set; }
 
+        /// <summary>
+        /// Base output file path; updated by OutputSetOptions or
+        /// </summary>
+        public string BaseOutputFilePath { get; private set; }
+
+        /// <summary>
+        /// Default _FIXED.mzML filename; used in a warning message by GeneratePlots
+        /// </summary>
+        public string DefaultFixedMzMLFileName { get; private set; }
+
+        private bool AutoResolveFixedMzMLFile(string baseOutputFilePath, out string fixedMzMLFilePath, out string cacheInfoFileName)
+        {
+
+            DefaultFixedMzMLFileName = baseOutputFilePath + ".mzML";
+
+            var suffixesToCheck = new List<string> {
+                "_FIXED.mzML",
+                "_FIXED.mzML.gz",
+                ".mzML",
+                ".mzML.gz"
+            };
+
+            foreach (var suffix in suffixesToCheck)
+            {
+                var candidateFile = new FileInfo(baseOutputFilePath + suffix);
+                if (!candidateFile.Exists)
+                    continue;
+
+                fixedMzMLFilePath = candidateFile.FullName;
+                cacheInfoFileName = string.Empty;
+                return true;
+            }
+
+            var cachedMzMLFileFound = ResolveCachedMzMLFile(baseOutputFilePath, out var cachedMzMLFile, out cacheInfoFileName);
+            if (cachedMzMLFileFound)
+            {
+                fixedMzMLFilePath = cachedMzMLFile.FullName;
+                return true;
+            }
+
+            fixedMzMLFilePath = string.Empty;
+            return false;
+        }
 
         /// <summary>
         /// Get the assembly version and program date
@@ -70,6 +133,43 @@ namespace PPMErrorCharter
             return version;
         }
 
+        /// <summary>
+        /// Determine the base dataset name and prepend it with the output directory path
+        /// </summary>
+        /// <param name="inputFilePath"></param>
+        /// <param name="outputDirectoryPath"></param>
+        /// <returns></returns>
+        public static string GetBaseOutputFilePath(string inputFilePath, string outputDirectoryPath)
+        {
+            string outFileStub;
+
+            var mzidIndex = inputFilePath.LastIndexOf(".mzid", StringComparison.OrdinalIgnoreCase);
+            if (mzidIndex <= 0)
+            {
+                outFileStub = Path.GetFileNameWithoutExtension(inputFilePath);
+            }
+            else
+            {
+                outFileStub = inputFilePath.Substring(0, mzidIndex);
+            }
+
+            var suffixIndex = outFileStub.LastIndexOf("_msgfplus", StringComparison.OrdinalIgnoreCase);
+
+            if (suffixIndex > 0)
+            {
+                outFileStub = outFileStub.Substring(0, suffixIndex);
+            }
+
+            if (string.IsNullOrWhiteSpace(outputDirectoryPath))
+                return outFileStub;
+
+            return Path.Combine(outputDirectoryPath, Path.GetFileName(outFileStub));
+        }
+
+        /// <summary>
+        /// Display the current options
+        /// If the FixedMzMLFilePath is undefined, tries to auto-resolve it
+        /// </summary>
         public void OutputSetOptions()
         {
             Console.WriteLine("PPMErrorCharter, version {0}", GetAppVersion());
@@ -77,6 +177,27 @@ namespace PPMErrorCharter
             Console.WriteLine("Using options:");
 
             Console.WriteLine(" PSM results file: {0}", InputFilePath);
+
+            BaseOutputFilePath = GetBaseOutputFilePath(InputFilePath, OutputDirectoryPath);
+
+            if (string.IsNullOrWhiteSpace(FixedMzMLFilePath))
+            {
+                var fixedMzMLFileExists = AutoResolveFixedMzMLFile(BaseOutputFilePath, out var fixedMzMLFilePath, out var cacheInfoFileName);
+
+                if (fixedMzMLFileExists)
+                {
+                    FixedMzMLFilePath = fixedMzMLFilePath;
+                }
+                else
+                {
+                    Console.WriteLine(" Fixed .mzML file: undefined and could not find \n    {0} or \n    {1}", DefaultFixedMzMLFileName, cacheInfoFileName);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(FixedMzMLFilePath))
+            {
+                Console.WriteLine(" Fixed .mzML file: {0}", FixedMzMLFilePath);
+            }
 
             Console.WriteLine(" Spec EValue threshold: {0}", StringUtilities.DblToString(SpecEValueThreshold, 2));
 
