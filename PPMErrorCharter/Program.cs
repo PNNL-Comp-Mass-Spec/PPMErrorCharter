@@ -323,66 +323,6 @@ namespace PPMErrorCharter
             return plotsSaved;
         }
 
-        /// <summary>
-        /// Look for the mzML CacheInfo file
-        /// If it exists, retrieve the .mzML.gz file that it points to
-        /// </summary>
-        /// <param name="outFileStub"></param>
-        /// <param name="fixedMzMLFile"></param>
-        /// <returns>True if the CacheInfo file was found and the .mzML.gz file was successfully retrieved; otherwise false</returns>
-        private static bool RetrieveCachedMzMLFile(string outFileStub, out FileInfo fixedMzMLFile)
-        {
-            try
-            {
-                var cacheInfoFile = new FileInfo(outFileStub + ".mzML.gz_CacheInfo.txt");
-                if (!cacheInfoFile.Exists)
-                {
-                    fixedMzMLFile = null;
-                    return false;
-                }
-
-                string cachedMzMLFilePath;
-
-                using (var reader = new StreamReader(new FileStream(cacheInfoFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
-                {
-                    if (reader.EndOfStream)
-                        cachedMzMLFilePath = string.Empty;
-                    else
-                        cachedMzMLFilePath = reader.ReadLine();
-                }
-
-                if (string.IsNullOrWhiteSpace(cachedMzMLFilePath))
-                {
-                    fixedMzMLFile = null;
-                    return false;
-                }
-
-                var cachedMzMLFile = new FileInfo(cachedMzMLFilePath);
-                if (!cachedMzMLFile.Exists)
-                {
-                    ConsoleMsgUtils.ShowWarning("Cached .mzML.gz file not found; cannot retrieve: " + cachedMzMLFilePath);
-                    fixedMzMLFile = null;
-                    return false;
-                }
-
-                fixedMzMLFile = new FileInfo(outFileStub + "_FIXED.mzML.gz");
-
-                ConsoleMsgUtils.ShowDebug("Copying cached .mzML.gz file to " + fixedMzMLFile.FullName);
-
-                cachedMzMLFile.CopyTo(fixedMzMLFile.FullName, true);
-
-                return true;
-
-            }
-            catch (Exception ex)
-            {
-                ShowErrorMessage("Error looking for and retrieving the fixed mzML file using the CacheInfo file", ex);
-                fixedMzMLFile = null;
-                return false;
-            }
-
-        }
-
         private static void Plotter_DebugEvent(string message)
         {
             ConsoleMsgUtils.ShowDebug(message);

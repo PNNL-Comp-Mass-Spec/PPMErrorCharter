@@ -211,6 +211,61 @@ namespace PPMErrorCharter
         }
 
         /// <summary>
+        /// Look for the mzML CacheInfo file
+        /// If it exists, determine the path of the .mzML.gz file that it points to and verify that the file exists
+        /// </summary>
+        /// <param name="baseOutputFilePath"></param>
+        /// <param name="cachedMzMLFile"></param>
+        /// <param name="cacheInfoFileName"></param>
+        /// <returns>True if the CacheInfo file was found and the .mzML.gz file was successfully retrieved; otherwise false</returns>
+        private bool ResolveCachedMzMLFile(string baseOutputFilePath, out FileInfo cachedMzMLFile, out string cacheInfoFileName)
+        {
+            cacheInfoFileName = baseOutputFilePath + ".mzML.gz_CacheInfo.txt";
+
+            try
+            {
+                var cacheInfoFile = new FileInfo(cacheInfoFileName);
+                if (!cacheInfoFile.Exists)
+                {
+                    cachedMzMLFile = null;
+                    return false;
+                }
+
+                string cachedMzMLFilePath;
+
+                using (var reader = new StreamReader(new FileStream(cacheInfoFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                {
+                    if (reader.EndOfStream)
+                        cachedMzMLFilePath = string.Empty;
+                    else
+                        cachedMzMLFilePath = reader.ReadLine();
+                }
+
+                if (string.IsNullOrWhiteSpace(cachedMzMLFilePath))
+                {
+                    cachedMzMLFile = null;
+                    return false;
+                }
+
+                cachedMzMLFile = new FileInfo(cachedMzMLFilePath);
+                if (cachedMzMLFile.Exists)
+                    return true;
+
+                ConsoleMsgUtils.ShowWarning("Cached .mzML.gz file specified by {0} not found;\n" +
+                                            "Cannot use: {1}", cacheInfoFile.Name, cachedMzMLFilePath);
+                cachedMzMLFile = null;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                ConsoleMsgUtils.ShowError("Error looking for the fixed mzML file using the CacheInfo file", ex);
+                cachedMzMLFile = null;
+                return false;
+            }
+
+        }
+
+        /// <summary>
         /// Validate the command line arguments
         /// </summary>
         /// <param name="errorMessage"></param>
