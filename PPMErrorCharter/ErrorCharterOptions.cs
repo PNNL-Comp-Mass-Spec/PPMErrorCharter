@@ -46,8 +46,8 @@ namespace PPMErrorCharter
         /// <summary>
         /// Fixed .mzML file path (optional)
         /// </summary>
-        [Option("F", "Fixed", "FixedMzML", HelpText = "Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter). " +
-                                                      "If this switch is not used, the program will try to auto-find this file")]
+        [Option("F", "Fixed", "MzML", HelpText = "Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter). " +
+                                                 "If this switch is not used, the program will try to auto-find this file")]
         public string FixedMzMLFilePath { get; set; }
 
         /// <summary>

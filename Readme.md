@@ -105,7 +105,7 @@ Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 `-EValue` or `-Threshold` (or the second non-switch argument)
 * Spec EValue Threshold (Default: 1E-10, Min: 0, Max: 10)
 
-`-F` or `-Fixed` or `-FixedMzML`
+`-F` or `-Fixed` or `-MzML`
 * Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter)
 * If this switch is not used, PPM Error Charter will try to auto-find this file
 
