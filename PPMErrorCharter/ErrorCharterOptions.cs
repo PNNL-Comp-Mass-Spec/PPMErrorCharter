@@ -4,10 +4,16 @@ using PRISM;
 
 namespace PPMErrorCharter
 {
+    /// <summary>
+    /// PPM Error Charter Options
+    /// </summary>
     public class ErrorCharterOptions
     {
         private const string PROGRAM_DATE = "July 8, 2019";
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ErrorCharterOptions()
         {
             InputFilePath = string.Empty;
@@ -16,26 +22,47 @@ namespace PPMErrorCharter
             PythonPlotting = false;
         }
 
-        [Option("I", ArgPosition = 1, HelpText = "PSM results file; mzid or .mzid.gz")]
+        /// <summary>
+        /// Input file path
+        /// </summary>
+        [Option("I", ArgPosition = 1, HelpText = "PSM results file; .mzid or .mzid.gz")]
         public string InputFilePath { get; set; }
 
+        /// <summary>
+        /// Spec_EValue threshold
+        /// </summary>
         [Option("EValue", "Threshold", ArgPosition = 2, HelpText = "Spec EValue Threshold",
             HelpShowsDefault = true, Min = 0, Max = 10)]
         public double SpecEValueThreshold { get; set; }
 
+
+        /// <summary>
+        /// Mass error histogram bin size (in ppm)
+        /// </summary>
         [Option("PPMBinSize", "Histogram", HelpText = "PPM mass error histogram bin size",
             HelpShowsDefault = true, Min = 0.1, Max = 10)]
         public double PPMErrorHistogramBinSize { get; set; }
 
+        /// <summary>
+        /// Generate plots with Python
+        /// </summary>
         [Option("Python", "PythonPlot", HelpText = "Generate plots with Python")]
         public bool PythonPlotting { get; set; }
 
+        /// <summary>
+        /// Create a text file containing the data behind the histograms
+        /// </summary>
         [Option("Debug", "Verbose", "Keep",
             HelpText = "Create a tab-delimited text file with detailed mass error information. " +
                        "When /Debug is enabled, PPMErrorCharter will not delete the _TmpExportData.txt files " +
                        "used to pass data to Python for plotting")]
         public bool SaveMassErrorDetails { get; set; }
 
+
+        /// <summary>
+        /// Get the assembly version and program date
+        /// </summary>
+        /// <returns></returns>
         public static string GetAppVersion()
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version + " (" + PROGRAM_DATE + ")";
@@ -62,6 +89,11 @@ namespace PPMErrorCharter
 
         }
 
+        /// <summary>
+        /// Validate the command line arguments
+        /// </summary>
+        /// <param name="errorMessage"></param>
+        /// <returns></returns>
         public bool ValidateArgs(out string errorMessage)
         {
             if (string.IsNullOrWhiteSpace(InputFilePath))
@@ -73,6 +105,5 @@ namespace PPMErrorCharter
             errorMessage = string.Empty;
             return true;
         }
-
     }
 }
