@@ -1,7 +1,8 @@
-# PPMErrorCharter
+# PPM Error Charter
 
 ## Overview
-PPMErrorCharter is a command line utility for generating plots of the 
+
+PPM Error Charter is a command line utility for generating plots of the 
 mass measurement errors before and after processing with mzRefinery.
 
 mzRefinery is a software tool for correcting systematic mass error biases in 
@@ -31,7 +32,7 @@ An example command to install these packages is
 C:\ProgramData\Anaconda3\Scripts\pip.exe install numpy matplotlib pandas
 ```
 
-On Windows, PPMErrorCharter searches for `python.exe` by looking for subdirectories starting with "Python3" or "Python 3" below the following directories.
+On Windows, PPM Error Charter searches for `python.exe` by looking for subdirectories starting with "Python3" or "Python 3" below the following directories.
 It also looks for `python.exe` within each of the following directories (e.g. `C:\ProgramData\Anaconda3\python.exe`)
 * C:\Program Files
 * C:\Program Files (x86)
@@ -80,7 +81,6 @@ On Linux, use PPMErrorCharterPython with mono
 mono PPMErrorCharterPython.exe -I:C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid -Evalue:1E-10
 ```
  
-
 5. Run MSGF+ again, this time using a more thorough search, for example using partially tryptic or non-tryptic, or adding additional dynamic mods.
 
 ```
@@ -100,11 +100,19 @@ java.exe  -Xmx2000M -XX:+UseConcMarkSweepGC -cp MSGFPlus.jar edu.ucsd.msjava.ui.
 Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 `-I` (or the first non-switch argument)
-* PSM results file; mzid or .mzid.gz (Default: "")
+* PSM results file; .mzid or .mzid.gz (Default: "")
 
 `-EValue` or `-Threshold` (or the second non-switch argument)
 * Spec EValue Threshold (Default: 1E-10, Min: 0, Max: 10)
 
+`-F` or `-Fixed` or `-FixedMzML`
+* Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter)
+* If this switch is not used, PPM Error Charter will try to auto-find this file
+
+`-O` or `-Output`
+* Path to the directory where plots should be created
+* By default, plots are created in the same directory as the input file (Default: "")
+                      
 `-PPMBinSize` or `-Histogram`
 * PPM mass error histogram bin size (Default: 0.5, Min: 0.1, Max: 10)
 
@@ -122,12 +130,13 @@ Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 `PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz 1E-12`
 
+`PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz /F:C:\InstrumentFiles\SearchResults_msgfplus.mzML.gz 1E-12`
+
 `PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz /Python`
 
 `PPMErrorCharter.exe SearchResults_msgfplus.mzid.gz /Python /Debug`
 
 `PPMErrorCharterPython.exe -I:SearchResults_msgfplus.mzid.gz -EValue:1E-13`
-
 
 ## Contacts
 
@@ -137,7 +146,7 @@ Website: https://panomics.pnl.gov/ or https://omics.pnl.gov
 
 ## License
 
-The PPMErrorCharter is licensed under the 2-Clause BSD License; 
+The PPM Error Charter is licensed under the 2-Clause BSD License; 
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://opensource.org/licenses/BSD-2-Clause
 
