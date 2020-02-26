@@ -186,7 +186,8 @@ namespace PPMErrorCharter
 
             if (psmResults.Count == 0)
             {
-                ConsoleMsgUtils.ShowWarning("No PSM results were read from {0}; nothing to plot", identFile.Name);
+                ShowErrorMessage(string.Format(
+                    "No PSM results were read from {0}; nothing to plot", identFile.Name));
                 return false;
             }
 
