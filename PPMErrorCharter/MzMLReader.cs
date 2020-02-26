@@ -48,6 +48,12 @@ namespace PPMErrorCharter
                 }
             }
 
+            if (psmResults.Count == 0)
+            {
+                OnWarningEvent("Empty psmResults were sent to ReadSpectraData; nothing to do");
+                return;
+            }
+
             using (var reader = new SimpleMzMLReader(_mzMLFilePath))
             {
 
