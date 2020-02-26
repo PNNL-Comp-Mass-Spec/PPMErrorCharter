@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using PRISM;
+using PRISM.Logging;
 
 namespace PPMErrorCharter
 {
@@ -59,8 +60,8 @@ namespace PPMErrorCharter
                     parser.PrintHelp();
 
                     Console.WriteLine();
-                    ConsoleMsgUtils.ShowWarning("Validation error:");
-                    ConsoleMsgUtils.ShowWarning(errorMessage);
+                    OnWarningEvent("Validation error:");
+                    OnWarningEvent(errorMessage);
 
                     Thread.Sleep(1500);
                     return -1;
@@ -99,14 +100,18 @@ namespace PPMErrorCharter
             if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) ||
                   identFilePath.EndsWith(".mzid.gz", StringComparison.OrdinalIgnoreCase)))
             {
-                ConsoleMsgUtils.ShowWarning("Error: \"{0}\" is not an mzIdentML file.\nThe filename should end in .mzid or .mzid.gz", identFilePath);
+                OnWarningEvent(string.Format(
+                    "Error: \"{0}\" is not an mzIdentML file.\nThe filename should end in .mzid or .mzid.gz",
+                    identFilePath));
                 return false;
             }
 
             var identFile = new FileInfo(identFilePath);
             if (!identFile.Exists)
             {
-                ConsoleMsgUtils.ShowWarning("Error: Data file not found: \"{0}\"", identFilePath);
+                OnWarningEvent(string.Format(
+                    "Error: Data file not found: \"{0}\"", identFilePath));
+
                 if (!Path.IsPathRooted(identFilePath))
                     Console.WriteLine("Full file path: {0}", identFile.FullName);
 
@@ -124,7 +129,9 @@ namespace PPMErrorCharter
 
                 if (!fixedMzMLFileExists)
                 {
-                    ConsoleMsgUtils.ShowWarning("Error: Data file not found: \"{0}\"", options.FixedMzMLFilePath);
+                    OnWarningEvent(string.Format(
+                        "Error: Data file not found: \"{0}\"", options.FixedMzMLFilePath));
+
                     if (!Path.IsPathRooted(options.FixedMzMLFilePath))
                         Console.WriteLine("Full file path: {0}", options.FixedMzMLFilePath);
 
@@ -138,14 +145,15 @@ namespace PPMErrorCharter
             {
                 if (string.IsNullOrWhiteSpace(options.BaseOutputFilePath) || string.IsNullOrWhiteSpace(options.DefaultFixedMzMLFileName))
                 {
-                    ConsoleMsgUtils.ShowWarning("  Warning: Could not find fixed data file \"{0}[.gz]\"\n  " +
-                                                "  Output will not include fixed data plots.",
-                                                Path.GetFileNameWithoutExtension(identFile.Name) + "_FIXED.mzML");
+                    OnWarningEvent(string.Format(
+                        "  Warning: Could not find fixed data file \"{0}[.gz]\"\n  " +
+                        "  Output will not include fixed data plots.",
+                        Path.GetFileNameWithoutExtension(identFile.Name) + "_FIXED.mzML"));
                 }
                 else
                 {
                     // A message with the expected filename should have already been shown by OutputSetOptions
-                    ConsoleMsgUtils.ShowWarning("  Output will not include fixed data plots since the fixed .mzML file is not defined");
+                    OnWarningEvent("  Output will not include fixed data plots since the fixed .mzML file is not defined");
                 }
             }
 
@@ -153,15 +161,18 @@ namespace PPMErrorCharter
             Console.WriteLine("Loading data from the .mzid file");
 
             var reader = new MzIdentMLReader(options.SpecEValueThreshold);
+            RegisterEvents(reader);
 
             var psmResults = reader.Read(identFile.FullName);
             bool haveScanTimes;
 
-            if (fixedMzMLFileExists)
+            if (fixedMzMLFileExists && psmResults.Count > 0)
             {
                 Console.WriteLine();
                 Console.WriteLine("Loading data from \"{0}\"", PRISM.PathUtils.CompactPathString(options.FixedMzMLFilePath, 80));
                 var fixedDataReader = new MzMLReader(options.FixedMzMLFilePath);
+                RegisterEvents(fixedDataReader);
+
                 fixedDataReader.ReadSpectraData(psmResults);
 
                 // mzML files are guaranteed to have scan time
@@ -245,7 +256,7 @@ namespace PPMErrorCharter
                     {
                         debugMsg += "\n  " + item;
                     }
-                    ConsoleMsgUtils.ShowDebug(debugMsg);
+                    OnDebugEvent(debugMsg);
                     return false;
                 }
 
@@ -267,10 +278,7 @@ namespace PPMErrorCharter
 #endif
             }
 
-            plotter.DebugEvent += Plotter_DebugEvent;
-            plotter.ErrorEvent += Plotter_ErrorEvent;
-            plotter.WarningEvent += Plotter_WarningEvent;
-            plotter.StatusEvent += Plotter_MessageEvent;
+            RegisterEvents(plotter);
 
             var plotsSaved = plotter.GeneratePNGPlots(psmResults, fixedMzMLFileExists, haveScanTimes);
 
@@ -325,22 +333,33 @@ namespace PPMErrorCharter
             return plotsSaved;
         }
 
-        private static void Plotter_DebugEvent(string message)
+        /// <summary>Use this method to chain events between classes</summary>
+        /// <param name="sourceClass"></param>
+        private static void RegisterEvents(IEventNotifier sourceClass)
+        {
+            sourceClass.DebugEvent += OnDebugEvent;
+            sourceClass.StatusEvent += OnStatusEvent;
+            sourceClass.ErrorEvent += OnErrorEvent;
+            sourceClass.WarningEvent += OnWarningEvent;
+            // sourceClass.ProgressUpdate += OnProgressUpdate;
+        }
+
+        private static void OnDebugEvent(string message)
         {
             ConsoleMsgUtils.ShowDebug(message);
         }
 
-        private static void Plotter_ErrorEvent(string message, Exception ex)
+        private static void OnErrorEvent(string message, Exception ex)
         {
             ConsoleMsgUtils.ShowErrorCustom(message, ex, false);
         }
 
-        private static void Plotter_MessageEvent(string message)
+        private static void OnStatusEvent(string message)
         {
             Console.WriteLine(message);
         }
 
-        private static void Plotter_WarningEvent(string message)
+        private static void OnWarningEvent(string message)
         {
             ConsoleMsgUtils.ShowWarning(message);
         }

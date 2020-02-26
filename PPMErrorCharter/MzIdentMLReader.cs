@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PRISM;
 using PSI_Interface.IdentData;
 
 namespace PPMErrorCharter
@@ -8,7 +9,7 @@ namespace PPMErrorCharter
     /// Read and perform some processing on a MZIdentML file
     /// Processes the data into an LCMS DataSet
     /// </summary>
-    public class MzIdentMLReader
+    public class MzIdentMLReader : EventNotifier
     {
         /// <summary>
         /// Default SpecEValue filter threshold
@@ -138,20 +139,23 @@ namespace PPMErrorCharter
 
                 if (psmResults.Count >= 500)
                 {
-                    Console.WriteLine("  {0:N0} PSMs passed the filters", psmResults.Count);
+                    OnStatusEvent(string.Format("  {0:N0} PSMs passed the filters", psmResults.Count));
                     break;
                 }
 
-                Console.WriteLine("  Fewer than 500 PSMs passed the filters ({0})", psmResults.Count);
+                OnStatusEvent(string.Format("  Fewer than 500 PSMs passed the filters ({0})", psmResults.Count));
 
                 // Loosen the filters and try again (up to 3 times)
                 if (!AdjustThreshold())
                 {
-                    Console.WriteLine("  Plotting errors using these PSMs");
+                    if (psmResults.Count == 0)
+                        OnWarningEvent("  No PSMs passed the filters");
+                    else
+                        OnStatusEvent("  Plotting errors using these PSMs");
                     break;
                 }
 
-                Console.WriteLine("  Loosening thresholds and trying again");
+                OnStatusEvent("  Loosening thresholds and trying again");
 
             } while (true);
 

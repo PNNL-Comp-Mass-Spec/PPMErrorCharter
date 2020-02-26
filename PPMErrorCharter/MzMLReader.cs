@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PRISM;
 using PSI_Interface.MSData;
 
 namespace PPMErrorCharter
 {
-    public sealed class MzMLReader
+    public sealed class MzMLReader : EventNotifier
     {
 
         private readonly string _mzMLFilePath;
@@ -78,7 +79,6 @@ namespace PPMErrorCharter
 
                     foreach (var psm in psmsForSpectrum)
                     {
-
                         var experimentalMzRefined = spectrum.GetThermoMonoisotopicMz();
 
                         if (Math.Abs(experimentalMzRefined) > 0)
@@ -93,7 +93,9 @@ namespace PPMErrorCharter
                             }
                             else
                             {
-                                PRISM.ConsoleMsgUtils.ShowWarning("Could not determine the experimental precursor m/z for scan {0}", spectrum.ScanNumber);
+                                OnWarningEvent(string.Format(
+                                    "Could not determine the experimental precursor m/z for scan {0}",
+                                    spectrum.ScanNumber));
                             }
                         }
 
