@@ -173,9 +173,9 @@ namespace PPMErrorCharter
         /// <param name="haveScanTimes"></param>
         private bool ErrorScatterPlotsToPng(IReadOnlyCollection<IdentData> psmResults, string pngFilePath, bool fixedMzMLFileExists, bool haveScanTimes)
         {
-            var width = 512;  // 1024 pixels final width
-            var height = 384; // 768 pixels final height
-            var resolution = 96; //96
+            const int width = 512;     // 1024 pixels final width
+            const int height = 384;    // 768 pixels final height
+            const int resolution = 96; //96
 
             // Draw the bitmaps onto a new canvas internally
             // Allows us to combine them
@@ -243,7 +243,7 @@ namespace PPMErrorCharter
             if (haveScanTimes)
             {
                 var scanPlotTitle = "Scan Time: " + dataTypeSuffix;
-                var scanPlotXAxisLabel = "Scan Time (min)";
+                const string scanPlotXAxisLabel = "Scan Time (min)";
 
                 if (useRefinedData)
                 {
@@ -262,7 +262,7 @@ namespace PPMErrorCharter
             else
             {
                 var scanPlotTitle = "Scan Number: " + dataTypeSuffix;
-                var scanPlotXAxisLabel = "Scan Number";
+                const string scanPlotXAxisLabel = "Scan Number";
 
                 if (useRefinedData)
                 {
@@ -309,8 +309,8 @@ namespace PPMErrorCharter
             var model = ModelBaseConfig();
             model.Title = title;
 
-            var yStep = 50.0;
-            var xStep = 5.0;
+            const double yStep = 50.0;
+            const double xStep = 5.0;
             var yAxis = new LinearAxis
             {
                 Position = AxisPosition.Left,
@@ -469,9 +469,9 @@ namespace PPMErrorCharter
                 axis.Minimum = xMin;
             }
 
-            var resolution = 96;
-            var width = 512;  // 1024 pixels final width
-            var height = 512; // 512 pixels final height
+            const int width = 512;    // 1024 pixels final width
+            const int height = 512;   // 512 pixels final height
+            const int resolution = 96;
 
             // Draw the bitmaps onto a new canvas internally
             // Allows us to combine them
