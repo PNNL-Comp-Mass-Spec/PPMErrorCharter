@@ -35,7 +35,6 @@ namespace PPMErrorCharter
         /// <remarks>Initially null</remarks>
         public RenderTargetBitmap ErrorScatterPlotBitmap { get; private set; }
 
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -257,7 +256,6 @@ namespace PPMErrorCharter
                         ScatterPlot(psmResults, item => new ScatterPoint(((IdentData)item).ScanTimeSeconds, ((IdentData)item).PpmError),
                                     scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
                 }
-
             }
             else
             {
@@ -269,7 +267,6 @@ namespace PPMErrorCharter
                     massErrorsVsTimePlot =
                         ScatterPlot(psmResults, item => new ScatterPoint(((IdentData)item).ScanIdInt, ((IdentData)item).PpmErrorRefined),
                                     scanPlotTitle, scanPlotXAxisLabel, OxyColors.Blue);
-
                 }
                 else
                 {

@@ -94,7 +94,6 @@ namespace PPMErrorCharter
 
         private static bool GeneratePlots(ErrorCharterOptions options)
         {
-
             // Get the file name
             var identFilePath = options.InputFilePath;
             if (!(identFilePath.EndsWith(".mzid", StringComparison.OrdinalIgnoreCase) ||
@@ -328,7 +327,6 @@ namespace PPMErrorCharter
                 {
                     return plotsSaved;
                 }
-
             }
 
             return plotsSaved;

@@ -204,8 +204,6 @@ namespace PPMErrorCharter
             {
                 HaveScanTimes = true;
             }
-
         }
-
     }
 }

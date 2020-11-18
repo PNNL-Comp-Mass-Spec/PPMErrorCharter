@@ -90,7 +90,6 @@ namespace PPMErrorCharter
 
         private bool AutoResolveFixedMzMLFile(string baseOutputFilePath, out string fixedMzMLFilePath, out string cacheInfoFileName)
         {
-
             DefaultFixedMzMLFileName = baseOutputFilePath + ".mzML";
 
             var suffixesToCheck = new List<string> {
@@ -207,7 +206,6 @@ namespace PPMErrorCharter
                 Console.WriteLine(" Generating plots with Python");
             else
                 Console.WriteLine(" Generating plots with OxyPlot");
-
         }
 
         /// <summary>
@@ -262,7 +260,6 @@ namespace PPMErrorCharter
                 cachedMzMLFile = null;
                 return false;
             }
-
         }
 
         /// <summary>

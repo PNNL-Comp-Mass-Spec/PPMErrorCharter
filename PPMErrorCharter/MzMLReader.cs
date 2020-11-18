@@ -8,7 +8,6 @@ namespace PPMErrorCharter
 {
     public sealed class MzMLReader : EventNotifier
     {
-
         private readonly string _mzMLFilePath;
 
         /// <summary>
@@ -56,7 +55,6 @@ namespace PPMErrorCharter
 
             using (var reader = new SimpleMzMLReader(_mzMLFilePath))
             {
-
                 var spectraRead = 0;
                 var lastStatus = DateTime.UtcNow;
 
@@ -119,10 +117,8 @@ namespace PPMErrorCharter
 
                     Console.WriteLine("  {0:F0}% complete", spectraRead / (double)reader.NumSpectra * 100);
                     lastStatus = DateTime.UtcNow;
-
                 }
             }
-
         }
     }
 }

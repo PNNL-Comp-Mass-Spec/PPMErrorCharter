@@ -51,7 +51,6 @@ namespace PPMErrorCharter
         /// </summary>
         public static bool PythonInstalled => FindPython();
 
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -59,7 +58,6 @@ namespace PPMErrorCharter
         /// <param name="baseOutputFilePath"></param>
         public PythonDataPlotter(ErrorCharterOptions options, string baseOutputFilePath) : base(options, baseOutputFilePath)
         {
-
             DeleteTempFiles = true;
 
             if (PythonPath == null)
@@ -128,7 +126,6 @@ namespace PPMErrorCharter
                             StringUtilities.DblToString(item.PpmError, 3),
                             ppmErrorRefined);
                     }
-
                 }
                 else
                 {
@@ -173,7 +170,6 @@ namespace PPMErrorCharter
             }
 
             return true;
-
         }
 
         /// <summary>
@@ -258,11 +254,9 @@ namespace PPMErrorCharter
                                      item.Value.BinCountOriginal,
                                      refinedMassError);
                 }
-
             }
 
             return true;
-
         }
 
         /// <summary>
@@ -294,7 +288,6 @@ namespace PPMErrorCharter
             }
 
             return !string.IsNullOrWhiteSpace(PythonPath);
-
         }
 
         /// <summary>
@@ -329,7 +322,6 @@ namespace PPMErrorCharter
             var query = (from item in candidates orderby item.LastWriteTime select item.FullName);
 
             return query.First();
-
         }
 
         /// <summary>
@@ -387,7 +379,6 @@ namespace PPMErrorCharter
         /// <remarks>Call ErrorHistogramsToPng and ErrorScatterPlotsToPng prior to calling this method</remarks>
         private bool GeneratePlotsWithPython(MetadataFileNamesType metadataFilePaths)
         {
-
             if (!PythonInstalled)
             {
                 NotifyPythonNotFound("Could not find the python executable");
@@ -470,8 +461,6 @@ namespace PPMErrorCharter
                     runtimeExceeded = true;
                     break;
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -505,7 +494,6 @@ namespace PPMErrorCharter
                     {
                         OnErrorEvent("Error deleting files: " + ex.Message);
                     }
-
                 }
                 else
                 {
@@ -522,7 +510,6 @@ namespace PPMErrorCharter
 
             OnErrorEvent("Python ExitCode = " + progRunner.ExitCode);
             return false;
-
         }
 
         protected void NotifyPythonNotFound(string currentTask)
@@ -536,7 +523,6 @@ namespace PPMErrorCharter
             }
 
             OnDebugEvent(debugMsg);
-
         }
 
         public static IEnumerable<string> PythonPathsToCheck()
@@ -550,6 +536,5 @@ namespace PPMErrorCharter
                 @"C:\"
             };
         }
-
     }
 }
