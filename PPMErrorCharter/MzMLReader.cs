@@ -91,7 +91,7 @@ namespace PPMErrorCharter
                         }
                         else
                         {
-                            if (spectrum.Precursors.Any() && spectrum.Precursors.First().SelectedIons.Any())
+                            if (spectrum.Precursors.Count > 0 && spectrum.Precursors.First().SelectedIons.Count > 0)
                             {
                                 psm.ExperMzRefined = spectrum.Precursors.First().SelectedIons.First().SelectedIonMz;
                             }

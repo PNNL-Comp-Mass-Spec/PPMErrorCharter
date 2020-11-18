@@ -9,10 +9,10 @@ using PRISM.Logging;
 
 namespace PPMErrorCharter
 {
-    class Program
+    public class Program
     {
         [STAThread]
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             try
             {

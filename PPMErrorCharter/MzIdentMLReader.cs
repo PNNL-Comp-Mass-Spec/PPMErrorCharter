@@ -71,8 +71,8 @@ namespace PPMErrorCharter
 
         private bool PassesWindows(IdentData data)
         {
-            return (-IsotopeErrorFilterWindow < data.MassError && data.MassError < IsotopeErrorFilterWindow)
-                   && (-PpmErrorFilterWindow < data.PpmError && data.PpmError < PpmErrorFilterWindow);
+            return -IsotopeErrorFilterWindow < data.MassError && data.MassError < IsotopeErrorFilterWindow &&
+                   -PpmErrorFilterWindow < data.PpmError && data.PpmError < PpmErrorFilterWindow;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace PPMErrorCharter
                     break;
             }
 
-            do
+            while (true)
             {
                 psmResults.Clear();
 
@@ -156,8 +156,7 @@ namespace PPMErrorCharter
                 }
 
                 OnStatusEvent("  Loosening thresholds and trying again");
-
-            } while (true);
+            }
 
             return psmResults;
         }
