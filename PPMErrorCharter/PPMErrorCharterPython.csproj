@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="DataPlotterBase.cs" />
     <Compile Include="ErrorCharterOptions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IdentData.cs" />
     <Compile Include="IdentDataStats.cs" />
     <Compile Include="MassErrorHistogramResult.cs" />
