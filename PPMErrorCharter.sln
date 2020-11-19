@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{4F6629FC-FA6C-4DD2-8A4C-6AE8C399A22E}") = "PPMErrorCharter", "PPMErrorCharter\PPMErrorCharter.csproj", "{4F6629FC-FA6C-4DD2-8A4C-6AE8C399A22E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPMErrorCharter", "PPMErrorCharter\PPMErrorCharter.csproj", "{4F6629FC-FA6C-4DD2-8A4C-6AE8C399A22E}"
 EndProject
-Project("{574BEBF0-6776-4050-A651-6139A72063B0}") = "PPMErrorCharterDisplay", "PPMErrorCharterDisplay\PPMErrorCharterDisplay.csproj", "{574BEBF0-6776-4050-A651-6139A72063B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPMErrorCharterDisplay", "PPMErrorCharterDisplay\PPMErrorCharterDisplay.csproj", "{574BEBF0-6776-4050-A651-6139A72063B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPMErrorCharterPython", "PPMErrorCharter\PPMErrorCharterPython.csproj", "{A1EAF889-86B5-488C-A97A-9360C7D157CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{574BEBF0-6776-4050-A651-6139A72063B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{574BEBF0-6776-4050-A651-6139A72063B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{574BEBF0-6776-4050-A651-6139A72063B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1EAF889-86B5-488C-A97A-9360C7D157CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1EAF889-86B5-488C-A97A-9360C7D157CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1EAF889-86B5-488C-A97A-9360C7D157CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1EAF889-86B5-488C-A97A-9360C7D157CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
