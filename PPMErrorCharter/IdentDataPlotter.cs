@@ -278,8 +278,8 @@ namespace PPMErrorCharter
             }
 
             var massErrorsVsMzPlot = ScatterPlot(psmResults, "CalcMz", ppmErrorDataField, "M/Z: " + dataTypeSuffix, "m/z", OxyColors.Green);
-            var massErrorsVsTimeBitmap = PngExporter.ExportToBitmap(massErrorsVsTimePlot, width, height, OxyColors.White, resolution);
-            var massErrorsVsMzBitmap = PngExporter.ExportToBitmap(massErrorsVsMzPlot, width, height, OxyColors.White, resolution);
+            var massErrorsVsTimeBitmap = ExportToBitmap(massErrorsVsTimePlot, width, height, OxyColors.White, resolution);
+            var massErrorsVsMzBitmap = ExportToBitmap(massErrorsVsMzPlot, width, height, OxyColors.White, resolution);
 
             drawContext.DrawImage(massErrorsVsTimeBitmap, new Rect(0, plotOffset, width, height));
             drawContext.DrawImage(massErrorsVsMzBitmap, new Rect(width, plotOffset, width, height));
@@ -541,13 +541,13 @@ namespace PPMErrorCharter
             var drawContext = drawVisual.RenderOpen();
 
             // Output the graph models to a context
-            var oe = PngExporter.ExportToBitmap(origError, width, height, OxyColors.White);
+            var oe = ExportToBitmap(origError, width, height, OxyColors.White);
             drawContext.DrawImage(oe, new Rect(0, 0, width, height));
 
             // Only add the fixed files if the data file exists
             if (fixedMzMLFileExists)
             {
-                var fe = PngExporter.ExportToBitmap(fixError, width, height, OxyColors.White);
+                var fe = ExportToBitmap(fixError, width, height, OxyColors.White);
                 drawContext.DrawImage(fe, new Rect(width, 0, width, height));
             }
 
@@ -599,6 +599,19 @@ namespace PPMErrorCharter
                 Console.WriteLine("Error generating {0}", histogramPlotFilePath);
 
             return scatterPlotSuccess && histogramPlotSuccess;
+        }
+
+        private BitmapSource ExportToBitmap(IPlotModel plotModel, int height, int width, OxyColor background, double resolution = 96)
+        {
+            var exporter = new PngExporter()
+            {
+                Height = height,
+                Width = width,
+                Background = background,
+                Resolution = resolution,
+            };
+
+            return exporter.ExportToBitmap(plotModel);
         }
     }
 }
