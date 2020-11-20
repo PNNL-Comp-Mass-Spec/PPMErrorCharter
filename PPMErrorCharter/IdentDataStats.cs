@@ -5,6 +5,8 @@ namespace PPMErrorCharter
 {
     public class IdentDataStats
     {
+        // Ignore Spelling: PpmErrorIsotoped
+
         private readonly List<IdentData> _data;
         public double Mean { get; private set; }
         public double Median { get; private set; }

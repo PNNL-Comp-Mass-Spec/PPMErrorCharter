@@ -11,6 +11,8 @@ namespace PPMErrorCharter
     /// </summary>
     public class MzIdentMLReader : EventNotifier
     {
+        // Ignore Spelling: MZIdentML, MyriMatch
+
         /// <summary>
         /// Default SpecEValue filter threshold
         /// </summary>
@@ -23,11 +25,25 @@ namespace PPMErrorCharter
         private int _currentSteps;
 
         // MS-GF+ Filtering
-        private double _specEValueThreshold = DEFAULT_SPEC_EVALUE_THRESHOLD; // Less than
-        private readonly double _specEValueThresholdStep = 10; // Multiply by
 
-        // MyriMatch Filtering
-        private readonly double _mvhThreshold = 35;     // Greater than
+        /// <summary>
+        /// MS-GF+ spec e-value filter
+        /// </summary>
+        /// <remarks>Keep data less than this value</remarks>
+        private double _specEValueThreshold = DEFAULT_SPEC_EVALUE_THRESHOLD;
+
+        /// <summary>
+        /// Factor to change the MS-GF+ filter by if not enough matches pass the filter
+        /// The filter threshold will be adjusted up to three times
+        /// </summary>
+        /// <remarks>Multiply by this value</remarks>
+        private readonly double _specEValueThresholdStep = 10;
+
+        /// <summary>
+        /// MyriMatch filter threshold
+        /// </summary>
+        /// <comment>Keep data greater than this value</comment>
+        private readonly double _mvhThreshold = 35;
 
         private bool AdjustThreshold()
         {

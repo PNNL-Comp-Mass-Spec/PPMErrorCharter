@@ -6,6 +6,8 @@ namespace PPMErrorCharter
 {
     public class IdentData : IEquatable<IdentData>, IComparable<IdentData>
     {
+        // Ignore Spelling: OxyPlot
+
         public readonly double IsotopeErrorFilterWindow = 0.2;
         public readonly double PpmErrorFilterWindow = 50.0;
         private const double IsotopeErrorTestWindow = 0.05;
@@ -13,6 +15,7 @@ namespace PPMErrorCharter
 
         public string NativeId;
         public ulong ScanId;
+
         public double ScanTimeSeconds { get; set; } // Property for reflection by OxyPlot
         public string IdField;
         public string IdValue;
@@ -331,7 +334,7 @@ namespace PPMErrorCharter
 
         public override int GetHashCode()
         {
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
+            // ReSharper disable once NonReadOnlyMemberInGetHashCode
             return Convert.ToInt32(ScanId);
         }
 

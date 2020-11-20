@@ -11,6 +11,8 @@ namespace PPMErrorCharter
 {
     public class Program
     {
+        // Ignore Spelling: Bryson, mzIdentML, Da, OxyPlot, ExperMZ
+
         [STAThread]
         private static int Main(string[] args)
         {
@@ -272,7 +274,7 @@ namespace PPMErrorCharter
             else
             {
 #if DISABLE_OXYPLOT
-                throw new Exception("Oxyplot is disabled; use switch /Python");
+                throw new Exception("OxyPlot is disabled; use switch /Python");
 #else
                 plotter = new IdentDataPlotter(options, baseOutputFilePath);
 #endif

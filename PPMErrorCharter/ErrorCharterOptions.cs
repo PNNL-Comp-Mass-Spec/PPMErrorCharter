@@ -11,7 +11,9 @@ namespace PPMErrorCharter
     /// </summary>
     public class ErrorCharterOptions
     {
-        private const string PROGRAM_DATE = "November 18, 2020";
+        // Ignore Spelling: OxyPlot
+
+        private const string PROGRAM_DATE = "November 20, 2020";
 
         /// <summary>
         /// Constructor
@@ -133,7 +135,7 @@ namespace PPMErrorCharter
         }
 
         /// <summary>
-        /// Determine the base dataset name and prepend it with the output directory path
+        /// Determine the base dataset name and combine it with the output directory path
         /// </summary>
         /// <param name="inputFilePath"></param>
         /// <param name="outputDirectoryPath"></param>

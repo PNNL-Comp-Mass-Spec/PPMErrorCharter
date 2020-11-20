@@ -11,6 +11,8 @@ namespace PPMErrorCharter
     /// </summary>
     public class PythonDataPlotter : DataPlotterBase
     {
+        // Ignore Spelling: tmp, autoscale, gridline, usr, png
+
         private struct MetadataFileNamesType
         {
             /// <summary>
