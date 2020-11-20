@@ -91,7 +91,6 @@ namespace PPMErrorCharterDisplay
 
             AllVis = plotter.ErrorScatterPlotBitmap;
             ErrHist = plotter.ErrorHistogramBitmap;
-
         }
 
         //public PlotModel OrigScanId { get; private set; }
