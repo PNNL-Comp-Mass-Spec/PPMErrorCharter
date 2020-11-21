@@ -48,14 +48,16 @@ namespace PPMErrorCharter
         /// <summary>
         /// Fixed .mzML file path (optional)
         /// </summary>
-        [Option("F", "Fixed", "MzML", HelpText = "Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter). " +
-                                                 "If this switch is not used, the program will try to auto-find this file")]
+        [Option("F", "Fixed", "MzML",
+            HelpText = "Path to the .mzML or .mzML.gz file with updated m/z values (created by MSConvert using the mzRefiner filter). " +
+                       "If this switch is not used, the program will try to auto-find this file")]
         public string FixedMzMLFilePath { get; set; }
 
         /// <summary>
         /// Output directory path (optional)
         /// </summary>
-        [Option("O", "Output", HelpText = "Path to the directory where plots should be created; by default, plots are created in the same directory as the input file")]
+        [Option("O", "Output",
+            HelpText = "Path to the directory where plots should be created; by default, plots are created in the same directory as the input file")]
         public string OutputDirectoryPath { get; set; }
 
         /// <summary>
@@ -126,7 +128,6 @@ namespace PPMErrorCharter
         /// <summary>
         /// Get the assembly version and program date
         /// </summary>
-        /// <returns></returns>
         public static string GetAppVersion()
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version + " (" + PROGRAM_DATE + ")";
@@ -139,7 +140,6 @@ namespace PPMErrorCharter
         /// </summary>
         /// <param name="inputFilePath"></param>
         /// <param name="outputDirectoryPath"></param>
-        /// <returns></returns>
         public static string GetBaseOutputFilePath(string inputFilePath, string outputDirectoryPath)
         {
             string outFileStub;
@@ -268,7 +268,6 @@ namespace PPMErrorCharter
         /// Validate the command line arguments
         /// </summary>
         /// <param name="errorMessage"></param>
-        /// <returns></returns>
         public bool ValidateArgs(out string errorMessage)
         {
             if (string.IsNullOrWhiteSpace(InputFilePath))

@@ -42,7 +42,7 @@ namespace PPMErrorCharter
         /// <summary>
         /// MyriMatch filter threshold
         /// </summary>
-        /// <comment>Keep data greater than this value</comment>
+        /// <remarks>Keep data greater than this value</remarks>
         private readonly double _mvhThreshold = 35;
 
         private bool AdjustThreshold()

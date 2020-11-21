@@ -299,7 +299,6 @@ namespace PPMErrorCharter
         /// <param name="dataField"></param>
         /// <param name="title"></param>
         /// <param name="lineColor"></param>
-        /// <returns></returns>
         public PlotModel Histogram(IReadOnlyCollection<IdentData> data, string dataField, string title, OxyColor lineColor)
         {
             var frequencies = HistogramFrequencies(data, dataField);
@@ -394,7 +393,6 @@ namespace PPMErrorCharter
         /// <param name="scanData"></param>
         /// <param name="pngFilePath"></param>
         /// <param name="fixedMzMLFileExists"></param>
-        /// <returns></returns>
         private bool ErrorHistogramsToPng(IReadOnlyCollection<IdentData> scanData, string pngFilePath, bool fixedMzMLFileExists)
         {
             // Create both histogram models to allow synchronizing the y-axis
@@ -580,7 +578,6 @@ namespace PPMErrorCharter
         /// <param name="psmResults"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="haveScanTimes"></param>
-        /// <returns></returns>
         public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> psmResults, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var scatterPlotFilePath = BaseOutputFilePath + "_MZRefinery_MassErrors.png";

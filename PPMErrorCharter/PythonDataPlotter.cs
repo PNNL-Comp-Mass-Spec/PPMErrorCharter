@@ -181,7 +181,6 @@ namespace PPMErrorCharter
         /// <param name="baseOutputFile"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="massErrorHistogramsExportFileName"></param>
-        /// <returns></returns>
         private bool ExportHistogramPlotData(
             IReadOnlyCollection<IdentData> scanData,
             FileInfo baseOutputFile,
@@ -332,7 +331,6 @@ namespace PPMErrorCharter
         /// <param name="scanData"></param>
         /// <param name="fixedMzMLFileExists"></param>
         /// <param name="haveScanTimes"></param>
-        /// <returns></returns>
         public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> scanData, bool fixedMzMLFileExists, bool haveScanTimes)
         {
             var metadataFilePaths = new MetadataFileNamesType
