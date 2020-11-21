@@ -56,9 +56,9 @@ namespace PPMErrorCharterDisplay
             mainWindow.Content = myParentCanvas;
             mainWindow.Show();
             /*/
-            var datasetPathName = @"..\..\..\ExampleData\2016-07-28_QC-digest_HCD_01";
-            var identFile = datasetPathName + "_msgfplus.mzid.gz";
-            var dataFileFixed = datasetPathName + "_FIXED.mzML.gz";
+            const string datasetPathName = @"..\..\..\ExampleData\2016-07-28_QC-digest_HCD_01";
+            const string identFile = datasetPathName + "_msgfplus.mzid.gz";
+            const string dataFileFixed = datasetPathName + "_FIXED.mzML.gz";
 
             Console.WriteLine("Loading data from {0}", identFile);
 
