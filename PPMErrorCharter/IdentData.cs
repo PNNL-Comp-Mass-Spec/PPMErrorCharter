@@ -80,13 +80,13 @@ namespace PPMErrorCharter
                 {
                     runIsotopeCheck = true;
                     MassError = _experMz - _calcMz;
-                    PpmError = (MassError / _calcMz) * 1.0e6;
+                    PpmError = MassError / _calcMz * 1.0e6;
                 }
                 if (_isSetExperMzRefined && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     runIsotopeCheck = true;
                     MassErrorRefined = _experMzRefined - _calcMz;
-                    PpmErrorRefined = (MassErrorRefined / _calcMz) * 1.0e6;
+                    PpmErrorRefined = MassErrorRefined / _calcMz * 1.0e6;
                 }
                 if (runIsotopeCheck && !locked) // Will only run if was not locked
                 {
@@ -111,7 +111,7 @@ namespace PPMErrorCharter
                 if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     MassError = _experMz - _calcMz;
-                    PpmError = (MassError / _calcMz) * 1.0e6;
+                    PpmError = MassError / _calcMz * 1.0e6;
                     var locked = _fixIsoLocked;
                     _fixIsoLocked = true; // Value only changed if was false
                     if (!locked) // Will only run if was not locked
@@ -134,7 +134,7 @@ namespace PPMErrorCharter
                 if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     MassErrorIsotoped = _experMzIsotoped - _calcMz;
-                    PpmErrorIsotoped = (MassErrorIsotoped / _calcMz) * 1.0e6;
+                    PpmErrorIsotoped = MassErrorIsotoped / _calcMz * 1.0e6;
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace PPMErrorCharter
                     _fixIsoLocked = true; // Value only changed if was false
 
                     MassErrorRefined = _experMzRefined - _calcMz;
-                    PpmErrorRefined = (MassErrorRefined / _calcMz) * 1.0e6;
+                    PpmErrorRefined = MassErrorRefined / _calcMz * 1.0e6;
 
                     if (!locked) // Will only run if was not locked
                     {
@@ -177,7 +177,7 @@ namespace PPMErrorCharter
                 if (_isSetCalcMz && Math.Abs(_calcMz) > float.Epsilon)
                 {
                     MassErrorRefinedIsotoped = _experMzRefinedIsotoped - _calcMz;
-                    PpmErrorRefinedIsotoped = (MassErrorRefinedIsotoped / _calcMz) * 1.0e6;
+                    PpmErrorRefinedIsotoped = MassErrorRefinedIsotoped / _calcMz * 1.0e6;
                 }
             }
         }
@@ -359,10 +359,10 @@ namespace PPMErrorCharter
 
         public bool OutOfRange()
         {
-            var orig = (MassError < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassError) ||
-                        (PpmError < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmError);
-            var refined = (MassErrorRefined < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassErrorRefined) ||
-                        (PpmErrorRefined < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmErrorRefined);
+            var orig = MassError < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassError ||
+                       PpmError < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmError;
+            var refined = MassErrorRefined < -IsotopeErrorFilterWindow || IsotopeErrorFilterWindow < MassErrorRefined ||
+                          PpmErrorRefined < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmErrorRefined;
             return orig || refined;
         }
     }
