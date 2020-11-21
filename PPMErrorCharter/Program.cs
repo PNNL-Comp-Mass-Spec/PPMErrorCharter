@@ -367,7 +367,7 @@ namespace PPMErrorCharter
 
         private static void ShowErrorMessage(string message, Exception ex = null)
         {
-            ConsoleMsgUtils.ShowError(message, ex);
+            ConsoleMsgUtils.ShowErrorCustom(message, ex, false);
         }
     }
 }
