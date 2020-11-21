@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using PRISM;
 
 namespace PPMErrorCharter
@@ -67,6 +68,34 @@ namespace PPMErrorCharter
 
             // Sort once?
             return new SortedDictionary<double, int>(counts);
+        }
+
+        public bool ValidateOutputDirectory(string baseOutputFilePath)
+        {
+            try
+            {
+                var baseOutputFile = new FileInfo(baseOutputFilePath);
+                if (baseOutputFile.Directory == null ||
+                    baseOutputFile.DirectoryName == null)
+                {
+                    OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFilePath);
+                    return false;
+                }
+
+                if (!baseOutputFile.Directory.Exists)
+                {
+                    OnStatusEvent("Creating the output directory: " + baseOutputFile.Directory.FullName);
+                    baseOutputFile.Directory.Create();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFilePath);
+                Console.WriteLine(StackTraceFormatter.GetExceptionStackTraceMultiLine(ex));
+                return false;
+            }
         }
     }
 }

@@ -580,6 +580,9 @@ namespace PPMErrorCharter
         /// <param name="haveScanTimes"></param>
         public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> psmResults, bool fixedMzMLFileExists, bool haveScanTimes)
         {
+            if (!ValidateOutputDirectory(BaseOutputFilePath))
+                return false;
+
             var scatterPlotFilePath = BaseOutputFilePath + "_MZRefinery_MassErrors.png";
             var histogramPlotFilePath = BaseOutputFilePath + "_MZRefinery_Histograms.png";
 

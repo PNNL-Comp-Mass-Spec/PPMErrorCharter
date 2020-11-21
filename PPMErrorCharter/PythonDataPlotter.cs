@@ -91,7 +91,7 @@ namespace PPMErrorCharter
                 return false;
             }
 
-            if (baseOutputFile.DirectoryName == null)
+            if (baseOutputFile.Directory == null || baseOutputFile.DirectoryName == null)
             {
                 OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFile.FullName);
                 massErrorVsTimeExportFileName = string.Empty;
@@ -338,11 +338,8 @@ namespace PPMErrorCharter
                 BaseOutputFile = new FileInfo(BaseOutputFilePath)
             };
 
-            if (metadataFilePaths.BaseOutputFile.DirectoryName == null)
-            {
-                OnErrorEvent("Unable to determine the parent directory of the base output file: " + BaseOutputFilePath);
+            if (!ValidateOutputDirectory(BaseOutputFilePath))
                 return false;
-            }
 
             var histogramPlotDataExported = ExportHistogramPlotData(
                 scanData, metadataFilePaths.BaseOutputFile, fixedMzMLFileExists,
@@ -384,6 +381,9 @@ namespace PPMErrorCharter
                 NotifyPythonNotFound("Could not find the python executable");
                 return false;
             }
+
+            if (!ValidateOutputDirectory(BaseOutputFilePath))
+                return false;
 
             if (metadataFilePaths.BaseOutputFile.DirectoryName == null)
             {
