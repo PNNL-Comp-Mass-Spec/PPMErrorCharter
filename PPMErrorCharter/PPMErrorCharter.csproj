@@ -56,6 +56,7 @@
     <Compile Include="IdentDataPlotter.cs" />
     <Compile Include="IdentDataStats.cs" />
     <Compile Include="MassErrorHistogramResult.cs" />
+    <Compile Include="MetadataFileInfo.cs" />
     <Compile Include="MzIdentMLReader.cs" />
     <Compile Include="MzMLReader.cs" />
     <Compile Include="Program.cs" />

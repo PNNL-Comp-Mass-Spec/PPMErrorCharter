@@ -13,29 +13,6 @@ namespace PPMErrorCharter
     {
         // Ignore Spelling: tmp, autoscale, gridline, usr, png
 
-        private struct MetadataFileNamesType
-        {
-            /// <summary>
-            /// Base output file, e.g. DatasetName_HCD_01_MZRefinery
-            /// </summary>
-            public FileInfo BaseOutputFile;
-
-            /// <summary>
-            /// Histogram data, e.g. DatasetName_HCD_01_MZRefinery_Histograms_TmpExportData.txt
-            /// </summary>
-            public string ErrorHistogramsExportFileName;
-
-            /// <summary>
-            /// Mass error vs. time data, e.g. DatasetName_HCD_01_MZRefinery_MassErrorsVsTime_TmpExportData.txt
-            /// </summary>
-            public string MassErrorVsTimeExportFileName;
-
-            /// <summary>
-            /// Mass error vs. mass data, e.g. DatasetName_HCD_01_MZRefinery_MassErrorsVsMass_TmpExportData.txt
-            /// </summary>
-            public string MassErrorVsMassExportFileName;
-        }
-
         protected const string TMP_FILE_SUFFIX = "_TmpExportData";
 
         /// <summary>
@@ -333,16 +310,13 @@ namespace PPMErrorCharter
         /// <param name="haveScanTimes"></param>
         public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> scanData, bool fixedMzMLFileExists, bool haveScanTimes)
         {
-            var metadataFilePaths = new MetadataFileNamesType
-            {
-                BaseOutputFile = new FileInfo(BaseOutputFilePath)
-            };
+            var metadataFileInfo = new MetadataFileInfo(BaseOutputFilePath, Options);
 
             if (!ValidateOutputDirectory(BaseOutputFilePath))
                 return false;
 
             var histogramPlotDataExported = ExportHistogramPlotData(
-                scanData, metadataFilePaths.BaseOutputFile, fixedMzMLFileExists,
+                scanData, metadataFileInfo.BaseOutputFile, fixedMzMLFileExists,
                 out var errorHistogramsExportFileName);
 
             if (!histogramPlotDataExported)
@@ -351,7 +325,7 @@ namespace PPMErrorCharter
             }
 
             var scatterPlotDataExported = ExportScatterPlotData(
-                scanData, fixedMzMLFileExists, haveScanTimes, metadataFilePaths.BaseOutputFile,
+                scanData, fixedMzMLFileExists, haveScanTimes, metadataFileInfo.BaseOutputFile,
                 out var massErrorVsTimeExportFileName,
                 out var massErrorVsMassExportFileName);
 
@@ -360,11 +334,11 @@ namespace PPMErrorCharter
                 return false;
             }
 
-            metadataFilePaths.ErrorHistogramsExportFileName = errorHistogramsExportFileName;
-            metadataFilePaths.MassErrorVsTimeExportFileName = massErrorVsTimeExportFileName;
-            metadataFilePaths.MassErrorVsMassExportFileName = massErrorVsMassExportFileName;
+            metadataFileInfo.ErrorHistogramsExportFileName = errorHistogramsExportFileName;
+            metadataFileInfo.MassErrorVsTimeExportFileName = massErrorVsTimeExportFileName;
+            metadataFileInfo.MassErrorVsMassExportFileName = massErrorVsMassExportFileName;
 
-            var success = GeneratePlotsWithPython(metadataFilePaths);
+            var success = GeneratePlotsWithPython(metadataFileInfo);
 
             return success;
         }
@@ -374,7 +348,7 @@ namespace PPMErrorCharter
         /// </summary>
         /// <returns>True if success, otherwise false</returns>
         /// <remarks>Call ErrorHistogramsToPng and ErrorScatterPlotsToPng prior to calling this method</remarks>
-        private bool GeneratePlotsWithPython(MetadataFileNamesType metadataFilePaths)
+        private bool GeneratePlotsWithPython(MetadataFileInfo metadataFileInfo)
         {
             if (!PythonInstalled)
             {
@@ -391,7 +365,7 @@ namespace PPMErrorCharter
                 return false;
             }
 
-            var workDir = metadataFilePaths.BaseOutputFile.DirectoryName;
+            var workDir = metadataFileInfo.BaseOutputFile.Directory.FullName;
 
             var exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (exeDirectory == null)
@@ -407,7 +381,7 @@ namespace PPMErrorCharter
                 return false;
             }
 
-            var baseOutputName = metadataFilePaths.BaseOutputFile.Name;
+            var baseOutputName = metadataFileInfo.BaseOutputFile.Name;
 
             var metadataFile = new FileInfo(Path.Combine(workDir, "MZRefinery_Plotting_Metadata.txt"));
             using (var writer = new StreamWriter(new FileStream(metadataFile.FullName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)))
@@ -486,9 +460,9 @@ namespace PPMErrorCharter
                     try
                     {
                         metadataFile.Delete();
-                        File.Delete(Path.Combine(workDir, metadataFilePaths.ErrorHistogramsExportFileName));
-                        File.Delete(Path.Combine(workDir, metadataFilePaths.MassErrorVsTimeExportFileName));
-                        File.Delete(Path.Combine(workDir, metadataFilePaths.MassErrorVsMassExportFileName));
+                        File.Delete(Path.Combine(workDir, metadataFileInfo.ErrorHistogramsExportFileName));
+                        File.Delete(Path.Combine(workDir, metadataFileInfo.MassErrorVsTimeExportFileName));
+                        File.Delete(Path.Combine(workDir, metadataFileInfo.MassErrorVsMassExportFileName));
                     }
                     catch (Exception ex)
                     {
@@ -500,9 +474,9 @@ namespace PPMErrorCharter
                     ConsoleMsgUtils.ShowDebug("{0}\n    {1}\n    {2}\n    {3}\n    {4}",
                                               "Not deleting the following temporary files since debug mode is enabled",
                                               metadataFile.FullName,
-                                              Path.Combine(workDir, metadataFilePaths.ErrorHistogramsExportFileName),
-                                              Path.Combine(workDir, metadataFilePaths.MassErrorVsTimeExportFileName),
-                                              Path.Combine(workDir, metadataFilePaths.MassErrorVsMassExportFileName));
+                                              Path.Combine(workDir, metadataFileInfo.ErrorHistogramsExportFileName),
+                                              Path.Combine(workDir, metadataFileInfo.MassErrorVsTimeExportFileName),
+                                              Path.Combine(workDir, metadataFileInfo.MassErrorVsMassExportFileName));
                 }
 
                 return true;
