@@ -171,7 +171,8 @@ namespace PPMErrorCharter
             if (fixedMzMLFileExists && psmResults.Count > 0)
             {
                 Console.WriteLine();
-                Console.WriteLine("Loading data from \"{0}\"", PRISM.PathUtils.CompactPathString(options.FixedMzMLFilePath, 80));
+                OnDebugEvent(string.Format(
+                    "Loading data from \"{0}\"", PRISM.PathUtils.CompactPathString(options.FixedMzMLFilePath, 80)));
                 var fixedDataReader = new MzMLReader(options.FixedMzMLFilePath);
                 RegisterEvents(fixedDataReader);
 

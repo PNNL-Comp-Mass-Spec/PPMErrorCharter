@@ -386,6 +386,7 @@ namespace PPMErrorCharter
             var baseOutputName = metadataFileInfo.BaseOutputFile.Name;
 
             var metadataFile = new FileInfo(Path.Combine(workDir, "MZRefinery_Plotting_Metadata.txt"));
+            OnDebugEvent("Creating " + metadataFile.FullName);
 
             using (var writer = new StreamWriter(new FileStream(metadataFile.FullName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)))
             {
