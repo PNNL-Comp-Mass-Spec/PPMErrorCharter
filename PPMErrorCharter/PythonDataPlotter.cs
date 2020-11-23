@@ -384,12 +384,32 @@ namespace PPMErrorCharter
             var baseOutputName = metadataFileInfo.BaseOutputFile.Name;
 
             var metadataFile = new FileInfo(Path.Combine(workDir, "MZRefinery_Plotting_Metadata.txt"));
+
             using (var writer = new StreamWriter(new FileStream(metadataFile.FullName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)))
             {
-                writer.WriteLine("BaseOutputName=" + baseOutputName);
-                writer.WriteLine("HistogramData=" + metadataFilePaths.ErrorHistogramsExportFileName);
-                writer.WriteLine("MassErrorVsTimeData=" + metadataFilePaths.MassErrorVsTimeExportFileName);
-                writer.WriteLine("MassErrorVsMassData=" + metadataFilePaths.MassErrorVsMassExportFileName);
+                var plotFilesDefined = 0;
+                if (metadataFileInfo.HistogramPlotFile != null)
+                {
+                    writer.WriteLine("HistogramPlotFilePath=" + metadataFileInfo.HistogramPlotFile.FullName);
+                    plotFilesDefined++;
+                }
+
+                if (metadataFileInfo.MassErrorPlotFile != null)
+                {
+                    writer.WriteLine("MassErrorPlotFilePath=" + metadataFileInfo.MassErrorPlotFile.FullName);
+                    plotFilesDefined++;
+                }
+
+                if (plotFilesDefined < 2)
+                {
+                    writer.WriteLine("BaseOutputName=" + baseOutputName);
+                    metadataFileInfo.HistogramPlotFile = new FileInfo(Path.Combine(metadataFileInfo.BaseOutputFile.FullName, baseOutputName + "_Histograms.png"));
+                    metadataFileInfo.MassErrorPlotFile = new FileInfo(Path.Combine(metadataFileInfo.BaseOutputFile.FullName, baseOutputName + "_MassErrors.png"));
+                }
+
+                writer.WriteLine("HistogramData=" + metadataFileInfo.ErrorHistogramsExportFileName);
+                writer.WriteLine("MassErrorVsTimeData=" + metadataFileInfo.MassErrorVsTimeExportFileName);
+                writer.WriteLine("MassErrorVsMassData=" + metadataFileInfo.MassErrorVsMassExportFileName);
             }
 
             var args = PathUtils.PossiblyQuotePath(pythonScriptFile.FullName) + " " + PathUtils.PossiblyQuotePath(metadataFile.FullName);
@@ -448,10 +468,7 @@ namespace PPMErrorCharter
             // Examine the exit code
             if (progRunner.ExitCode == 0)
             {
-                var histogramPlotFile = new FileInfo(Path.Combine(metadataFilePaths.BaseOutputFile.FullName, baseOutputName + "_Histograms.png"));
-                var scatterPlotFile = new FileInfo(Path.Combine(metadataFilePaths.BaseOutputFile.FullName, baseOutputName + "_MassErrors.png"));
-
-                OnStatusEvent("Generated plots; see:\n  " + histogramPlotFile.FullName + "\nand\n  " + scatterPlotFile.FullName);
+                OnStatusEvent("Generated plots; see:\n  " + metadataFileInfo.HistogramPlotFile?.FullName + "\nand\n  " + metadataFileInfo.MassErrorPlotFile?.FullName);
 
                 if (DeleteTempFiles)
                 {

@@ -583,20 +583,19 @@ namespace PPMErrorCharter
             if (!ValidateOutputDirectory(BaseOutputFilePath))
                 return false;
 
-            var scatterPlotFilePath = BaseOutputFilePath + "_MZRefinery_MassErrors.png";
-            var histogramPlotFilePath = BaseOutputFilePath + "_MZRefinery_Histograms.png";
+            var metadataFileInfo = new MetadataFileInfo(BaseOutputFilePath, Options);
 
-            var scatterPlotSuccess = ErrorScatterPlotsToPng(psmResults, scatterPlotFilePath, fixedMzMLFileExists, haveScanTimes);
+            var scatterPlotSuccess = ErrorScatterPlotsToPng(psmResults, metadataFileInfo.MassErrorPlotFile.FullName, fixedMzMLFileExists, haveScanTimes);
             if (scatterPlotSuccess)
-                Console.WriteLine("Generated {0}", scatterPlotFilePath);
+                Console.WriteLine("Generated {0}", metadataFileInfo.MassErrorPlotFile.FullName);
             else
-                Console.WriteLine("Error generating {0}", scatterPlotFilePath);
+                Console.WriteLine("Error generating {0}", metadataFileInfo.MassErrorPlotFile.FullName);
 
-            var histogramPlotSuccess = ErrorHistogramsToPng(psmResults, histogramPlotFilePath, fixedMzMLFileExists);
+            var histogramPlotSuccess = ErrorHistogramsToPng(psmResults, metadataFileInfo.HistogramPlotFile.FullName, fixedMzMLFileExists);
             if (histogramPlotSuccess)
-                Console.WriteLine("Generated {0}", histogramPlotFilePath);
+                Console.WriteLine("Generated {0}", metadataFileInfo.HistogramPlotFile.FullName);
             else
-                Console.WriteLine("Error generating {0}", histogramPlotFilePath);
+                Console.WriteLine("Error generating {0}", metadataFileInfo.HistogramPlotFile.FullName);
 
             return scatterPlotSuccess && histogramPlotSuccess;
         }

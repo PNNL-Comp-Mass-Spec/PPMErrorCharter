@@ -22,6 +22,8 @@ namespace PPMErrorCharter
         {
             BaseOutputFilePath = string.Empty;
             DefaultFixedMzMLFileName = string.Empty;
+            HistogramPlotFilePath = string.Empty;
+            MassErrorPlotFilePath = string.Empty;
 
             InputFilePath = string.Empty;
             FixedMzMLFilePath = string.Empty;
@@ -59,6 +61,22 @@ namespace PPMErrorCharter
         [Option("O", "Output",
             HelpText = "Path to the directory where plots should be created; by default, plots are created in the same directory as the input file")]
         public string OutputDirectoryPath { get; set; }
+
+        /// <summary>
+        /// Full path to the histogram plot file
+        /// </summary>
+        /// <remarks>If empty, will be defined using BaseOutputFilePath</remarks>
+        [Option("HistogramPlot", "HP",
+            HelpText = "Histogram plot file path to use; overrides use of -O or -Output")]
+        public string HistogramPlotFilePath { get; set; }
+
+        /// <summary>
+        /// Full path to the mass errors plot file
+        /// </summary>
+        /// <remarks>If empty, will be defined using BaseOutputFilePath</remarks>
+        [Option("MassErrorPlot", "MEP",
+            HelpText = "Mass error plot file path to use; overrides use of -O or -Output")]
+        public string MassErrorPlotFilePath { get; set; }
 
         /// <summary>
         /// Mass error histogram bin size (in ppm)
