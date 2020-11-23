@@ -7,15 +7,16 @@ mass measurement errors before and after processing with mzRefinery.
 
 mzRefinery is a software tool for correcting systematic mass error biases in 
 mass spectrometry data files. The software uses confident peptide spectrum matches 
-from MSGF+ to evaluate three different calibration methods, then chooses the 
-optimal transform function to remove systematic bias, typically resulting in 
+from [MS-GF+](https://github.com/MSGFPlus/msgfplus) to evaluate three different calibration methods, 
+then chooses the optimal transform function to remove systematic bias, typically resulting in 
 a mass measurement error histogram centered at 0 ppm. MzRefinery is part of the 
 ProteoWizard package (in the msconvert.exe tool) and it thus can read and write 
 a wide variety of file formats.
 
 Download ProteoWizard from http://proteowizard.sourceforge.net/
 
-For more information on the algorithms employed by mzRefinery, see http://www.ncbi.nlm.nih.gov/pubmed/26243018
+For more information on the algorithms employed by mzRefinery, see 
+manuscript [Correcting systematic bias and instrument measurement drift with mzRefinery](https://pubmed.ncbi.nlm.nih.gov/26243018/)
 
 ### Requirements
 
@@ -54,7 +55,7 @@ MSConvert.exe C:\WorkDir\DatasetName_2016-09-28.raw --filter "peakPicking true 1
 ```
 
 
-2. Search the .mzML file using MSGF+ and a fully tryptic search and no dynamic mods (do include alkylation of cysteine if applicable):
+2. Search the .mzML file using MS-GF+ and a fully tryptic search and no dynamic mods (do include alkylation of cysteine if applicable):
 
 ```
 java.exe  -Xmx1500M -jar MSGFPlus.jar -s DatasetName_2016-09-28.mzML -o DatasetName_2016-09-28_msgfplus.mzid 
@@ -81,7 +82,7 @@ On Linux, use PPMErrorCharterPython with mono
 mono PPMErrorCharterPython.exe -I:C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid -Evalue:1E-10
 ```
  
-5. Run MSGF+ again, this time using a more thorough search, for example using partially tryptic or non-tryptic, or adding additional dynamic mods.
+5. Run MS-GF+ again, this time using a more thorough search, for example using partially tryptic or non-tryptic, or adding additional dynamic mods.
 
 ```
 java.exe  -Xmx4000M -jar MSGFPlus.jar -s DatasetName_2016-09-28.mzML -o DatasetName_2016-09-28_msgfplus.mzid 
@@ -100,7 +101,7 @@ java.exe  -Xmx2000M -XX:+UseConcMarkSweepGC -cp MSGFPlus.jar edu.ucsd.msjava.ui.
 Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 `-I` (or the first non-switch argument)
-* PSM results file; .mzid or .mzid.gz (Default: "")
+* PSM results file; .mzid or .mzid.gz
 
 `-EValue` or `-Threshold` (or the second non-switch argument)
 * Spec EValue Threshold (Default: 1E-10, Min: 0, Max: 10)
@@ -111,8 +112,14 @@ Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 `-O` or `-Output`
 * Path to the directory where plots should be created
-* By default, plots are created in the same directory as the input file (Default: "")
-                      
+* By default, plots are created in the same directory as the input file
+
+`-HP` or `-HistogramPlot`
+* Histogram plot file path to use; overrides use of -O
+
+`-MEP` or `-MassErrorPlot`
+* Mass error plot file path to use; overrides use of -O
+
 `-PPMBinSize` or `-Histogram`
 * PPM mass error histogram bin size (Default: 0.5, Min: 0.1, Max: 10)
 
@@ -123,6 +130,7 @@ Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 `-Debug` or `-Verbose`
 * Create a tab-delimited text file with detailed mass error information (Default: False)
+* In addition, will not delete the _TmpExportData.txt files used to pass data to Python for plotting
 
 ## Example Commands
 
