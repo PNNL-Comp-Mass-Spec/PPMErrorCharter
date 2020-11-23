@@ -69,6 +69,9 @@ namespace PPMErrorCharter
                     return -1;
                 }
 
+#if DISABLE_OXYPLOT
+                options.PythonPlotting = true;
+#endif
                 // Display the current options
                 // If the FixedMzMLFilePath is undefined, OutputSetOptions tries to auto-resolve it
                 // This method will also populate BaseOutputFilePath
@@ -242,14 +245,7 @@ namespace PPMErrorCharter
                 baseOutputFilePath = options.BaseOutputFilePath;
             }
 
-#if DISABLE_OXYPLOT
-            var usePythonPlotting = true;
-#else
-            var usePythonPlotting = options.PythonPlotting;
-#endif
-
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (usePythonPlotting)
+            if (options.PythonPlotting)
             {
                 // Make sure that Python exists
                 if (!PythonDataPlotter.PythonInstalled)
