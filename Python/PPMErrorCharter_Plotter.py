@@ -36,12 +36,21 @@ def process_file(metadataFilePath):
     print('Reading metadata file: ' + metadataFilePath)
     
     # Read the filenames in the metadata file
-    # It should have 4 lines of information (either filenames or full paths)
+    # It should have keywords and file names (or full paths), separated by an equals sign
+    #
+    # Example 1:
     #   BaseOutputName=Output_File_Base_Name
     #   HistogramData=Histogram_Data_File_Name
     #   MassErrorVsTimeData=MassErrorsVsTime_Data_File_Name
     #   MassErrorVsMassData=MassErrorsVsMass_Data_File_Name
-    
+    #
+    # Example 2:
+    #   HistogramPlotFilePath=Histogram_Plot_File_Name
+    #   MassErrorPlotFilePath=Mass_Error_Plot_File_Name
+    #   HistogramData=Histogram_Data_File_Name
+    #   MassErrorVsTimeData=MassErrorsVsTime_Data_File_Name
+    #   MassErrorVsMassData=MassErrorsVsMass_Data_File_Name
+            
     metadata = {}
     with open(str(metadataFile), 'r') as f:
         for line in f:
@@ -61,9 +70,26 @@ def process_file(metadataFilePath):
         return
     
     print()
- 
-    if not 'BaseOutputName' in metadata:
-        print ('Error: keyword BaseOutputName not found in the metadata file')
+
+    if 'BaseOutputName' in metadata:
+        baseName = metadata['BaseOutputName']
+    else:
+        baseName = ''
+    
+    if 'HistogramPlotFilePath' in metadata:
+        histogramPlotFilePath = metadata['HistogramPlotFilePath']
+    else:
+        histogramPlotFilePath = ''
+        
+    if 'MassErrorPlotFilePath' in metadata:
+        massErrorPlotFilePath = metadata['MassErrorPlotFilePath']
+    else:
+        massErrorPlotFilePath = ''
+
+    if len(baseName) == 0 and \
+       len(histogramPlotFilePath) == 0 and \
+       len(massErrorPlotFilePath) == 0:
+        print ('Error: the metadata file must either have keyword BaseOutputName or keywords HistogramPlotFilePath and MassErrorPlotFilePath')
         ShowExampleMetadataFile()
         return
 
@@ -72,7 +98,7 @@ def process_file(metadataFilePath):
         ShowExampleMetadataFile()
         return
 
-    baseName = metadata['BaseOutputName']
+
     histogramDataFilePath = metadata['HistogramData']
 
     if 'MassErrorVsTimeData' in metadata and 'MassErrorVsMassData' in metadata:
@@ -101,7 +127,7 @@ def process_file(metadataFilePath):
     baseNameHead, baseNameTail = os.path.split(baseName)
     
     if baseNameTail == baseName:
-        # Create the output files in same folder as the histogram data file
+        # Create the output files in same directory as the histogram data file
         histogramParentDirectoryPath = os.path.dirname(histogramDataFile)
         baseNamePath = os.path.join(histogramParentDirectoryPath, baseName)
     else:
@@ -119,8 +145,11 @@ def process_file(metadataFilePath):
         
         errorVsTimeData, errorVsTimePlotLabels, errorVsTimeColumnOptions = read_file(errorVsTimeDataFile)
         errorVsMassData, errorVsMassPlotLabels, errorVsMassColumnOptions = read_file(errorVsMassDataFile)
-    
-    histogramOutputFilePath  = baseNamePath + '_MZRefinery_Histograms.png'
+
+    if len(histogramPlotFilePath) == 0:
+        histogramOutputFilePath = baseNamePath + '_MZRefinery_Histograms.png'
+    else:
+        histogramOutputFilePath = histogramPlotFilePath
             
     print('\nOutput: ' + histogramOutputFilePath)
     print()
@@ -133,8 +162,11 @@ def process_file(metadataFilePath):
     
     if len(errorVsTimeDataFilePath) == 0:
         return
-       
-    massErrorsOutputFilePath = baseNamePath + '_MZRefinery_MassErrors.png'
+
+    if len(massErrorPlotFilePath) == 0:
+        massErrorsOutputFilePath = baseNamePath + '_MZRefinery_MassErrors.png'
+    else:
+        massErrorsOutputFilePath = massErrorPlotFilePath
 
     print('\nOutput: ' + massErrorsOutputFilePath)
     print()
@@ -451,14 +483,28 @@ def plot_lc_mz(outputFilePath, columnNames, lc_scan_num, mz, intensities, title,
     print('2D plot created')
 
 def ShowExampleMetadataFile():
-    print('The metadata file should have either 2 or 4 lines of information')
+    print()
+    print('-- Metadata File Syntax --')
     print('Each line has a key/value pair of information, separated by an equals sign')
     print('Filenames can be simple filenames or full file paths')
     print()
+    print('-- Example File #1 --')
+    print('BaseOutputName=Output_File_Base_Name')
+    print('HistogramData=Histogram_Data_File_Name')
+    print()
+    print('-- Example File #2 --')
     print('BaseOutputName=Output_File_Base_Name')
     print('HistogramData=Histogram_Data_File_Name')
     print('MassErrorVsTimeData=MassErrorsVsTime_Data_File_Name')
     print('MassErrorVsMassData=MassErrorsVsMass_Data_File_Name')
+    print()
+    print('-- Example File #3 --')
+    print('HistogramPlotFilePath=C:\DMS_WorkDir\Histograms.png')
+    print('MassErrorPlotFilePath=C:\DMS_WorkDir\MassErrors.png')
+    print('HistogramData=Histogram_Data_File_Name')
+    print('MassErrorVsTimeData=MassErrorsVsTime_Data_File_Name')
+    print('MassErrorVsMassData=MassErrorsVsMass_Data_File_Name')
+    print()
 
 def ValidateFile(parentDirectoryPath, fileDescription, dataFilePath):
     dataFile = Path(dataFilePath)
@@ -480,6 +526,8 @@ import sys
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('\nError: please enter the file name to process (wildcards are supported)')
+        print()
+        ShowExampleMetadataFile()
         exit()
     
     fileNameMatchSpec = sys.argv[1]
