@@ -1,6 +1,7 @@
 xcopy Debug\PPMErrorCharter.exe C:\DMS_Programs\MzRefinery\ /D /Y
 xcopy Debug\PPMErrorCharter.pdb C:\DMS_Programs\MzRefinery\ /D /Y
 xcopy Debug\*.dll C:\DMS_Programs\MzRefinery\ /D /Y
+xcopy Debug\*.py C:\DMS_Programs\MzRefinery\ /D /Y
 
 @echo off
 echo.
@@ -13,5 +14,6 @@ pause
 xcopy Debug\PPMErrorCharter.exe \\pnl\projects\OmicsSW\DMS_Programs\AnalysisToolManagerDistribution\MzRefinery\ /D /Y
 xcopy Debug\PPMErrorCharter.pdb \\pnl\projects\OmicsSW\DMS_Programs\AnalysisToolManagerDistribution\MzRefinery\ /D /Y
 xcopy Debug\*.dll \\pnl\projects\OmicsSW\DMS_Programs\AnalysisToolManagerDistribution\MzRefinery\ /D /Y
+xcopy Debug\*.py \\pnl\projects\OmicsSW\DMS_Programs\AnalysisToolManagerDistribution\MzRefinery\ /D /Y
 
 pause
