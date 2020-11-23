@@ -70,7 +70,8 @@ namespace PPMErrorCharter
                 }
 
                 // Display the current options
-                // If the FixedMzMLFilePath is undefined, OutputSetOptions ties to auto-resolve it
+                // If the FixedMzMLFilePath is undefined, OutputSetOptions tries to auto-resolve it
+                // This method will also populate BaseOutputFilePath
                 options.OutputSetOptions();
 
                 // Read the input files, generate histograms, and create the plots

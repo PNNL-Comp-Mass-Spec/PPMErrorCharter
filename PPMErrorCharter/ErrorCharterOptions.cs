@@ -13,7 +13,7 @@ namespace PPMErrorCharter
     {
         // Ignore Spelling: OxyPlot
 
-        private const string PROGRAM_DATE = "November 20, 2020";
+        private const string PROGRAM_DATE = "November 23, 2020";
 
         /// <summary>
         /// Constructor
@@ -101,8 +101,9 @@ namespace PPMErrorCharter
         public bool SaveMassErrorDetails { get; set; }
 
         /// <summary>
-        /// Base output file path; updated by OutputSetOptions or
+        /// Base output file path; updated by OutputSetOptions
         /// </summary>
+        /// <remarks>Ignored if HistogramPlotFilePath and MassErrorPlotFilePath are defined</remarks>
         public string BaseOutputFilePath { get; private set; }
 
         /// <summary>
