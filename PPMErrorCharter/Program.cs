@@ -144,7 +144,7 @@ namespace PPMErrorCharter
             Console.WriteLine("Creating plots for \"{0}\"", identFile.Name);
             if (!fixedMzMLFileExists)
             {
-                if (string.IsNullOrWhiteSpace(options.BaseOutputFilePath) || string.IsNullOrWhiteSpace(options.DefaultFixedMzMLFileName))
+                if (string.IsNullOrWhiteSpace(options.BaseOutputFilePath) || options.DefaultFixedMzMLFiles.Count == 0)
                 {
                     OnWarningEvent(string.Format(
                         "  Warning: Could not find fixed data file \"{0}[.gz]\"\n  " +

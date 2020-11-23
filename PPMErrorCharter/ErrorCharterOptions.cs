@@ -21,7 +21,7 @@ namespace PPMErrorCharter
         public ErrorCharterOptions()
         {
             BaseOutputFilePath = string.Empty;
-            DefaultFixedMzMLFileName = string.Empty;
+            DefaultFixedMzMLFiles = new List<string>();
             HistogramPlotFilePath = string.Empty;
             MassErrorPlotFilePath = string.Empty;
 
@@ -106,37 +106,53 @@ namespace PPMErrorCharter
         public string BaseOutputFilePath { get; private set; }
 
         /// <summary>
-        /// Default _FIXED.mzML filename; used in a warning message by GeneratePlots
+        /// Default _FIXED.mzML file paths; used in a warning message by GeneratePlots
         /// </summary>
-        public string DefaultFixedMzMLFileName { get; private set; }
+        public List<string> DefaultFixedMzMLFiles { get; }
 
-        private bool AutoResolveFixedMzMLFile(string baseOutputFilePath, out string fixedMzMLFilePath, out string cacheInfoFileName)
+        private bool AutoResolveFixedMzMLFile(string inputFilePath, string baseOutputFilePath, out string fixedMzMLFilePath, out string cacheInfoFileName)
         {
-            DefaultFixedMzMLFileName = baseOutputFilePath + ".mzML";
+            var inputFile = new FileInfo(inputFilePath);
+            var baseOutputFile = new FileInfo(baseOutputFilePath);
 
-            var suffixesToCheck = new List<string> {
-                "_FIXED.mzML",
-                "_FIXED.mzML.gz",
-                ".mzML",
-                ".mzML.gz"
-            };
+            var basePaths = new List<string> { baseOutputFile.FullName };
 
-            foreach (var suffix in suffixesToCheck)
+            if (inputFile.DirectoryName != null)
             {
-                var candidateFile = new FileInfo(baseOutputFilePath + suffix);
-                if (!candidateFile.Exists)
-                    continue;
-
-                fixedMzMLFilePath = candidateFile.FullName;
-                cacheInfoFileName = string.Empty;
-                return true;
+                basePaths.Add(Path.Combine(inputFile.DirectoryName, baseOutputFile.Name));
             }
 
-            var cachedMzMLFileFound = ResolveCachedMzMLFile(baseOutputFilePath, out var cachedMzMLFile, out cacheInfoFileName);
-            if (cachedMzMLFileFound)
+            cacheInfoFileName = string.Empty;
+            DefaultFixedMzMLFiles.Clear();
+
+            foreach (var basePath in basePaths)
             {
-                fixedMzMLFilePath = cachedMzMLFile.FullName;
-                return true;
+                DefaultFixedMzMLFiles.Add(basePath + ".mzML");
+
+                var suffixesToCheck = new List<string>
+                {
+                    "_FIXED.mzML",
+                    "_FIXED.mzML.gz",
+                    ".mzML",
+                    ".mzML.gz"
+                };
+
+                foreach (var suffix in suffixesToCheck)
+                {
+                    var candidateFile = new FileInfo(basePath + suffix);
+                    if (!candidateFile.Exists)
+                        continue;
+
+                    fixedMzMLFilePath = candidateFile.FullName;
+                    return true;
+                }
+
+                var cachedMzMLFileFound = ResolveCachedMzMLFile(basePath, out var cachedMzMLFile, out cacheInfoFileName);
+                if (cachedMzMLFileFound)
+                {
+                    fixedMzMLFilePath = cachedMzMLFile.FullName;
+                    return true;
+                }
             }
 
             fixedMzMLFilePath = string.Empty;
@@ -201,7 +217,7 @@ namespace PPMErrorCharter
 
             if (string.IsNullOrWhiteSpace(FixedMzMLFilePath))
             {
-                var fixedMzMLFileExists = AutoResolveFixedMzMLFile(BaseOutputFilePath, out var fixedMzMLFilePath, out var cacheInfoFileName);
+                var fixedMzMLFileExists = AutoResolveFixedMzMLFile(InputFilePath, BaseOutputFilePath, out var fixedMzMLFilePath, out var cacheInfoFileName);
 
                 if (fixedMzMLFileExists)
                 {
@@ -209,13 +225,20 @@ namespace PPMErrorCharter
                 }
                 else
                 {
-                    Console.WriteLine(" Fixed .mzML file: undefined and could not find \n    {0} or \n    {1}", DefaultFixedMzMLFileName, cacheInfoFileName);
+                    Console.WriteLine(" {0,-23} {1}", "Fixed .mzML file:", "Undefined; could not find any of these files");
+                    foreach (var defaultFile in DefaultFixedMzMLFiles)
+                    {
+                        Console.WriteLine(" {0,-23} {1}", string.Empty, defaultFile);
+                    }
+                    Console.WriteLine(" {0,-23} {1}", string.Empty, cacheInfoFileName);
+
+                    Console.WriteLine();
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(FixedMzMLFilePath))
             {
-                Console.WriteLine(" Fixed .mzML file: {0}", FixedMzMLFilePath);
+                Console.WriteLine(" {0,-23} {1}", "Fixed .mzML file", FixedMzMLFilePath);
             }
 
             Console.WriteLine(" Spec EValue threshold: {0}", StringUtilities.DblToString(SpecEValueThreshold, 2));
