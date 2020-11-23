@@ -211,7 +211,7 @@ namespace PPMErrorCharter
             Console.WriteLine();
             Console.WriteLine("Using options:");
 
-            Console.WriteLine(" PSM results file: {0}", InputFilePath);
+            Console.WriteLine(" {0,-23} {1}", "PSM results file:", InputFilePath);
 
             BaseOutputFilePath = GetBaseOutputFilePath(InputFilePath, OutputDirectoryPath);
 
@@ -241,14 +241,36 @@ namespace PPMErrorCharter
                 Console.WriteLine(" {0,-23} {1}", "Fixed .mzML file", FixedMzMLFilePath);
             }
 
-            Console.WriteLine(" Spec EValue threshold: {0}", StringUtilities.DblToString(SpecEValueThreshold, 2));
+            var baseOutputFile = new FileInfo(BaseOutputFilePath);
 
-            Console.WriteLine(" PPM Error histogram bin size: {0}", StringUtilities.DblToString(PPMErrorHistogramBinSize, 2));
+            var histogramPlotFile = new FileInfo(baseOutputFile.FullName + "_Histograms.png");
+            var scatterPlotFile = new FileInfo(baseOutputFile.FullName + "_MassErrors.png");
 
-            if (PythonPlotting)
-                Console.WriteLine(" Generating plots with Python");
+            if (string.IsNullOrEmpty(HistogramPlotFilePath))
+            {
+                Console.WriteLine(" {0,-23} {1}", "Histogram plot:", histogramPlotFile.FullName);
+            }
             else
-                Console.WriteLine(" Generating plots with OxyPlot");
+            {
+                Console.WriteLine(" {0,-23} {1}", "Histogram plot:", HistogramPlotFilePath);
+            }
+
+            if (string.IsNullOrEmpty(MassErrorPlotFilePath))
+            {
+                Console.WriteLine(" {0,-23} {1}", "Mass Errors plot:", scatterPlotFile.FullName);
+            }
+            else
+            {
+                Console.WriteLine(" {0,-23} {1}", "Mass Errors plot:", MassErrorPlotFilePath);
+            }
+
+            Console.WriteLine(" {0,-23} {1}", "Spec EValue threshold:", StringUtilities.DblToString(SpecEValueThreshold, 2));
+
+            Console.WriteLine(" {0,-23} {1}", "Histogram bin size:", StringUtilities.DblToString(PPMErrorHistogramBinSize, 2));
+
+            Console.WriteLine(" {0,-23} {1}", "Generating plots with:", PythonPlotting ? "Python" : "OxyPlot");
+
+            Console.WriteLine();
         }
 
         /// <summary>
