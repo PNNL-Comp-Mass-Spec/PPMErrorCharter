@@ -312,7 +312,7 @@ namespace PPMErrorCharter
         {
             var metadataFileInfo = new MetadataFileInfo(BaseOutputFilePath, Options);
 
-            if (!ValidateOutputDirectory(BaseOutputFilePath))
+            if (!ValidateOutputDirectories(BaseOutputFilePath))
                 return false;
 
             var histogramPlotDataExported = ExportHistogramPlotData(
@@ -356,13 +356,15 @@ namespace PPMErrorCharter
                 return false;
             }
 
-            if (!ValidateOutputDirectory(BaseOutputFilePath))
-                return false;
-
-            if (metadataFilePaths.BaseOutputFile.DirectoryName == null)
+            if (metadataFileInfo.BaseOutputFile.Directory == null)
             {
-                OnErrorEvent("Unable to determine the parent directory of the base output file: " + metadataFilePaths.BaseOutputFile.FullName);
+                OnErrorEvent("Unable to determine the parent directory of the base output file: " + metadataFileInfo.BaseOutputFile.FullName);
                 return false;
+            }
+
+            if (!metadataFileInfo.BaseOutputFile.Directory.Exists)
+            {
+                metadataFileInfo.BaseOutputFile.Directory.Create();
             }
 
             var workDir = metadataFileInfo.BaseOutputFile.Directory.FullName;

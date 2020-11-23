@@ -70,29 +70,54 @@ namespace PPMErrorCharter
             return new SortedDictionary<double, int>(counts);
         }
 
-        public bool ValidateOutputDirectory(string baseOutputFilePath)
+        protected bool ValidateOutputDirectories(string baseOutputFilePath)
+        {
+            var histogramPlotFileValidated = false;
+            var massErrorPlotFileValidated = false;
+
+            if (!string.IsNullOrWhiteSpace(Options.HistogramPlotFilePath))
+            {
+                if (!ValidateOutputDirectory(Options.HistogramPlotFilePath))
+                    return false;
+                histogramPlotFileValidated = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Options.MassErrorPlotFilePath))
+            {
+                if (!ValidateOutputDirectory(Options.MassErrorPlotFilePath))
+                    return false;
+                massErrorPlotFileValidated = true;
+            }
+
+            if (histogramPlotFileValidated && massErrorPlotFileValidated)
+                return true;
+
+            return ValidateOutputDirectory(baseOutputFilePath);
+        }
+
+        private bool ValidateOutputDirectory(string outputFilePath)
         {
             try
             {
-                var baseOutputFile = new FileInfo(baseOutputFilePath);
-                if (baseOutputFile.Directory == null ||
-                    baseOutputFile.DirectoryName == null)
+                var outputFile = new FileInfo(outputFilePath);
+                if (outputFile.Directory == null ||
+                    outputFile.DirectoryName == null)
                 {
-                    OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFilePath);
+                    OnErrorEvent("Unable to determine the parent directory of output file: " + outputFile);
                     return false;
                 }
 
-                if (!baseOutputFile.Directory.Exists)
+                if (!outputFile.Directory.Exists)
                 {
-                    OnStatusEvent("Creating the output directory: " + baseOutputFile.Directory.FullName);
-                    baseOutputFile.Directory.Create();
+                    OnStatusEvent("Creating output directory: " + outputFile.Directory.FullName);
+                    outputFile.Directory.Create();
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                OnErrorEvent("Unable to determine the parent directory of the base output file: " + baseOutputFilePath);
+                OnErrorEvent("Unable to determine the parent directory of output file: " + outputFilePath);
                 Console.WriteLine(StackTraceFormatter.GetExceptionStackTraceMultiLine(ex));
                 return false;
             }

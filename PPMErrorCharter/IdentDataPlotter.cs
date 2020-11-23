@@ -580,7 +580,7 @@ namespace PPMErrorCharter
         /// <param name="haveScanTimes"></param>
         public override bool GeneratePNGPlots(IReadOnlyCollection<IdentData> psmResults, bool fixedMzMLFileExists, bool haveScanTimes)
         {
-            if (!ValidateOutputDirectory(BaseOutputFilePath))
+            if (!ValidateOutputDirectories(BaseOutputFilePath))
                 return false;
 
             var metadataFileInfo = new MetadataFileInfo(BaseOutputFilePath, Options);
