@@ -66,19 +66,35 @@ namespace PPMErrorCharter
             {
                 spectraRead++;
 
-                if (spectrum.ScanNumber > maxScanId)
+                var nativeIdScanNumber = spectrum.NativeIdScanNumber;
+                if (nativeIdScanNumber > 0 && nativeIdScanNumber > maxScanId)
                 {
                     // All of the PSMs have been processed
                     break;
                 }
+
+                var spectrumScanNumber = nativeIdScanNumber == 0 ? spectrum.ScanNumber : nativeIdScanNumber;
 
                 if (spectrum.MsLevel <= 1)
                 {
                     continue;
                 }
 
-                if (!dataByNativeId.TryGetValue(spectrum.NativeId, out var psmsForSpectrum) &&
-                    !dataByScan.TryGetValue(spectrum.ScanNumber, out psmsForSpectrum))
+                // Find PSMs associated with the current spectrum
+                // First lookup using NativeId
+                // If no match, lookup using the scan number
+
+                List<IdentData> psmsForSpectrum;
+                if (dataByNativeId.TryGetValue(spectrum.NativeId, out var psmsFromNativeId))
+                {
+                    psmsForSpectrum = psmsFromNativeId;
+                }
+                else if (dataByScan.TryGetValue(spectrumScanNumber, out var psmsFromScanNumber))
+                {
+                    psmsForSpectrum = psmsFromScanNumber;
+                }
+                else
+
                 {
                     continue;
                 }
@@ -101,7 +117,7 @@ namespace PPMErrorCharter
                         {
                             OnWarningEvent(string.Format(
                                 "Could not determine the experimental precursor m/z for scan {0}",
-                                spectrum.ScanNumber));
+                                spectrumScanNumber));
                         }
                     }
 
