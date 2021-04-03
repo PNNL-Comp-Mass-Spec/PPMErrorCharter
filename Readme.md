@@ -77,7 +77,7 @@ msconvert.exe C:\WorkDir\DatasetName_2016-09-28.mzML --outfile DatasetName_2016-
 PPMErrorCharter.exe C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid 1E-10
 ```
 
-On Linux, use PPMErrorCharterPython with mono
+On Linux, use PPMErrorCharterPython with [Mono](https://www.mono-project.com/download/stable/)
 ```
 mono PPMErrorCharterPython.exe -I:C:\WorkDir\DatasetName_2016-09-28_msgfplus.mzid -Evalue:1E-10
 ```
@@ -155,7 +155,7 @@ Website: https://panomics.pnl.gov/ or https://omics.pnl.gov
 ## License
 
 The PPM Error Charter is licensed under the 2-Clause BSD License; 
-you may not use this file except in compliance with the License.
+you may not use this program except in compliance with the License.
 You may obtain a copy of the License at https://opensource.org/licenses/BSD-2-Clause
 
 Copyright 2019 Battelle Memorial Institute
