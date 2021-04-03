@@ -130,18 +130,12 @@ namespace PPMErrorCharter
 
             HaveScanTimes = false;
 
-            switch (mzIdentMLData.AnalysisSoftware)
+            IdentProg = mzIdentMLData.AnalysisSoftware switch
             {
-                case "MyriMatch":
-                    IdentProg = IdentProgramType.MyriMatch;
-                    break;
-                case "MS-GF+":
-                    IdentProg = IdentProgramType.MSGFPlus;
-                    break;
-                default:
-                    IdentProg = IdentProgramType.Unset;
-                    break;
-            }
+                "MyriMatch" => IdentProgramType.MyriMatch,
+                "MS-GF+" => IdentProgramType.MSGFPlus,
+                _ => IdentProgramType.Unset
+            };
 
             while (true)
             {
