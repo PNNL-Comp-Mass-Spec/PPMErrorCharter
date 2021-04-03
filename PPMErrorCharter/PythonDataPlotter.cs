@@ -205,33 +205,32 @@ namespace PPMErrorCharter
             var massErrorHistogramsExportFile = new FileInfo(Path.Combine(baseOutputFile.DirectoryName, massErrorHistogramsExportFileName));
 
             // Export data for the mass errors vs. Time plot
-            using (var writer = new StreamWriter(new FileStream(massErrorHistogramsExportFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            using var writer = new StreamWriter(new FileStream(massErrorHistogramsExportFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read));
+
+            writer.WriteLine("[Title1=Original;Title2=Refined]");
+            writer.WriteLine("Autoscale=false;Minimum=-50;Maximum=50;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1	Autoscale=true;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1");
+
+            var headerColumns = new List<string>
             {
-                writer.WriteLine("[Title1=Original;Title2=Refined]");
-                writer.WriteLine("Autoscale=false;Minimum=-50;Maximum=50;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1	Autoscale=true;StringFormat=#,##0;MinorGridlineThickness=0;MajorStep=1");
+                "Mass error (PPM)",
+                "Original: Counts",
+                "Refined: Counts"
+            };
 
-                var headerColumns = new List<string>
-                {
-                    "Mass error (PPM)",
-                    "Original: Counts",
-                    "Refined: Counts"
-                };
+            writer.WriteLine(string.Join("\t", headerColumns));
 
-                writer.WriteLine(string.Join("\t", headerColumns));
+            foreach (var item in mergedHistogramData)
+            {
+                string refinedMassError;
+                if (fixedMzMLFileExists)
+                    refinedMassError = item.Value.BinCountRefined.ToString();
+                else
+                    refinedMassError = string.Empty;
 
-                foreach (var item in mergedHistogramData)
-                {
-                    string refinedMassError;
-                    if (fixedMzMLFileExists)
-                        refinedMassError = item.Value.BinCountRefined.ToString();
-                    else
-                        refinedMassError = string.Empty;
-
-                    writer.WriteLine("{0}\t{1}\t{2}",
-                                     item.Key,
-                                     item.Value.BinCountOriginal,
-                                     refinedMassError);
-                }
+                writer.WriteLine("{0}\t{1}\t{2}",
+                    item.Key,
+                    item.Value.BinCountOriginal,
+                    refinedMassError);
             }
 
             return true;

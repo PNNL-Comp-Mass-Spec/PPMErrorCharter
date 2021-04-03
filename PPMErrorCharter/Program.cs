@@ -175,7 +175,7 @@ namespace PPMErrorCharter
             {
                 Console.WriteLine();
                 OnDebugEvent(string.Format(
-                    "Loading data from \"{0}\"", PRISM.PathUtils.CompactPathString(options.FixedMzMLFilePath, 80)));
+                    "Loading data from \"{0}\"", PathUtils.CompactPathString(options.FixedMzMLFilePath, 80)));
                 var fixedDataReader = new MzMLReader(options.FixedMzMLFilePath);
                 RegisterEvents(fixedDataReader);
 
@@ -289,44 +289,44 @@ namespace PPMErrorCharter
 
             Console.WriteLine();
             Console.WriteLine("Exporting data to {0}", outFilePath);
-            using (var writer = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read)))
+            
+            using var writer = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read));
+
+            var headerColumns = new List<string>
             {
-                var headerColumns = new List<string>
+                "NativeID",
+                "CalcMZ",
+                // ReSharper disable once StringLiteralTypo
+                "ExperMZ",
+                "RefineMZ",
+                "MassError",
+                "PpmError",
+                "RMassError",
+                "RPpmError",
+                "Charge"
+            };
+
+            writer.WriteLine(string.Join("\t", headerColumns));
+
+            foreach (var data in psmResults)
+            {
+                var error = data.MassErrorIsotoped - data.MassErrorRefinedIsotoped;
+                string largeErrorSuffix;
+                if (error < -0.2 || error > 0.2)
                 {
-                    "NativeID",
-                    "CalcMZ",
-                    // ReSharper disable once StringLiteralTypo
-                    "ExperMZ",
-                    "RefineMZ",
-                    "MassError",
-                    "PpmError",
-                    "RMassError",
-                    "RPpmError",
-                    "Charge"
-                };
-
-                writer.WriteLine(string.Join("\t", headerColumns));
-
-                foreach (var data in psmResults)
+                    largeErrorSuffix = "\tLarge error: " + StringUtilities.DblToString(error, 2);
+                }
+                else
                 {
-                    var error = data.MassErrorIsotoped - data.MassErrorRefinedIsotoped;
-                    string largeErrorSuffix;
-                    if (error < -0.2 || error > 0.2)
-                    {
-                        largeErrorSuffix = "\tLarge error: " + StringUtilities.DblToString(error, 2);
-                    }
-                    else
-                    {
-                        largeErrorSuffix = string.Empty;
-                    }
-
-                    writer.WriteLine(data.ToDebugString() + largeErrorSuffix);
+                    largeErrorSuffix = string.Empty;
                 }
 
-                if (!fixedMzMLFileExists)
-                {
-                    return plotsSaved;
-                }
+                writer.WriteLine(data.ToDebugString() + largeErrorSuffix);
+            }
+
+            if (!fixedMzMLFileExists)
+            {
+                return plotsSaved;
             }
 
             return plotsSaved;
