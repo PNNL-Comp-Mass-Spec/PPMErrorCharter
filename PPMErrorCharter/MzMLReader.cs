@@ -55,71 +55,70 @@ namespace PPMErrorCharter
                 return;
             }
 
-            using (var reader = new SimpleMzMLReader(_mzMLFilePath))
+            using var reader = new SimpleMzMLReader(_mzMLFilePath);
+
+            var spectraRead = 0;
+            var lastStatus = DateTime.UtcNow;
+
+            var maxScanId = psmResults.Max(x => x.ScanIdInt);
+
+            foreach (var spectrum in reader.ReadAllSpectra(false))
             {
-                var spectraRead = 0;
-                var lastStatus = DateTime.UtcNow;
+                spectraRead++;
 
-                var maxScanId = psmResults.Max(x => x.ScanIdInt);
-
-                foreach (var spectrum in reader.ReadAllSpectra(false))
+                if (spectrum.ScanNumber > maxScanId)
                 {
-                    spectraRead++;
+                    // All of the PSMs have been processed
+                    break;
+                }
 
-                    if (spectrum.ScanNumber > maxScanId)
+                if (spectrum.MsLevel <= 1)
+                {
+                    continue;
+                }
+
+                if (!dataByNativeId.TryGetValue(spectrum.NativeId, out var psmsForSpectrum) &&
+                    !dataByScan.TryGetValue(spectrum.ScanNumber, out psmsForSpectrum))
+                {
+                    continue;
+                }
+
+                foreach (var psm in psmsForSpectrum)
+                {
+                    var experimentalMzRefined = spectrum.GetThermoMonoisotopicMz();
+
+                    if (Math.Abs(experimentalMzRefined) > 0)
                     {
-                        // All of the PSMs have been processed
-                        break;
+                        psm.ExperMzRefined = experimentalMzRefined;
                     }
-
-                    if (spectrum.MsLevel <= 1)
+                    else
                     {
-                        continue;
-                    }
-
-                    if (!dataByNativeId.TryGetValue(spectrum.NativeId, out var psmsForSpectrum) &&
-                        !dataByScan.TryGetValue(spectrum.ScanNumber, out psmsForSpectrum))
-                    {
-                        continue;
-                    }
-
-                    foreach (var psm in psmsForSpectrum)
-                    {
-                        var experimentalMzRefined = spectrum.GetThermoMonoisotopicMz();
-
-                        if (Math.Abs(experimentalMzRefined) > 0)
+                        if (spectrum.Precursors.Count > 0 && spectrum.Precursors.First().SelectedIons.Count > 0)
                         {
-                            psm.ExperMzRefined = experimentalMzRefined;
+                            psm.ExperMzRefined = spectrum.Precursors.First().SelectedIons.First().SelectedIonMz;
                         }
                         else
                         {
-                            if (spectrum.Precursors.Count > 0 && spectrum.Precursors.First().SelectedIons.Count > 0)
-                            {
-                                psm.ExperMzRefined = spectrum.Precursors.First().SelectedIons.First().SelectedIonMz;
-                            }
-                            else
-                            {
-                                OnWarningEvent(string.Format(
-                                    "Could not determine the experimental precursor m/z for scan {0}",
-                                    spectrum.ScanNumber));
-                            }
-                        }
-
-                        if (psm.ScanTimeSeconds <= 0)
-                        {
-                            // StartTime is stored in minutes, we've been using seconds.
-                            psm.ScanTimeSeconds = spectrum.ScanStartTime * 60;
+                            OnWarningEvent(string.Format(
+                                "Could not determine the experimental precursor m/z for scan {0}",
+                                spectrum.ScanNumber));
                         }
                     }
 
-                    if (DateTime.UtcNow.Subtract(lastStatus).TotalSeconds < 5)
+                    if (psm.ScanTimeSeconds <= 0)
                     {
-                        continue;
+                        // StartTime is stored in minutes, we've been using seconds.
+                        psm.ScanTimeSeconds = spectrum.ScanStartTime * 60;
                     }
-
-                    Console.WriteLine("  {0:F0}% complete", spectraRead / (double)reader.NumSpectra * 100);
-                    lastStatus = DateTime.UtcNow;
                 }
+
+                if (DateTime.UtcNow.Subtract(lastStatus).TotalSeconds < 5)
+                {
+                    continue;
+                }
+
+                Console.WriteLine("  {0:F0}% complete", spectraRead / (double)reader.NumSpectra * 100);
+                lastStatus = DateTime.UtcNow;
             }
         }
     }
