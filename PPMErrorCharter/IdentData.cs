@@ -365,6 +365,11 @@ namespace PPMErrorCharter
                           PpmErrorRefined < -PpmErrorFilterWindow || PpmErrorFilterWindow < PpmErrorRefined;
             return orig || refined;
         }
+
+        public override string ToString()
+        {
+            return NativeId;
+        }
     }
 
     public class IdentDataByCalcMz : IComparer<IdentData>
