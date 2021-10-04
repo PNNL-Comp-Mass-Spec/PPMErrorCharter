@@ -13,7 +13,7 @@ a mass measurement error histogram centered at 0 ppm. MzRefinery is part of the
 ProteoWizard package (in the msconvert.exe tool) and it thus can read and write 
 a wide variety of file formats.
 
-Download ProteoWizard from http://proteowizard.sourceforge.net/
+Download ProteoWizard from https://proteowizard.sourceforge.io/
 
 For more information on the algorithms employed by mzRefinery, see 
 manuscript [Correcting systematic bias and instrument measurement drift with mzRefinery](https://pubmed.ncbi.nlm.nih.gov/26243018/)
@@ -150,7 +150,7 @@ Usage: PPMErrorCharter.exe or PPMErrorCharterPython.exe
 
 Written by Bryson Gibbons and Matthew Monroe for the Department of Energy (PNNL, Richland, WA) \
 E-mail: bryson.gibbons@pnnl.gov or proteomics@pnnl.gov \
-Website: https://panomics.pnl.gov/ or https://omics.pnl.gov
+Website: https://github.com/PNNL-Comp-Mass-Spec/ or https://panomics.pnnl.gov/ or https://www.pnnl.gov/integrative-omics
 
 ## License
 

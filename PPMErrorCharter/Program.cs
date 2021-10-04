@@ -36,7 +36,7 @@ namespace PPMErrorCharter
                     ContactInfo = "Program written by Bryson Gibbons and Matthew Monroe for the Department of Energy (PNNL, Richland, WA) in 2014" +
                                   Environment.NewLine + Environment.NewLine +
                                   "E-mail: proteomics@pnnl.gov" + Environment.NewLine +
-                                  "Website: https://panomics.pnnl.gov/ or https://omics.pnl.gov or https://github.com/PNNL-Comp-Mass-Spec",
+                                  "Website: https://github.com/PNNL-Comp-Mass-Spec/ or https://panomics.pnnl.gov/ or https://www.pnnl.gov/integrative-omics",
 
                     UsageExamples = {
                         exeName + " SearchResults_msgfplus.mzid.gz",
@@ -289,7 +289,7 @@ namespace PPMErrorCharter
 
             Console.WriteLine();
             Console.WriteLine("Exporting data to {0}", outFilePath);
-            
+
             using var writer = new StreamWriter(new FileStream(outFilePath, FileMode.Create, FileAccess.Write, FileShare.Read));
 
             var headerColumns = new List<string>
