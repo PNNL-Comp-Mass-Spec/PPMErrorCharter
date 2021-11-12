@@ -33,12 +33,12 @@ namespace PPMErrorCharter
                                   "ProteoWizard package (in the msconvert.exe tool) and it thus can read and write " +
                                   "a wide variety of file formats.",
 
-                    ContactInfo = "Program written by Bryson Gibbons and Matthew Monroe for the Department of Energy (PNNL, Richland, WA) in 2014" +
-                                  Environment.NewLine + Environment.NewLine +
+                    ContactInfo = "Program written by Bryson Gibbons and Matthew Monroe for the Department of Energy (PNNL, Richland, WA)" +                                  Environment.NewLine + Environment.NewLine +
                                   "E-mail: proteomics@pnnl.gov" + Environment.NewLine +
                                   "Website: https://github.com/PNNL-Comp-Mass-Spec/ or https://panomics.pnnl.gov/ or https://www.pnnl.gov/integrative-omics",
 
-                    UsageExamples = {
+                    UsageExamples =
+                    {
                         exeName + " SearchResults_msgfplus.mzid.gz",
                         exeName + " SearchResults_msgfplus.mzid.gz 1E-12",
                         exeName + " SearchResults_msgfplus.mzid.gz /Python",
@@ -48,11 +48,17 @@ namespace PPMErrorCharter
                     }
                 };
 
-                var parseResults = parser.ParseArgs(args);
-                var options = parseResults.ParsedResults;
+                var result = parser.ParseArgs(args);
+                var options = result.ParsedResults;
 
-                if (!parseResults.Success)
+                if (!result.Success)
                 {
+                    if (parser.CreateParamFileProvided)
+                    {
+                        return 0;
+                    }
+
+                    // Delay for 1500 msec in case the user double clicked this file from within Windows Explorer (or started the program via a shortcut)
                     Thread.Sleep(1500);
                     return -1;
                 }
