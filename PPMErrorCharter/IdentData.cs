@@ -327,6 +327,7 @@ namespace PPMErrorCharter
             _internalOp = false;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public int CompareToByCalcMz(IdentData compareData)
         {
             return compareData == null ? 1 : CalcMz.CompareTo(compareData.CalcMz);
@@ -377,6 +378,7 @@ namespace PPMErrorCharter
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public class IdentDataByCalcMz : IComparer<IdentData>
     {
         public int Compare(IdentData left, IdentData right)
@@ -389,6 +391,7 @@ namespace PPMErrorCharter
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public class IdentDataByScanTime : IComparer<IdentData>
     {
         public int Compare(IdentData left, IdentData right)
@@ -401,6 +404,7 @@ namespace PPMErrorCharter
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public class IdentDataByPpmError : IComparer<IdentData>
     {
         public int Compare(IdentData left, IdentData right)

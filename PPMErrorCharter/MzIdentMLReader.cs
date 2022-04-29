@@ -106,6 +106,8 @@ namespace PPMErrorCharter
             HaveScanTimes = false;
         }
 
+        // ReSharper disable once UnusedMember.Global
+
         /// <summary>
         /// Constructor, using default thresholds
         /// </summary>
