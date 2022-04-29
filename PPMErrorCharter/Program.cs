@@ -152,6 +152,7 @@ namespace PPMErrorCharter
 
             Console.WriteLine();
             Console.WriteLine("Creating plots for \"{0}\"", identFile.Name);
+
             if (!fixedMzMLFileExists)
             {
                 if (string.IsNullOrWhiteSpace(options.BaseOutputFilePath) || options.DefaultFixedMzMLFiles.Count == 0)
@@ -180,8 +181,10 @@ namespace PPMErrorCharter
             if (fixedMzMLFileExists && psmResults.Count > 0)
             {
                 Console.WriteLine();
+
                 OnDebugEvent(string.Format(
                     "Loading data from \"{0}\"", PathUtils.CompactPathString(options.FixedMzMLFilePath, 80)));
+
                 var fixedDataReader = new MzMLReader(options.FixedMzMLFilePath);
                 RegisterEvents(fixedDataReader);
 
@@ -198,8 +201,7 @@ namespace PPMErrorCharter
 
             if (psmResults.Count == 0)
             {
-                ShowErrorMessage(string.Format(
-                    "No PSM results were read from {0}; nothing to plot", identFile.Name));
+                ShowErrorMessage(string.Format("No PSM results were read from {0}; nothing to plot", identFile.Name));
                 return false;
             }
 
@@ -210,11 +212,13 @@ namespace PPMErrorCharter
             var firstResult = psmResults[0];
 
             Console.WriteLine();
-            Console.WriteLine("Using data points with original and refined MassError between {0} and {1} Da",
-                              -firstResult.IsotopeErrorFilterWindow, firstResult.IsotopeErrorFilterWindow);
+            Console.WriteLine(
+                "Using data points with original and refined MassError between {0} and {1} Da",
+                -firstResult.IsotopeErrorFilterWindow, firstResult.IsotopeErrorFilterWindow);
 
-            Console.WriteLine("Using data points with original and refined PpmError between {0} and {1} ppm",
-                              -firstResult.PpmErrorFilterWindow, firstResult.PpmErrorFilterWindow);
+            Console.WriteLine(
+                "Using data points with original and refined PpmError between {0} and {1} ppm",
+                -firstResult.PpmErrorFilterWindow, firstResult.PpmErrorFilterWindow);
 
             var origSize = psmResults.Count;
             var itemsRemoved = 0;

@@ -234,10 +234,12 @@ namespace PPMErrorCharter
             {
                 return;
             }
+
             if (!(_isSetCalcMz && _isSetExperMz) || _charge == 0)
             {
                 return;
             }
+
             // Assume that it doesn't, and only change it if it does.
             _hasIsotopeError = CheckedIsotopeError.No;
 
@@ -251,6 +253,7 @@ namespace PPMErrorCharter
             {
                 chargeWithSign = -chargeWithSign;
             }
+
             for (var i = 1; i <= 5; ++i)
             {
                 var adjustment = i / chargeWithSign;

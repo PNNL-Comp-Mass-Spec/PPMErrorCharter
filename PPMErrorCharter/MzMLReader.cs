@@ -94,7 +94,6 @@ namespace PPMErrorCharter
                     psmsForSpectrum = psmsFromScanNumber;
                 }
                 else
-
                 {
                     continue;
                 }
