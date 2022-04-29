@@ -10,7 +10,7 @@ namespace PPMErrorCharter
     {
         // Ignore Spelling: psmResults
 
-        private readonly string _mzMLFilePath;
+        private readonly string MzMLFilePath;
 
         /// <summary>
         /// Constructor
@@ -18,7 +18,7 @@ namespace PPMErrorCharter
         /// <param name="filePath">Path to mzML file</param>
         public MzMLReader(string filePath)
         {
-            _mzMLFilePath = filePath;
+            MzMLFilePath = filePath;
         }
 
         public void ReadSpectraData(List<IdentData> psmResults)
@@ -55,7 +55,7 @@ namespace PPMErrorCharter
                 return;
             }
 
-            using var reader = new SimpleMzMLReader(_mzMLFilePath);
+            using var reader = new SimpleMzMLReader(MzMLFilePath);
 
             var spectraRead = 0;
             var lastStatus = DateTime.UtcNow;
