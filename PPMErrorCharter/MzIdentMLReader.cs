@@ -192,15 +192,11 @@ namespace PPMErrorCharter
             //data.MassError = data.ExperMz - data.CalcMz;
             //data.PpmError = (data.MassError / data.CalcMz) * 1.0e6;
 
-            if (IdentProg == IdentProgramType.MyriMatch)
+            if (IdentProg == IdentProgramType.MyriMatch &&
+                result.AllParamsDict.TryGetValue("MyriMatch:MVH", out var valueText) &&
+                double.TryParse(valueText, out var value))
             {
-                if (result.AllParamsDict.TryGetValue("MyriMatch:MVH", out var valueText))
-                {
-                    if (double.TryParse(valueText, out var value))
-                    {
-                        data.ThresholdValue = value;
-                    }
-                }
+                data.ThresholdValue = value;
             }
 
             if (PassesThreshold(data) && PassesWindows(data))
