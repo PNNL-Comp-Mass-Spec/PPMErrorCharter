@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PRISM;
 using PSI_Interface.IdentData;
 
@@ -149,11 +148,11 @@ namespace PPMErrorCharter
 
                 if (psmResults.Count >= 500)
                 {
-                    OnStatusEvent(string.Format("  {0:N0} PSMs passed the filters", psmResults.Count));
+                    OnStatusEvent("  {0:N0} PSMs passed the filters", psmResults.Count);
                     break;
                 }
 
-                OnStatusEvent(string.Format("  Fewer than 500 PSMs passed the filters ({0})", psmResults.Count));
+                OnStatusEvent("  Fewer than 500 PSMs passed the filters ({0})", psmResults.Count);
 
                 // Loosen the filters and try again (up to 3 times)
                 if (!AdjustThreshold())
