@@ -107,18 +107,13 @@ namespace PPMErrorCharter
                     {
                         psm.ExperMzRefined = experimentalMzRefined;
                     }
+                    else if (spectrum.Precursors.Count > 0 && spectrum.Precursors[0].SelectedIons.Count > 0)
+                    {
+                        psm.ExperMzRefined = spectrum.Precursors[0].SelectedIons[0].SelectedIonMz;
+                    }
                     else
                     {
-                        if (spectrum.Precursors.Count > 0 && spectrum.Precursors.First().SelectedIons.Count > 0)
-                        {
-                            psm.ExperMzRefined = spectrum.Precursors.First().SelectedIons.First().SelectedIonMz;
-                        }
-                        else
-                        {
-                            OnWarningEvent(string.Format(
-                                "Could not determine the experimental precursor m/z for scan {0}",
-                                spectrumScanNumber));
-                        }
+                        OnWarningEvent("Could not determine the experimental precursor m/z for scan {0}", spectrumScanNumber);
                     }
 
                     if (psm.ScanTimeSeconds <= 0)

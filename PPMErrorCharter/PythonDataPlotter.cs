@@ -289,7 +289,7 @@ namespace PPMErrorCharter
                 if (files.Length == 0)
                     continue;
 
-                candidates.Add(files.First());
+                candidates.Add(files[0]);
             }
 
             if (candidates.Count == 0)

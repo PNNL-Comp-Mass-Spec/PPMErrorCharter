@@ -207,7 +207,7 @@ namespace PPMErrorCharter
 
             stats.PrintStatsTable();
 
-            var firstResult = psmResults.First();
+            var firstResult = psmResults[0];
 
             Console.WriteLine();
             Console.WriteLine("Using data points with original and refined MassError between {0} and {1} Da",
