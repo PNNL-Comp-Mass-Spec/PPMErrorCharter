@@ -240,10 +240,12 @@ namespace PPMErrorCharter
             }
             // Assume that it doesn't, and only change it if it does.
             _hasIsotopeError = CheckedIsotopeError.No;
-            if (_charge == 0 || (-IsotopeErrorFixWindow < MassError && MassError < IsotopeErrorFixWindow))
+
+            if (_charge == 0 || MassError is > -IsotopeErrorFixWindow and < IsotopeErrorFixWindow)
             {
                 return;
             }
+
             double chargeWithSign = _charge;
             if (MassError < 0)
             {
@@ -274,7 +276,7 @@ namespace PPMErrorCharter
             }
             // Assume that it doesn't, and only change it if it does.
             _hasRefinedIsotopeError = CheckedIsotopeError.No;
-            if (_charge == 0 || (-IsotopeErrorFixWindow < MassErrorRefined && MassErrorRefined < IsotopeErrorFixWindow))
+            if (_charge == 0 || MassErrorRefined is > -IsotopeErrorFixWindow and < IsotopeErrorFixWindow)
             {
                 return;
             }
