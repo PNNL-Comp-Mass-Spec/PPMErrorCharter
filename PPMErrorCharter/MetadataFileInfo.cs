@@ -61,22 +61,16 @@ namespace PPMErrorCharter
                 }
                 else
                 {
-                    BaseOutputFile = new FileInfo(Path.Combine(HistogramPlotFile?.DirectoryName, "Placeholder"));
+                    BaseOutputFile = new FileInfo(Path.Combine(HistogramPlotFile?.DirectoryName ?? string.Empty, "Placeholder"));
                 }
             }
             else
             {
                 BaseOutputFile = new FileInfo(baseOutputFilePath);
 
-                if (HistogramPlotFile == null)
-                {
-                    HistogramPlotFile = new FileInfo(baseOutputFilePath + "_MZRefinery_Histograms.png");
-                }
+                HistogramPlotFile ??= new FileInfo(baseOutputFilePath + "_MZRefinery_Histograms.png");
 
-                if (MassErrorPlotFile == null)
-                {
-                    MassErrorPlotFile = new FileInfo(baseOutputFilePath + "_MZRefinery_MassErrors.png");
-                }
+                MassErrorPlotFile ??= new FileInfo(baseOutputFilePath + "_MZRefinery_MassErrors.png");
             }
         }
     }

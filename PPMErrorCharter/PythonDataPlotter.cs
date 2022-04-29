@@ -39,8 +39,7 @@ namespace PPMErrorCharter
         {
             DeleteTempFiles = true;
 
-            if (PythonPath == null)
-                PythonPath = string.Empty;
+            PythonPath ??= string.Empty;
         }
 
         /// <summary>
