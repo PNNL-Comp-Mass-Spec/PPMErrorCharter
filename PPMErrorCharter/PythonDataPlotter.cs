@@ -342,8 +342,8 @@ namespace PPMErrorCharter
         /// <summary>
         /// Call the Python script to create the plots
         /// </summary>
-        /// <returns>True if success, otherwise false</returns>
         /// <remarks>Call ErrorHistogramsToPng and ErrorScatterPlotsToPng prior to calling this method</remarks>
+        /// <returns>True if success, otherwise false</returns>
         private bool GeneratePlotsWithPython(MetadataFileInfo metadataFileInfo)
         {
             if (!PythonInstalled)
