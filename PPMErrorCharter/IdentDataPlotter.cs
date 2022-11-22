@@ -586,16 +586,10 @@ namespace PPMErrorCharter
             var metadataFileInfo = new MetadataFileInfo(BaseOutputFilePath, Options);
 
             var scatterPlotSuccess = ErrorScatterPlotsToPng(psmResults, metadataFileInfo.MassErrorPlotFile.FullName, fixedMzMLFileExists, haveScanTimes);
-            if (scatterPlotSuccess)
-                Console.WriteLine("Generated {0}", metadataFileInfo.MassErrorPlotFile.FullName);
-            else
-                Console.WriteLine("Error generating {0}", metadataFileInfo.MassErrorPlotFile.FullName);
+            Console.WriteLine(scatterPlotSuccess ? "Generated {0}" : "Error generating {0}", metadataFileInfo.MassErrorPlotFile.FullName);
 
             var histogramPlotSuccess = ErrorHistogramsToPng(psmResults, metadataFileInfo.HistogramPlotFile.FullName, fixedMzMLFileExists);
-            if (histogramPlotSuccess)
-                Console.WriteLine("Generated {0}", metadataFileInfo.HistogramPlotFile.FullName);
-            else
-                Console.WriteLine("Error generating {0}", metadataFileInfo.HistogramPlotFile.FullName);
+            Console.WriteLine(histogramPlotSuccess ? "Generated {0}" : "Error generating {0}", metadataFileInfo.HistogramPlotFile.FullName);
 
             return scatterPlotSuccess && histogramPlotSuccess;
         }
