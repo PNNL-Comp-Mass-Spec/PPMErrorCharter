@@ -600,13 +600,14 @@ namespace PPMErrorCharter
             return scatterPlotSuccess && histogramPlotSuccess;
         }
 
-        private BitmapSource ExportToBitmap(IPlotModel plotModel, int height, int width, OxyColor background, double resolution = 96)
+        private BitmapSource ExportToBitmap(PlotModel plotModel, int height, int width, OxyColor background, double resolution = 96)
         {
+            plotModel.Background = background;
+
             var exporter = new PngExporter()
             {
                 Height = height,
                 Width = width,
-                Background = background,
                 Resolution = resolution,
             };
 
