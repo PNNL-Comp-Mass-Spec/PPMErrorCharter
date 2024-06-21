@@ -8,7 +8,7 @@ namespace PPMErrorCharter
 {
     public sealed class MzMLReader : EventNotifier
     {
-        // Ignore Spelling: psmResults
+        // Ignore Spelling: psm, psmResults
 
         private readonly string MzMLFilePath;
 

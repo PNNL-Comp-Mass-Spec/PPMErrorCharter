@@ -11,7 +11,7 @@ namespace PPMErrorCharter
     /// </summary>
     public class ErrorCharterOptions
     {
-        // Ignore Spelling: OxyPlot
+        // Ignore Spelling: app, OxyPlot
 
         private const string PROGRAM_DATE = "June 20, 2024";
 

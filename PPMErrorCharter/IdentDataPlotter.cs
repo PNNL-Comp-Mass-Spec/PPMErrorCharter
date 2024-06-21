@@ -22,7 +22,7 @@ namespace PPMErrorCharter
     /// </summary>
     public class IdentDataPlotter : DataPlotterBase
     {
-        // Ignore Spelling: Oxy, Png, Rect, rc
+        // Ignore Spelling: ident, Oxy, Png, psm, Rect, rc
 
         /// <summary>
         /// Bitmap of the graphic created by ErrorHistogramsToPng
