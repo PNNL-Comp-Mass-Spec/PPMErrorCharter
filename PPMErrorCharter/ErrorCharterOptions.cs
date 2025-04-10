@@ -13,7 +13,7 @@ namespace PPMErrorCharter
     {
         // Ignore Spelling: app, OxyPlot
 
-        private const string PROGRAM_DATE = "June 20, 2024";
+        private const string PROGRAM_DATE = "April 9, 2025";
 
         /// <summary>
         /// Constructor
